@@ -1,0 +1,27 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-night-900 text-white;
+  }
+}
+
+@layer components {
+  .dream-gradient {
+    @apply bg-gradient-to-r from-dream-400 to-dream-600;
+  }
+  
+  .dream-card {
+    @apply bg-night-800/50 backdrop-blur-sm rounded-xl border border-night-700/50 hover:border-dream-500/30 transition-all duration-300;
+  }
+  
+  .dream-input {
+    @apply bg-night-700/50 border border-night-600 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-dream-500 focus:ring-1 focus:ring-dream-500 transition-all;
+  }
+  
+  .dream-btn {
+    @apply dream-gradient text-night-900 font-semibold px-6 py-3 rounded-lg hover:scale-105 transition-all duration-300 hover:shadow-lg hover:shadow-dream-500/20;
+  }
+}

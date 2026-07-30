@@ -1,0 +1,25 @@
+{
+    "compilerOptions": {
+        "target": "ES2022",
+        "useDefineForClassFields": true,
+        "module": "ESNext",
+        "lib": ["es2017"],
+        "types": ["node"],
+        "skipLibCheck": true,
+        "useUnknownInCatchVariables": false,
+        "rootDir": "./src",
+        "outDir": "./dist",
+        "paths": {
+            "@/*": ["./src/*"]
+        },
+        /* Linting */
+        "strict": true,
+        "noUnusedLocals": true,
+        "noUnusedParameters": true,
+        "erasableSyntaxOnly": true,
+        "noFallthroughCasesInSwitch": true,
+        "noUncheckedSideEffectImports": true
+    },
+    "include": ["**/main.ts", "**/classes/*.ts", "**/vite-env.d.ts",],
+    "exclude": ["./node_modules", "./tests/**/*.ts", "./types/**/*.ts"]
+}
