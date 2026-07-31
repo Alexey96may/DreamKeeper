@@ -1,0 +1,186 @@
+/* ============================================
+   1. ЦВЕТОВАЯ ПАЛИТРА
+   ============================================ */
+
+:root {
+    /* ----- Базовые цвета ----- */
+    --dk-white: #ffffff;
+    --dk-white-soft: #f8f9fa;
+    --dk-white-mute: #f0f1f3;
+
+    --dk-black: #0d0d1a;
+    --dk-black-soft: #1a1a2e;
+    --dk-black-mute: #262640;
+
+    --dk-gray-50: #f8f9fa;
+    --dk-gray-100: #f0f1f3;
+    --dk-gray-200: #e0e1e6;
+    --dk-gray-300: #c0c1cc;
+    --dk-gray-400: #9091a6;
+    --dk-gray-500: #606180;
+    --dk-gray-600: #404166;
+    --dk-gray-700: #2a2b4a;
+    --dk-gray-800: #1a1a33;
+    --dk-gray-900: #0d0d1a;
+
+    /* ----- Акцентные цвета (золото/медный) ----- */
+    --dk-gold-50: #fdf8f0;
+    --dk-gold-100: #fbf0d9;
+    --dk-gold-200: #f5dba8;
+    --dk-gold-300: #f0c677;
+    --dk-gold-400: #eab146;
+    --dk-gold-500: #e59c15;
+    --dk-gold-600: #c78712;
+    --dk-gold-700: #a8720f;
+    --dk-gold-800: #8a5d0c;
+    --dk-gold-900: #6b4809;
+
+    /* ----- Специальные цвета для снов ----- */
+    --dk-dream-purple: #7c3aed;
+    --dk-dream-blue: #3b82f6;
+    --dk-dream-pink: #ec4899;
+    --dk-dream-cyan: #06b6d4;
+    --dk-dream-indigo: #4f46e5;
+}
+
+/* ============================================
+   2. СЕМАНТИЧЕСКИЕ ПЕРЕМЕННЫЕ
+   ============================================ */
+
+:root {
+    /* Фоны */
+    --color-background: var(--dk-white);
+    --color-background-soft: var(--dk-white-soft);
+    --color-background-mute: var(--dk-white-mute);
+    --color-background-card: var(--dk-white);
+    --color-background-input: var(--dk-white-soft);
+
+    /* Текст */
+    --color-text: var(--dk-gray-900);
+    --color-text-soft: var(--dk-gray-700);
+    --color-text-mute: var(--dk-gray-500);
+    --color-text-inverse: var(--dk-white);
+    --color-text-link: var(--dk-gold-600);
+    --color-text-link-hover: var(--dk-gold-700);
+
+    /* Границы */
+    --color-border: var(--dk-gray-200);
+    --color-border-hover: var(--dk-gray-300);
+    --color-border-focus: var(--dk-gold-500);
+
+    /* Акценты */
+    --color-accent: var(--dk-gold-500);
+    --color-accent-hover: var(--dk-gold-600);
+    --color-accent-soft: var(--dk-gold-100);
+
+    /* Тени */
+    --color-shadow: rgba(0, 0, 0, 0.08);
+    --color-shadow-lg: rgba(0, 0, 0, 0.12);
+    --color-shadow-xl: rgba(0, 0, 0, 0.16);
+
+    /* Статусы */
+    --color-success: #22c55e;
+    --color-warning: #f59e0b;
+    --color-error: #ef4444;
+    --color-info: var(--dk-dream-blue);
+
+    /* Сны - для маркеров */
+    --color-dream-lucid: var(--dk-dream-purple);
+    --color-dream-nightmare: var(--color-error);
+    --color-dream-prophetic: var(--dk-dream-indigo);
+    --color-dream-normal: var(--dk-dream-cyan);
+}
+
+/* ============================================
+   3. ТЁМНАЯ ТЕМА
+   ============================================ */
+
+[data-theme='dark'] {
+    /* Фоны */
+    --color-background: var(--dk-black);
+    --color-background-soft: var(--dk-black-soft);
+    --color-background-mute: var(--dk-black-mute);
+    --color-background-card: var(--dk-black-soft);
+    --color-background-input: var(--dk-black-mute);
+
+    /* Текст */
+    --color-text: var(--dk-gray-100);
+    --color-text-soft: var(--dk-gray-300);
+    --color-text-mute: var(--dk-gray-500);
+    --color-text-inverse: var(--dk-white);
+
+    /* Границы */
+    --color-border: var(--dk-gray-700);
+    --color-border-hover: var(--dk-gray-600);
+
+    /* Тени */
+    --color-shadow: rgba(0, 0, 0, 0.3);
+    --color-shadow-lg: rgba(0, 0, 0, 0.4);
+    --color-shadow-xl: rgba(0, 0, 0, 0.5);
+}
+
+/* ============================================
+   4. НОЧНАЯ ТЕМА
+   ============================================ */
+
+[data-theme='night'] {
+    /* Фоны */
+    --color-background: #06060e;
+    --color-background-soft: #0e0e1e;
+    --color-background-mute: #16162e;
+    --color-background-card: #0e0e1e;
+    --color-background-input: #16162e;
+
+    /* Текст */
+    --color-text: #dcdcf0;
+    --color-text-soft: #a8a8c8;
+    --color-text-mute: #6a6a8a;
+    --color-text-inverse: var(--dk-white);
+
+    /* Границы */
+    --color-border: #2a2a4a;
+    --color-border-hover: #3a3a5a;
+
+    /* Акценты (более приглушенные) */
+    --color-accent: #c7a020;
+    --color-accent-hover: #d4b030;
+    --color-accent-soft: #2a2a1a;
+
+    /* Тени */
+    --color-shadow: rgba(0, 0, 0, 0.5);
+    --color-shadow-lg: rgba(0, 0, 0, 0.6);
+    --color-shadow-xl: rgba(0, 0, 0, 0.7);
+}
+
+/* ============================================
+   5. СЕПИЯ ТЕМА
+   ============================================ */
+
+[data-theme='sepia'] {
+    /* Фоны */
+    --color-background: #f5edd6;
+    --color-background-soft: #efe7d0;
+    --color-background-mute: #e9dfc8;
+    --color-background-card: #faf2e0;
+    --color-background-input: #efe7d0;
+
+    /* Текст */
+    --color-text: #5c4d3c;
+    --color-text-soft: #7a6a5a;
+    --color-text-mute: #a09080;
+    --color-text-inverse: var(--dk-white);
+
+    /* Границы */
+    --color-border: #d4c8b8;
+    --color-border-hover: #c4b8a8;
+
+    /* Акценты (теплые) */
+    --color-accent: #b8860b;
+    --color-accent-hover: #d4a020;
+    --color-accent-soft: #e8ddc8;
+
+    /* Тени */
+    --color-shadow: rgba(92, 77, 60, 0.12);
+    --color-shadow-lg: rgba(92, 77, 60, 0.18);
+    --color-shadow-xl: rgba(92, 77, 60, 0.24);
+}

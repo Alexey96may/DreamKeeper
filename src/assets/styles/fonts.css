@@ -1,0 +1,85 @@
+/* ============================================
+   INTER
+   ============================================ */
+
+/* ----- Regular (400) ----- */
+@font-face {
+    font-family: 'Inter';
+    font-style: normal;
+    font-weight: 400;
+    src:
+        url('@/assets/fonts/Inter_24pt-Regular.woff2') format('woff2'),
+        url('@/assets/fonts/Inter_24pt-Regular.woff') format('woff'),
+        url('@/assets/fonts/Inter_24pt-Regular.ttf') format('truetype');
+    font-display: swap;
+}
+
+/* ----- Medium (500) ----- */
+@font-face {
+    font-family: 'Inter';
+    font-style: normal;
+    font-weight: 500;
+    src:
+        url('@/assets/fonts/Inter_24pt-Medium.woff2') format('woff2'),
+        url('@/assets/fonts/Inter_24pt-Medium.woff') format('woff'),
+        url('@/assets/fonts/Inter_24pt-Medium.ttf') format('truetype');
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Inter';
+    font-style: italic;
+    font-weight: 500;
+    src:
+        url('@/assets/fonts/Inter_24pt-MediumItalic.woff2') format('woff2'),
+        url('@/assets/fonts/Inter_24pt-MediumItalic.woff') format('woff'),
+        url('@/assets/fonts/Inter_24pt-MediumItalic.ttf') format('truetype');
+    font-display: swap;
+}
+
+/* ----- SemiBold (600) ----- */
+@font-face {
+    font-family: 'Inter';
+    font-style: normal;
+    font-weight: 600;
+    src:
+        url('@/assets/fonts/Inter_24pt-SemiBold.woff2') format('woff2'),
+        url('@/assets/fonts/Inter_24pt-SemiBold.woff') format('woff'),
+        url('@/assets/fonts/Inter_24pt-SemiBold.ttf') format('truetype');
+    font-display: swap;
+}
+
+/* ----- Bold (700) ----- */
+@font-face {
+    font-family: 'Inter';
+    font-style: normal;
+    font-weight: 700;
+    src:
+        url('@/assets/fonts/Inter_28pt-Bold.woff2') format('woff2'),
+        url('@/assets/fonts/Inter_28pt-Bold.woff') format('woff'),
+        url('@/assets/fonts/Inter_28pt-Bold.ttf') format('truetype');
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Inter';
+    font-style: italic;
+    font-weight: 700;
+    src:
+        url('@/assets/fonts/Inter_28pt-BoldItalic.woff2') format('woff2'),
+        url('@/assets/fonts/Inter_28pt-BoldItalic.woff') format('woff'),
+        url('@/assets/fonts/Inter_28pt-BoldItalic.ttf') format('truetype');
+    font-display: swap;
+}
+
+/* ----- ExtraBold (800) ----- */
+@font-face {
+    font-family: 'Inter';
+    font-style: normal;
+    font-weight: 800;
+    src:
+        url('@/assets/fonts/Inter_28pt-ExtraBold.woff2') format('woff2'),
+        url('@/assets/fonts/Inter_28pt-ExtraBold.woff') format('woff'),
+        url('@/assets/fonts/Inter_28pt-ExtraBold.ttf') format('truetype');
+    font-display: swap;
+}
