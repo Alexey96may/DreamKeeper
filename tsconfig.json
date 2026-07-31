@@ -20,6 +20,6 @@
         "noFallthroughCasesInSwitch": true,
         "noUncheckedSideEffectImports": true
     },
-    "include": ["**/main.ts", "**/classes/*.ts", "**/vite-env.d.ts",],
+    "include": ["**/main.ts", "**/classes/*.ts", "**/vite-env.d.ts"],
     "exclude": ["./node_modules", "./tests/**/*.ts", "./types/**/*.ts"]
 }
