@@ -1,10 +1,10 @@
 import '@/assets/styles/tailwind.css';
-import './assets/styles/main.css';
+import '@/assets/styles/main.css';
 
 import { createApp } from 'vue';
 import { createPinia } from 'pinia';
 
-import IndexedDB from '@/plugins/indexeddb';
+import IndexedDB from '@/composables/indexeddb.js';
 
 import App from './App.vue';
 import router from './router';
