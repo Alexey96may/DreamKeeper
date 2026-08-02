@@ -1,9 +1,9 @@
-import '@/assets/styles/tailwind.css';
-import '@/assets/styles/main.css';
-
 import { createApp } from 'vue';
+
 import { createPinia } from 'pinia';
 
+import '@/assets/styles/main.css';
+import '@/assets/styles/tailwind.css';
 import IndexedDB from '@/composables/indexeddb.js';
 
 import App from './App.vue';

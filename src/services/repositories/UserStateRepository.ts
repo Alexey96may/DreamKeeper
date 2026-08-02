@@ -1,14 +1,13 @@
-// src/services/repositories/UserStateRepository.ts
-import { BaseRepository } from './BaseRepository';
-import type { UserState } from '@/plugins/indexeddb';
-import type { IDataService } from '../data/DataService';
+import type { UserState } from '@/types/UserState';
+import type { IDataService } from '@/types/databases/DataService';
+
+import { BaseRepository } from '@/services/repositories/BaseRepository';
 
 export class UserStateRepository extends BaseRepository<UserState> {
     constructor(dataService: IDataService) {
         super(dataService, 'userStates');
     }
 
-    // Специфичные методы для состояния
     async getByDate(date: string): Promise<UserState | undefined> {
         const states = await this.getByIndex('date', date);
         return states[0];

@@ -1,5 +1,7 @@
 // src/services/data/DataService.ts
-import type { StoreName } from '@/plugins/indexeddb';
+import type { StoreName } from '@/types/Store';
+
+export type ServiceType = 'indexeddb' | 'api' | 'capacitor';
 
 export interface IDataService {
     init(): Promise<void>;

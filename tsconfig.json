@@ -3,16 +3,20 @@
         "target": "ES2022",
         "useDefineForClassFields": true,
         "module": "ESNext",
-        "lib": ["es2017"],
-        "types": ["node"],
+        "lib": ["ES2022", "DOM", "DOM.Iterable"],
+        "types": ["vitest/globals", "node"],
         "skipLibCheck": true,
         "useUnknownInCatchVariables": false,
-        "rootDir": "./src",
+        "rootDir": ".",
         "outDir": "./dist",
         "paths": {
             "@/*": ["./src/*"]
         },
-        /* Linting */
+        "moduleResolution": "bundler",
+        "resolveJsonModule": true,
+        "esModuleInterop": true,
+        "forceConsistentCasingInFileNames": true,
+
         "strict": true,
         "noUnusedLocals": true,
         "noUnusedParameters": true,
@@ -20,6 +24,6 @@
         "noFallthroughCasesInSwitch": true,
         "noUncheckedSideEffectImports": true
     },
-    "include": ["**/main.ts", "**/classes/*.ts", "**/vite-env.d.ts"],
-    "exclude": ["./node_modules", "./tests/**/*.ts", "./types/**/*.ts"]
+    "include": ["src/**/*.ts", "src/**/*.d.ts", "src/**/*.vue", "tests/**/*.ts"],
+    "exclude": ["node_modules", "dist"]
 }

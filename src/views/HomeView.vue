@@ -124,7 +124,9 @@
     import 'v-calendar-3/style.css';
     import { useSleepStore } from '@/stores/modules/sleep';
     import { useUserStateStore } from '@/stores/modules/userState';
-    import type { Dream, UserState } from '@/composables/indexeddb';
+    import type { Dream } from '@/types/Dream';
+    import type { UserState } from '@/types/UserState';
+    import type { CalendarAttribute } from '@/types/Calendar';
 
     const router = useRouter();
     const sleepStore = useSleepStore();
@@ -134,7 +136,7 @@
 
     // --- Атрибуты для календаря ---
     const calendarAttributes = computed(() => {
-        const attributes = [];
+        const attributes: CalendarAttribute[] = [];
 
         // Сны с качеством
         sleepStore.sleeps.forEach((dream: Dream) => {
@@ -148,7 +150,7 @@
 
                 attributes.push({
                     key: `dream-${dream.id}`,
-                    dates: new Date(dream.date),
+                    dates: [new Date(dream.date)],
                     dot: color,
                     popover: {
                         label: `⭐ ${quality}/10 — ${dream.description || 'Без описания'}`,
@@ -169,7 +171,7 @@
 
                 attributes.push({
                     key: `state-${state.id}`,
-                    dates: new Date(state.date),
+                    dates: [new Date(state.date)],
                     bar: color,
                     popover: {
                         label: `😊 Настроение: ${mood}/10`,
@@ -238,14 +240,14 @@
 
     // --- Методы ---
     const getDreamsForDate = (date: string): Dream[] => {
-        return sleepStore.getSleepsByDate(date);
+        return sleepStore.getDreamsByDate(date);
     };
 
     const getStateForDate = (date: string): UserState | undefined => {
         return userStateStore.getStateByDate(date);
     };
 
-    const onDayClick = (day: any) => {
+    const onDayClick = (day: { date: Date | string }): void => {
         const date = day.date instanceof Date ? day.date : new Date(day.date);
         selectedDay.value = { date: date.toISOString().split('T')[0] };
     };

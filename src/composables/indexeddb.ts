@@ -1,93 +1,22 @@
 // src/plugins/indexeddb.ts
-import { openDB, IDBPDatabase } from 'idb';
 import type { App, InjectionKey } from 'vue';
 
-// ============================================
-// 1. ТИПЫ ДАННЫХ
-// ============================================
+import { IDBPDatabase, openDB } from 'idb';
 
-export interface Dream {
-    id?: number;
-    date: string;
-    startTime?: string;
-    endTime?: string;
-    duration?: number;
-    quality: number;
-    description?: string;
-    type?: 'lucid' | 'nightmare' | 'prophetic' | 'normal';
-    emotions?: string[];
-    symbols?: string[];
-    createdAt?: string;
-    updatedAt?: string;
-}
-
-export interface UserState {
-    id?: number;
-    date: string;
-    mood?: number;
-    energy?: number;
-    productivity?: number;
-    stress?: number;
-    focus?: number;
-    notes?: string;
-    createdAt?: string;
-    updatedAt?: string;
-}
+import type { Dream } from '@/types/Dream';
+import type { StoreName, StoreType } from '@/types/Store';
+import type { UserState } from '@/types/UserState';
+import type { DreamKeeperDB } from '@/types/databases';
+import type { IDatabaseService, IndexedDBOptions } from '@/types/databases/IndexedDB';
 
 // ============================================
-// 2. ТИПЫ ХРАНИЛИЩ
-// ============================================
-
-export interface DreamKeeperDB {
-    dreams: Dream;
-    userStates: UserState;
-}
-
-export type StoreName = keyof DreamKeeperDB;
-export type StoreType<T extends StoreName> = DreamKeeperDB[T];
-
-// ============================================
-// 3. ИНТЕРФЕЙС СЕРВИСА (БЕЗ ANY!)
-// ============================================
-
-export interface IDatabaseService {
-    // Общие методы с дженериками
-    getAll: <T extends StoreName>(store: T) => Promise<StoreType<T>[]>;
-    get: <T extends StoreName>(store: T, id: number) => Promise<StoreType<T> | undefined>;
-    add: <T extends StoreName>(store: T, data: StoreType<T>) => Promise<number>;
-    put: <T extends StoreName>(store: T, data: StoreType<T>) => Promise<number>;
-    delete: (store: StoreName, id: number) => Promise<void>;
-    getByIndex: <T extends StoreName>(
-        store: T,
-        index: string,
-        value: string | number,
-    ) => Promise<StoreType<T>[]>;
-
-    // Специфические методы (строго типизированные)
-    getDreamsByDate: (date: string) => Promise<Dream[]>;
-    getDreamsByMonth: (year: number, month: number) => Promise<Dream[]>;
-    getDreamsByQuality: (minQuality: number) => Promise<Dream[]>;
-    getUserStateByDate: (date: string) => Promise<UserState | undefined>;
-    updateUserState: (date: string, data: Partial<UserState>) => Promise<number>;
-}
-
-// ============================================
-// 4. КЛЮЧ ДЛЯ INJECT
+// Key for INJECT
 // ============================================
 
 export const DB_KEY: InjectionKey<IDatabaseService> = Symbol('db');
 
 // ============================================
-// 5. ОПЦИИ ПЛАГИНА
-// ============================================
-
-export interface IndexedDBOptions {
-    dbName?: string;
-    version?: number;
-}
-
-// ============================================
-// 6. ПЛАГИН
+// Plagin
 // ============================================
 
 export default {
@@ -124,28 +53,41 @@ export default {
         );
 
         const dbService: IDatabaseService = {
-            // ===== Общие методы =====
+            async close(): Promise<void> {
+                const db = await dbPromise;
+                db.close();
+            },
+
             async getAll<T extends StoreName>(store: T): Promise<StoreType<T>[]> {
-                return (await dbPromise).getAll(store) as StoreType<T>[];
+                const db = await dbPromise;
+                const result = await db.getAll(store);
+                return result as StoreType<T>[];
             },
 
             async get<T extends StoreName>(
                 store: T,
                 id: number,
             ): Promise<StoreType<T> | undefined> {
-                return (await dbPromise).get(store, id) as StoreType<T> | undefined;
+                const db = await dbPromise;
+                const result = await db.get(store, id);
+                return result as StoreType<T> | undefined;
             },
 
             async add<T extends StoreName>(store: T, data: StoreType<T>): Promise<number> {
-                return (await dbPromise).add(store, data);
+                const db = await dbPromise;
+                const key = await db.add(store, data);
+                return key as number;
             },
 
             async put<T extends StoreName>(store: T, data: StoreType<T>): Promise<number> {
-                return (await dbPromise).put(store, data);
+                const db = await dbPromise;
+                const key = await db.put(store, data);
+                return key as number;
             },
 
             async delete(store: StoreName, id: number): Promise<void> {
-                await (await dbPromise).delete(store, id);
+                const db = await dbPromise;
+                await db.delete(store, id);
             },
 
             async getByIndex<T extends StoreName>(
@@ -153,12 +95,14 @@ export default {
                 index: string,
                 value: string | number,
             ): Promise<StoreType<T>[]> {
-                return (await dbPromise).getAllFromIndex(store, index, value) as StoreType<T>[];
+                const db = await dbPromise;
+                const result = await db.getAllFromIndex(store, index, value);
+                return result as StoreType<T>[];
             },
 
-            // ===== Специфические методы =====
             async getDreamsByDate(date: string): Promise<Dream[]> {
-                return this.getByIndex('dreams', 'date', date);
+                const result = await this.getByIndex('dreams', 'date', date);
+                return result as Dream[];
             },
 
             async getDreamsByMonth(year: number, month: number): Promise<Dream[]> {
@@ -203,10 +147,6 @@ export default {
         app.provide(DB_KEY, dbService);
     },
 };
-
-// ============================================
-// 7. РАСШИРЕНИЕ ТИПОВ ДЛЯ VUE
-// ============================================
 
 declare module '@vue/runtime-core' {
     interface ComponentCustomProperties {

@@ -6,8 +6,9 @@
         "node": true
     },
     "rules": {
-        "no-console": "error",
-        "eqeqeq": "warn"
+        "no-console": ["warn", { "allow": ["error", "warn"] }],
+        "eqeqeq": "warn",
+        "vitest/require-mock-type-parameters": "off"
     },
     "categories": {
         "correctness": "error"

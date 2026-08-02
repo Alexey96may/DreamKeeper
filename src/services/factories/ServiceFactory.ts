@@ -1,14 +1,12 @@
 // src/services/factories/ServiceFactory.ts
-import { IndexedDBService } from '../data/IndexedDBService';
-import type { IDataService } from '../data/DataService';
+import type { IDataService, ServiceType } from '@/types/databases/DataService';
 
-export type ServiceType = 'indexeddb' | 'api' | 'capacitor';
+import { IndexedDBService } from '@/services/data/IndexedDBService';
 
 export class ServiceFactory {
     private static instance: IDataService | null = null;
 
     static createService(type: ServiceType = 'indexeddb'): IDataService {
-        // Возвращаем существующий экземпляр, если есть
         if (this.instance) {
             return this.instance;
         }

@@ -1,14 +1,13 @@
-// src/services/repositories/SleepRepository.ts
+import type { Dream } from '@/types/Dream';
+import type { IDataService } from '@/types/databases/DataService';
+
 import { BaseRepository } from './BaseRepository';
-import type { Dream } from '@/plugins/indexeddb';
-import type { IDataService } from '../data/DataService';
 
 export class SleepRepository extends BaseRepository<Dream> {
     constructor(dataService: IDataService) {
         super(dataService, 'dreams');
     }
 
-    // Специфичные методы для снов
     async getByDate(date: string): Promise<Dream[]> {
         return this.getByIndex('date', date);
     }

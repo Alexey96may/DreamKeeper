@@ -1,7 +1,8 @@
-// src/services/data/IndexedDBService.ts
-import { openDB, IDBPDatabase } from 'idb';
-import type { IDataService } from './DataService';
-import type { StoreName, DreamKeeperDB } from '@/plugins/indexeddb';
+import { IDBPDatabase, openDB } from 'idb';
+
+import type { StoreName } from '@/types/Store';
+import type { DreamKeeperDB } from '@/types/databases';
+import type { IDataService } from '@/types/databases/DataService';
 
 export class IndexedDBService implements IDataService {
     private dbPromise: Promise<IDBPDatabase<DreamKeeperDB>> | null = null;
@@ -18,7 +19,7 @@ export class IndexedDBService implements IDataService {
 
         this.dbPromise = openDB<DreamKeeperDB>(this.dbName, this.version, {
             upgrade(db: IDBPDatabase<DreamKeeperDB>) {
-                // Хранилище снов
+                // Dream Storage
                 if (!db.objectStoreNames.contains('dreams')) {
                     const dreamStore = db.createObjectStore('dreams', {
                         keyPath: 'id',
@@ -29,7 +30,7 @@ export class IndexedDBService implements IDataService {
                     dreamStore.createIndex('type', 'type');
                 }
 
-                // Хранилище состояния пользователя
+                // User state storage
                 if (!db.objectStoreNames.contains('userStates')) {
                     const stateStore = db.createObjectStore('userStates', {
                         keyPath: 'id',
@@ -62,12 +63,12 @@ export class IndexedDBService implements IDataService {
 
     async add<T>(store: StoreName, data: T): Promise<number> {
         const db = await this.getDB();
-        return db.add(store, data);
+        return db.add(store, data) as Promise<number>;
     }
 
     async put<T>(store: StoreName, data: T): Promise<number> {
         const db = await this.getDB();
-        return db.put(store, data);
+        return db.put(store, data) as Promise<number>;
     }
 
     async delete(store: StoreName, id: number): Promise<void> {
@@ -78,5 +79,14 @@ export class IndexedDBService implements IDataService {
     async getByIndex<T>(store: StoreName, index: string, value: string | number): Promise<T[]> {
         const db = await this.getDB();
         return db.getAllFromIndex(store, index, value) as Promise<T[]>;
+    }
+
+    async destroy(): Promise<void> {
+        if (this.dbPromise) {
+            const db = await this.dbPromise;
+            db.close();
+            await indexedDB.deleteDatabase(this.dbName);
+            this.dbPromise = null;
+        }
     }
 }

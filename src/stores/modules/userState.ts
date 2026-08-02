@@ -1,9 +1,12 @@
 // src/store/modules/userState.ts
+import { computed, ref } from 'vue';
+
 import { defineStore } from 'pinia';
-import { ref, computed } from 'vue';
+
+import type { UserState } from '@/types/UserState';
+
 import { ServiceFactory } from '@/services/factories/ServiceFactory';
 import { UserStateRepository } from '@/services/repositories/UserStateRepository';
-import type { UserState } from '@/composables/indexeddb';
 
 export const useUserStateStore = defineStore('userState', () => {
     // ===== STATE =====

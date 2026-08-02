@@ -1,9 +1,11 @@
-// src/store/modules/sleep.ts
+import { computed, ref } from 'vue';
+
 import { defineStore } from 'pinia';
-import { ref, computed } from 'vue';
+
+import type { Dream } from '@/types/Dream';
+
 import { ServiceFactory } from '@/services/factories/ServiceFactory';
 import { SleepRepository } from '@/services/repositories/SleepRepository';
-import type { Dream } from '@/plugins/indexeddb';
 
 export const useSleepStore = defineStore('sleep', () => {
     // ===== STATE =====
@@ -31,7 +33,7 @@ export const useSleepStore = defineStore('sleep', () => {
     };
 
     const getDreamById = (id: number): Dream | undefined => {
-        return sleeps.value.find((sleep: Dream | undefined) => sleep.id === id);
+        return sleeps.value.find((sleep: Dream) => sleep.id === id);
     };
 
     const getMonthStats = (year: number, month: number) => {
@@ -104,7 +106,7 @@ export const useSleepStore = defineStore('sleep', () => {
             return savedDream || null;
         } catch (err) {
             error.value = err instanceof Error ? err.message : 'Ошибка создания сна';
-            console.error('Failed to add dream:', err);
+            console.error('Failed to add dreams:', err);
             return null;
         } finally {
             loading.value = false;

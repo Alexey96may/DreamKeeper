@@ -1,8 +1,10 @@
 // src/store/modules/ui.ts
-import { defineStore } from 'pinia';
 import { ref } from 'vue';
 
-export type ThemeMode = 'light' | 'dark' | 'night' | 'sepia' | 'system';
+import { defineStore } from 'pinia';
+
+import type { Notification, NotificationType } from '@/types/Notification';
+import type { ThemeMode } from '@/types/Theme';
 
 export const useUIStore = defineStore('ui', () => {
     // ===== STATE =====
@@ -11,9 +13,9 @@ export const useUIStore = defineStore('ui', () => {
     );
     const sidebarOpen = ref<boolean>(false);
     const isLoading = ref<boolean>(false);
-    const notifications = ref<
-        Array<{ id: number; message: string; type: 'info' | 'success' | 'error' | 'warning' }>
-    >([]);
+    const notifications = ref<Array<Notification>>([]);
+
+    let nextId = 1;
 
     // ===== ACTIONS =====
     const setTheme = (newTheme: ThemeMode) => {
@@ -41,7 +43,6 @@ export const useUIStore = defineStore('ui', () => {
     const initTheme = () => {
         applyTheme(theme.value);
 
-        // Слушаем изменения системной темы
         const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
         mediaQuery.addEventListener('change', () => {
             if (theme.value === 'system') {
@@ -58,14 +59,10 @@ export const useUIStore = defineStore('ui', () => {
         isLoading.value = status;
     };
 
-    const addNotification = (
-        message: string,
-        type: 'info' | 'success' | 'error' | 'warning' = 'info',
-    ) => {
-        const id = Date.now();
+    const addNotification = (message: string, type: NotificationType = 'info') => {
+        const id = nextId++;
         notifications.value.push({ id, message, type });
 
-        // Автоматическое удаление через 5 секунд
         setTimeout(() => {
             removeNotification(id);
         }, 5000);

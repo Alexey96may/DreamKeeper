@@ -1,6 +1,5 @@
-// src/services/repositories/BaseRepository.ts
-import type { IDataService } from '../data/DataService';
-import type { StoreName } from '@/plugins/indexeddb';
+import type { StoreName } from '@/types/Store';
+import type { IDataService } from '@/types/databases/DataService';
 
 export abstract class BaseRepository<T> {
     protected dataService: IDataService;
