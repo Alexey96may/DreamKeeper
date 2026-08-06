@@ -11,6 +11,12 @@ const router = createRouter({
             component: HomeView,
         },
         {
+            path: '/day/:date',
+            name: 'day-details',
+            component: () => import('../views/DayView.vue'),
+            props: true,
+        },
+        {
             path: '/about',
             name: 'about',
             component: () => import('../views/AboutView.vue'),
