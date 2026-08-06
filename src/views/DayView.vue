@@ -27,7 +27,8 @@
                     <div
                         v-for="dream in dayDreams"
                         :key="dream.id"
-                        class="bg-bg-secondary/50 border-border/50 mb-2 rounded-lg border p-3"
+                        @click="goToDreamDetail(dream.id)"
+                        class="bg-bg-secondary/50 border-border/50 mb-2 cursor-pointer rounded-lg border p-3"
                     >
                         <div class="flex items-start justify-between">
                             <span class="text-text-primary">
@@ -117,6 +118,12 @@
 
     const goBack = () => {
         router.push('/');
+    };
+
+    const goToDreamDetail = (id: number | undefined) => {
+        if (!id) return;
+
+        router.push(`/dream/${id}`);
     };
 
     const goToAddDream = () => {

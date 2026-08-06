@@ -21,6 +21,24 @@ const router = createRouter({
             name: 'about',
             component: () => import('../views/AboutView.vue'),
         },
+        // --- CRUD Dreams ---
+        {
+            path: '/dream/new',
+            name: 'dream-create',
+            component: () => import('../views/dreams/DreamFormView.vue'),
+        },
+        {
+            path: '/dream/:id',
+            name: 'dream-detail',
+            component: () => import('../views/dreams/DreamDetailView.vue'),
+            props: true,
+        },
+        {
+            path: '/dream/:id/edit',
+            name: 'dream-edit',
+            component: () => import('../views/dreams/DreamFormView.vue'),
+            props: true,
+        },
     ],
 });
 
