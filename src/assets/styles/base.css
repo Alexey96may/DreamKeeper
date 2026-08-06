@@ -1,7 +1,3 @@
-/* ============================================
-   6. БАЗОВЫЕ СТИЛИ
-   ============================================ */
-
 body {
     min-height: 100vh;
     color: var(--color-text);
@@ -25,10 +21,8 @@ body {
         'Helvetica Neue',
         sans-serif;
     font-size: 16px;
-    line-height: 1.6;
     font-weight: 400;
 
-    /* Сглаживание */
     text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
@@ -62,10 +56,9 @@ body {
    8. ВСПОМОГАТЕЛЬНЫЕ КЛАССЫ
    ============================================ */
 
-/* Контейнер */
 .container {
     width: 100%;
-    max-width: 1200px;
+    max-width: 1280px;
     margin: 0 auto;
     padding: 0 20px;
 }
@@ -191,27 +184,4 @@ body {
 
 .pulse {
     animation: pulse 2s ease-in-out infinite;
-}
-
-#app {
-    max-width: 1280px;
-    margin: 0 auto;
-    padding: 2rem;
-    font-weight: normal;
-}
-
-@media (hover: hover) {
-}
-
-@media (min-width: 1024px) {
-    body {
-        display: flex;
-        place-items: center;
-    }
-
-    #app {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        padding: 0 2rem;
-    }
 }

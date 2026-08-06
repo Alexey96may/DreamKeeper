@@ -2,18 +2,8 @@
 <template>
     <div class="bg-bg-primary text-text-primary transition-theme duration-theme min-h-screen">
         <div class="container mx-auto px-4 py-6">
-            <!-- Заголовок -->
-            <header class="mb-6 flex items-center justify-between">
-                <div>
-                    <h1 class="text-accent text-3xl font-bold">🌙 DreamKeeper</h1>
-                    <p class="text-text-soft text-sm">Хранитель твоих снов и состояния</p>
-                </div>
-                <button @click="goToNewDream" class="dream-btn flex items-center gap-2">
-                    ✨ Новый сон
-                </button>
-            </header>
+            <AppTitle @action="goToNewDream" />
 
-            <!-- Календарь -->
             <div class="dream-card p-4">
                 <Calendar
                     :attributes="calendarAttributes"
@@ -24,7 +14,6 @@
                 />
             </div>
 
-            <!-- Инфопанель выбранного дня -->
             <div v-if="selectedDay" class="dream-card fade-in mt-6 p-6">
                 <div class="flex items-start justify-between">
                     <div>
@@ -94,25 +83,7 @@
                 </button>
             </div>
 
-            <!-- Статистика -->
-            <div class="mt-6 grid grid-cols-2 gap-4 md:grid-cols-4">
-                <div class="dream-card p-4 text-center">
-                    <div class="text-accent text-2xl font-bold">{{ totalDreams }}</div>
-                    <div class="text-text-mute text-sm">Всего снов</div>
-                </div>
-                <div class="dream-card p-4 text-center">
-                    <div class="text-accent text-2xl font-bold">{{ avgQuality }}</div>
-                    <div class="text-text-mute text-sm">Среднее качество</div>
-                </div>
-                <div class="dream-card p-4 text-center">
-                    <div class="text-accent text-2xl font-bold">{{ thisMonthDreams }}</div>
-                    <div class="text-text-mute text-sm">Снов за месяц</div>
-                </div>
-                <div class="dream-card p-4 text-center">
-                    <div class="text-accent text-2xl font-bold">{{ streakDays }}</div>
-                    <div class="text-text-mute text-sm">Дней подряд</div>
-                </div>
-            </div>
+            <StatsGrid :items="statsData" />
         </div>
     </div>
 </template>
@@ -124,9 +95,14 @@
     import 'v-calendar-3/style.css';
     import { useSleepStore } from '@/stores/modules/sleep';
     import { useUserStateStore } from '@/stores/modules/userState';
+    import { useHomeStats } from '@/composables/useHomeStats';
+    import StatsGrid from '@/components/sections/StatsGrid.vue';
+    import AppTitle from '@/components/sections/AppTitle.vue';
     import type { Dream } from '@/types/Dream';
     import type { UserState } from '@/types/UserState';
     import type { CalendarAttribute } from '@/types/Calendar';
+
+    const { statsData } = useHomeStats();
 
     const router = useRouter();
     const sleepStore = useSleepStore();
@@ -181,61 +157,6 @@
         });
 
         return attributes;
-    });
-
-    // --- Вычисления ---
-    const totalDreams = computed(() => sleepStore.sleeps.length);
-
-    const avgQuality = computed(() => {
-        if (sleepStore.sleeps.length === 0) return '—';
-        const sum = sleepStore.sleeps.reduce((acc: number, s: Dream) => acc + (s.quality || 0), 0);
-        return (sum / sleepStore.sleeps.length).toFixed(1);
-    });
-
-    const thisMonthDreams = computed(() => {
-        const now = new Date();
-        const month = now.getMonth();
-        const year = now.getFullYear();
-        return sleepStore.sleeps.filter((s: Dream) => {
-            const d = new Date(s.date);
-            return d.getMonth() === month && d.getFullYear() === year;
-        }).length;
-    });
-
-    const streakDays = computed(() => {
-        // Простая реализация: считаем дни подряд с записями снов
-        if (sleepStore.sleeps.length === 0) return 0;
-
-        const dates = sleepStore.sleeps
-            .map((s: Dream) => s.date)
-            .sort()
-            .reverse();
-
-        let streak = 1;
-        const today = new Date();
-        const todayStr = today.toISOString().split('T')[0];
-
-        // Если сегодня нет записи, проверяем вчера
-        const startDate = new Date(today);
-        if (!dates.includes(todayStr)) {
-            startDate.setDate(startDate.getDate() - 1);
-        }
-
-        const startStr = startDate.toISOString().split('T')[0];
-        if (!dates.includes(startStr)) return 0;
-
-        const current = new Date(startDate);
-        while (true) {
-            current.setDate(current.getDate() - 1);
-            const str = current.toISOString().split('T')[0];
-            if (dates.includes(str)) {
-                streak++;
-            } else {
-                break;
-            }
-        }
-
-        return streak;
     });
 
     // --- Методы ---
@@ -300,7 +221,6 @@
         --vc-border: var(--color-border);
     }
 
-    /* Анимация */
     .fade-in {
         animation: fadeIn 0.3s ease forwards;
     }
