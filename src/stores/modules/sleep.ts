@@ -2,7 +2,7 @@ import { computed, ref } from 'vue';
 
 import { defineStore } from 'pinia';
 
-import type { Dream } from '@/types/Dream';
+import type { Dream, DreamWrite } from '@/types/Dream';
 
 import { ServiceFactory } from '@/services/factories/ServiceFactory';
 import { SleepRepository } from '@/services/repositories/SleepRepository';
@@ -42,9 +42,11 @@ export const useSleepStore = defineStore('sleep', () => {
 
         const total = monthDreams.length;
         const avgQuality = monthDreams.reduce((acc, s) => acc + (s.quality || 0), 0) / total;
+
+        //TODO
         const types = monthDreams.reduce(
             (acc, s) => {
-                const type = s.type || 'normal';
+                const type = s?.type || 'normal';
                 acc[type] = (acc[type] || 0) + 1;
                 return acc;
             },
@@ -86,7 +88,7 @@ export const useSleepStore = defineStore('sleep', () => {
         }
     };
 
-    const addDream = async (dreamData: Omit<Dream, 'id'>): Promise<Dream | null> => {
+    const addDream = async (dreamData: DreamWrite): Promise<Dream | null> => {
         if (!repository.value) return null;
 
         loading.value = true;

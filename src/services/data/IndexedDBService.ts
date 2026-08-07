@@ -5,6 +5,8 @@ import type { IDatabaseService } from '@/types/databases/IndexedDB';
 import type { Dream } from '@/types/Dream';
 import type { UserState } from '@/types/UserState';
 
+import { toRaw } from 'vue';
+
 export class IndexedDBService implements IDatabaseService {
     private dbPromise: Promise<IDBPDatabase<DreamKeeperDB>> | null = null;
     private dbName: string;
@@ -71,12 +73,15 @@ export class IndexedDBService implements IDatabaseService {
 
     async add<T>(store: StoreName, data: T): Promise<number> {
         const db = await this.getDB();
-        return db.add(store, data) as Promise<number>;
+
+        const cleanData = JSON.parse(JSON.stringify(toRaw(data)));
+        return db.add(store, cleanData) as Promise<number>;
     }
 
     async put<T>(store: StoreName, data: T): Promise<number> {
         const db = await this.getDB();
-        return db.put(store, data) as Promise<number>;
+        const cleanData = JSON.parse(JSON.stringify(toRaw(data)));
+        return db.put(store, cleanData) as Promise<number>;
     }
 
     async delete(store: StoreName, id: number): Promise<void> {
@@ -103,7 +108,7 @@ export class IndexedDBService implements IDatabaseService {
 
     async getDreamsByQuality(minQuality: number): Promise<Dream[]> {
         const allDreams = await this.getAll<Dream>('dreams');
-        return allDreams.filter((dream) => dream.quality >= minQuality);
+        return allDreams.filter((dream) => dream?.quality >= minQuality);
     }
 
     async getUserStateByDate(date: string): Promise<UserState | undefined> {

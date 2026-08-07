@@ -43,7 +43,7 @@ export class SleepRepository extends BaseRepository<Dream> {
 
         const byType = allDreams.reduce(
             (acc, dream) => {
-                const type = dream.type || 'normal';
+                const type = dream?.type || 'normal';
                 acc[type] = (acc[type] || 0) + 1;
                 return acc;
             },

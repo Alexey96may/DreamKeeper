@@ -3,11 +3,14 @@
     import { RouterView } from 'vue-router';
     import TheHeader from '@/components/sections/TheHeader.vue';
     import { useUIStore } from '@/stores/modules/ui';
+    import { useSleepStore } from '@/stores/modules/sleep';
 
     const uiStore = useUIStore();
+    const sleepStore = useSleepStore();
 
     onMounted(() => {
         uiStore.initTheme();
+        sleepStore.init();
     });
 </script>
 
