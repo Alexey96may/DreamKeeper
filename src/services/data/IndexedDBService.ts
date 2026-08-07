@@ -1,13 +1,11 @@
 import { IDBPDatabase, openDB } from 'idb';
 import type { StoreName } from '@/types/Store';
 import type { DreamKeeperDB } from '@/types/databases';
-import type { IDatabaseService } from '@/types/databases/IndexedDB';
-import type { Dream } from '@/types/Dream';
-import type { UserState } from '@/types/UserState';
+import type { IDataService } from '@/types/databases/DataService';
 
 import { toRaw } from 'vue';
 
-export class IndexedDBService implements IDatabaseService {
+export class IndexedDBService implements IDataService {
     private dbPromise: Promise<IDBPDatabase<DreamKeeperDB>> | null = null;
     private dbName: string;
     private version: number;
@@ -52,14 +50,6 @@ export class IndexedDBService implements IDatabaseService {
         }
     }
 
-    // ===== Вспомогательный метод =====
-    private async getDB(): Promise<IDBPDatabase<DreamKeeperDB>> {
-        if (!this.dbPromise) {
-            await this.init();
-        }
-        return this.dbPromise!;
-    }
-
     // ===== CRUD =====
     async getAll<T>(store: StoreName): Promise<T[]> {
         const db = await this.getDB();
@@ -94,49 +84,6 @@ export class IndexedDBService implements IDatabaseService {
         return db.getAllFromIndex(store, index, value) as Promise<T[]>;
     }
 
-    // ===== Специфические методы для снов =====
-    async getDreamsByDate(date: string): Promise<Dream[]> {
-        const result = await this.getByIndex('dreams', 'date', date);
-        return result as Dream[];
-    }
-
-    async getDreamsByMonth(year: number, month: number): Promise<Dream[]> {
-        const allDreams = await this.getAll<Dream>('dreams');
-        const monthStr = `${year}-${String(month).padStart(2, '0')}`;
-        return allDreams.filter((dream) => dream.date.startsWith(monthStr));
-    }
-
-    async getDreamsByQuality(minQuality: number): Promise<Dream[]> {
-        const allDreams = await this.getAll<Dream>('dreams');
-        return allDreams.filter((dream) => dream?.quality >= minQuality);
-    }
-
-    async getUserStateByDate(date: string): Promise<UserState | undefined> {
-        const states = await this.getByIndex<UserState>('userStates', 'date', date);
-        return states[0] || undefined;
-    }
-
-    async updateUserState(date: string, data: Partial<UserState>): Promise<number> {
-        const existing = await this.getUserStateByDate(date);
-
-        if (existing?.id) {
-            const updated: UserState = {
-                ...existing,
-                ...data,
-                updatedAt: new Date().toISOString(),
-            };
-            return this.put('userStates', updated);
-        } else {
-            const newState: UserState = {
-                ...data,
-                date,
-                createdAt: new Date().toISOString(),
-                updatedAt: new Date().toISOString(),
-            };
-            return this.add('userStates', newState);
-        }
-    }
-
     async destroy(): Promise<void> {
         if (this.dbPromise) {
             const db = await this.dbPromise;
@@ -144,5 +91,13 @@ export class IndexedDBService implements IDatabaseService {
             await indexedDB.deleteDatabase(this.dbName);
             this.dbPromise = null;
         }
+    }
+
+    // ===== Helper =====
+    private async getDB(): Promise<IDBPDatabase<DreamKeeperDB>> {
+        if (!this.dbPromise) {
+            await this.init();
+        }
+        return this.dbPromise!;
     }
 }
