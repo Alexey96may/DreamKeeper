@@ -1,15 +1,7 @@
-<!-- src/views/DreamFormView.vue -->
 <template>
     <div class="bg-bg-primary text-text-primary transition-theme duration-theme min-h-screen">
         <div class="container mx-auto max-w-xl px-4 py-6">
-            <button
-                @click="goBack"
-                type="button"
-                aria-label="Вернуться на предыдущую страницу"
-                class="text-text-mute hover:text-text-primary focus-visible:ring-accent mb-4 flex items-center gap-2 rounded-md px-1 py-0.5 transition-colors focus-visible:ring-2 focus-visible:outline-none"
-            >
-                ← Назад
-            </button>
+            <BackButton @click="goBack" />
 
             <div class="dream-card p-6">
                 <h2 class="text-text-primary mb-6 text-2xl font-bold">
@@ -36,23 +28,14 @@
                                     class="bg-bg-secondary border-border text-text-primary focus:ring-accent w-full rounded-lg border p-2.5 focus:ring-2 focus:outline-none"
                                 />
                             </div>
-                            <div>
-                                <label
-                                    for="form-time-of-day"
-                                    class="text-text-soft mb-1 block text-sm font-medium"
-                                >
-                                    Время суток
-                                </label>
-                                <select
-                                    id="form-time-of-day"
-                                    v-model="form.timeOfDay"
-                                    class="bg-bg-secondary border-border text-text-primary focus:ring-accent w-full rounded-lg border p-2.5 focus:ring-2 focus:outline-none"
-                                >
-                                    <option value="night">🌙 Ночь</option>
-                                    <option value="morning">🌅 Утро</option>
-                                    <option value="nap">☀️ Дневной сон</option>
-                                </select>
-                            </div>
+
+                            <AppSelect
+                                id="form-time-of-day"
+                                v-model="form.timeOfDay"
+                                label="Время суток"
+                                :options="timeOfDayOptions"
+                                placeholder="Выберите время суток"
+                            />
                         </div>
 
                         <!-- Заголовок -->
@@ -656,9 +639,12 @@
 
 <script setup lang="ts">
     import { ref, computed, onMounted } from 'vue';
+    import { Moon, Sunrise, Sun } from 'lucide-vue-next';
     import { useRoute, useRouter } from 'vue-router';
     import { useSleepStore } from '@/stores/modules/sleep';
+    import BackButton from '@/components/ui/BackButton.vue';
     import { formatToLocalDateStr } from '@/utils/date';
+    import AppSelect from '@/components/ui/AppSelect.vue';
     import type { DreamWrite, DreamCategory, SensoryAspect } from '@/types/Dream';
 
     const props = defineProps<{
@@ -689,6 +675,12 @@
         { value: 'tactile', label: '🖐 Тактильные' },
         { value: 'taste', label: '👅 Вкус' },
         { value: 'pain', label: '💥 Боль' },
+    ];
+
+    const timeOfDayOptions = [
+        { value: 'night', label: 'Ночь', icon: Moon },
+        { value: 'morning', label: 'Утро', icon: Sunrise },
+        { value: 'nap', label: 'Дневной сон', icon: Sun },
     ];
 
     // Реактивные данные формы
