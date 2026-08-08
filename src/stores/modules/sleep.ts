@@ -6,6 +6,7 @@ import type { Dream, DreamWrite } from '@/types/Dream';
 
 import { ServiceFactory } from '@/services/factories/ServiceFactory';
 import { SleepRepository } from '@/services/repositories/SleepRepository';
+import { initialDreamsSeed } from '@/services/seeders/dreamSeeder';
 
 export const useSleepStore = defineStore('sleep', () => {
     // ===== STATE =====
@@ -65,10 +66,35 @@ export const useSleepStore = defineStore('sleep', () => {
     const init = async () => {
         if (repository.value) return;
 
-        const service = ServiceFactory.createService('indexeddb');
-        await service.init();
-        repository.value = new SleepRepository(service);
-        await loadAll();
+        loading.value = true;
+        try {
+            // 1. Инициализируем сервис и репозиторий
+            const dataService = ServiceFactory.createService('indexeddb');
+            await dataService.init();
+            repository.value = new SleepRepository(dataService);
+
+            // 2. Достаем имеющиеся сны
+            let allDreams = await repository.value.getAll();
+
+            // 3. СИДЕР: Если БД пустая — наполняем тестовыми данными
+            if (allDreams.length === 0) {
+                console.log('🌱 База данных пуста. Запускаем сидер...');
+
+                for (const seedData of initialDreamsSeed) {
+                    // Репозиторий сохраняет и присваивает ID
+                    await addDream(seedData);
+                }
+
+                // Перезапрашиваем уже с засиженными данными
+                allDreams = await repository.value.getAll();
+            }
+
+            sleeps.value = allDreams;
+        } catch (error) {
+            console.error('Ошибка инициализации стора снов:', error);
+        } finally {
+            loading.value = false;
+        }
     };
 
     const loadAll = async () => {

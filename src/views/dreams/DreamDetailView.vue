@@ -416,6 +416,7 @@
     // Маппинг справочников из объявленных типов
     const getCategoryLabel = (cat: DreamCategory): string => {
         const map: Record<DreamCategory, string> = {
+            normal: 'Обычный',
             lucid: 'Осознанный (ОС)',
             nightmare: 'Кошмар',
             prophetic: 'Вещий / Сбывшийся',

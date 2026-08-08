@@ -674,6 +674,7 @@
 
     // Справочники категорий и ощущений
     const availableCategories: { value: DreamCategory; label: string }[] = [
+        { value: 'normal', label: 'Обычный' },
         { value: 'lucid', label: '🧠 Осознанный (ОС)' },
         { value: 'nightmare', label: '😱 Кошмар' },
         { value: 'prophetic', label: '🔮 Вещий' },

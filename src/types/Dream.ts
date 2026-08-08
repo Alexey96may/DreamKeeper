@@ -1,4 +1,5 @@
 export type DreamCategory =
+    | 'normal' // Осознанный (ОС)
     | 'lucid' // Осознанный (ОС)
     | 'nightmare' // Кошмар
     | 'prophetic' // Вещий / Сбывшийся
