@@ -1,7 +1,8 @@
 <!--
   ПРИМЕР ИСПОЛЬЗОВАНИЯ В РОДИТЕЛЬСКОМ КОМПОНЕНТЕ:
+  import AppSelect from '@/components/ui/AppSelect.vue';
 
-  <CustomSelect
+  <AppSelect
     id="form-time-of-day"
     v-model="form.timeOfDay"
     label="Время суток"
