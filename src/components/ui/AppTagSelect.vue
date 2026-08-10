@@ -36,7 +36,7 @@
     }
 
     interface Props {
-        modelValue: T[] | T | null | undefined;
+        modelValue?: T[] | T | null;
         options: ChipOption<T>[];
         label?: string;
         multiple?: boolean;
@@ -49,6 +49,7 @@
     }
 
     const props = withDefaults(defineProps<Props>(), {
+        modelValue: () => [],
         multiple: true,
         required: false,
         disabled: false,
@@ -56,8 +57,8 @@
     });
 
     const emit = defineEmits<{
-        (e: 'update:modelValue', value: T[] | T): void;
-        (e: 'change', value: T[] | T): void;
+        (e: 'update:modelValue', value: T[] | T | null): void;
+        (e: 'change', value: T[] | T | null): void;
     }>();
 
     const defaultId = useId();
@@ -67,11 +68,17 @@
 
     const isDisabled = computed(() => props.disabled || props.isLoading);
 
+    // Гибкая проверка выбранного значения (устойчивая к строкам/числам)
     const isSelected = (value: T): boolean => {
         if (props.multiple) {
-            return Array.isArray(props.modelValue) && props.modelValue.includes(value);
+            if (!Array.isArray(props.modelValue)) return false;
+            return props.modelValue.some((item) => String(item) === String(value));
         }
-        return props.modelValue === value;
+        return (
+            props.modelValue !== null &&
+            props.modelValue !== undefined &&
+            String(props.modelValue) === String(value)
+        );
     };
 
     const handleToggle = (value: T) => {
@@ -79,7 +86,7 @@
 
         if (props.multiple) {
             const currentList = Array.isArray(props.modelValue) ? [...props.modelValue] : [];
-            const index = currentList.indexOf(value);
+            const index = currentList.findIndex((item) => String(item) === String(value));
 
             if (index >= 0) {
                 currentList.splice(index, 1);
@@ -90,7 +97,9 @@
             emit('update:modelValue', currentList);
             emit('change', currentList);
         } else {
-            const newValue = props.modelValue === value ? (null as unknown as T) : value;
+            const isAlreadySelected = isSelected(value);
+            const newValue = isAlreadySelected ? null : value;
+
             emit('update:modelValue', newValue);
             emit('change', newValue);
         }
@@ -128,6 +137,8 @@
                 v-for="cat in options"
                 :key="String(cat.value)"
                 :is-pressed="isSelected(cat.value)"
+                :role="multiple ? undefined : 'radio'"
+                :aria-checked="multiple ? undefined : isSelected(cat.value)"
                 :icon="cat.icon"
                 :disabled="isDisabled || cat.disabled"
                 :is-loading="isLoading"

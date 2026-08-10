@@ -3,7 +3,10 @@
         <!-- Шапка -->
         <div class="mb-6 flex items-center justify-between">
             <div class="flex items-center gap-3">
-                <BackButton @click="goBack" />
+                <AppButton @click="goBack" size="xs" variant="back" :icon-left="MoveLeft">
+                    Назад
+                </AppButton>
+
                 <h1 class="text-text-primary text-xl font-bold sm:text-2xl">
                     {{ isEditMode ? 'Редактировать сон' : 'Записать сон' }}
                 </h1>
@@ -15,17 +18,12 @@
             <div class="border-border bg-bg-primary space-y-4 rounded-xl border p-4 sm:p-6">
                 <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
                     <!-- Дата -->
-                    <div>
-                        <label class="text-text-soft mb-1 block text-xs font-medium"
-                            >Дата сна</label
-                        >
-                        <input
-                            v-model="form.date"
-                            type="date"
-                            required
-                            class="border-border bg-bg-secondary text-text-primary focus:border-accent w-full rounded-lg border px-3 py-2 text-sm focus:outline-none"
-                        />
-                    </div>
+                    <AppDatePicker
+                        v-model="form.date"
+                        label="Дата сна"
+                        hint="Укажите дату, когда вам приснился сон"
+                        required
+                    />
 
                     <!-- Время суток -->
                     <AppSelect
@@ -38,7 +36,7 @@
                 </div>
 
                 <!-- Заголовок -->
-                <AppInput
+                <AppTextInput
                     v-model="form.title"
                     label="Название сна"
                     placeholder="Например: Полет над древним городом..."
@@ -60,6 +58,7 @@
                 <AppTagSelect
                     v-model="form.categories"
                     label="Категории сна"
+                    @change="handleCategoryChange"
                     :options="availableCategories"
                 />
 
@@ -90,6 +89,7 @@
                 </div>
 
                 <!-- Детали категории NIGHTMARE -->
+
                 <div
                     v-if="form.categories.includes('nightmare')"
                     class="space-y-3 rounded-lg border border-red-500/30 bg-red-500/5 p-3"
@@ -114,7 +114,7 @@
                         />
                     </div>
 
-                    <AppInput
+                    <AppTextInput
                         v-model="ensureCategoryDetails().nightmare!.copingMechanism"
                         label="Как справился / Завершение"
                         placeholder="Проснулся от крика, дал отпор..."
@@ -130,26 +130,17 @@
                         Параметры Вещего Сна (Prophetic)
                     </h4>
                     <div class="grid grid-cols-1 gap-3 sm:grid-cols-3">
-                        <div>
-                            <label class="text-text-soft mb-1 block text-xs font-medium"
-                                >Ожидаемый срок</label
-                            >
-                            <input
-                                v-model="ensureCategoryDetails().prophetic!.expectedByDate"
-                                type="date"
-                                class="border-border bg-bg-secondary text-text-primary w-full rounded-lg border px-2.5 py-1.5 text-xs focus:outline-none"
-                            />
-                        </div>
-                        <div>
-                            <label class="text-text-soft mb-1 block text-xs font-medium"
-                                >Дата исполнения</label
-                            >
-                            <input
-                                v-model="ensureCategoryDetails().prophetic!.fulfilledDate"
-                                type="date"
-                                class="border-border bg-bg-secondary text-text-primary w-full rounded-lg border px-2.5 py-1.5 text-xs focus:outline-none"
-                            />
-                        </div>
+                        <AppDatePicker
+                            v-model="ensureCategoryDetails().prophetic!.expectedByDate"
+                            label="Ожидаемый срок"
+                            hint="Укажите дату, к которой сон должен реализоваться"
+                        />
+
+                        <AppDatePicker
+                            v-model="ensureCategoryDetails().prophetic!.fulfilledDate"
+                            label="Дата исполнения"
+                            hint="Укажите дату, к которой сон реализовался"
+                        />
 
                         <AppCheckbox
                             v-model="ensureCategoryDetails().prophetic!.isFulfilled"
@@ -158,7 +149,7 @@
                         />
                     </div>
 
-                    <AppInput
+                    <AppTextInput
                         v-model="ensureCategoryDetails().prophetic!.fulfillmentNotes"
                         label="Что именно произошло в реальности"
                         placeholder="Описание события в реальной жизни..."
@@ -171,29 +162,9 @@
                 <AppTagSelect
                     v-model="form.phenomena"
                     label="Феномены и события во сне"
+                    @change="handlePhenomenaChange"
                     :options="availablePhenomena"
                 />
-                <div>
-                    <label class="text-text-soft mb-2 block text-xs font-medium"
-                        >Феномены и события во сне</label
-                    >
-                    <div class="flex flex-wrap gap-2">
-                        <button
-                            v-for="ph in availablePhenomena"
-                            :key="ph.value"
-                            type="button"
-                            @click="togglePhenomenon(ph.value)"
-                            :class="[
-                                'rounded-lg border px-3 py-1.5 text-xs font-medium transition-colors',
-                                form.phenomena?.includes(ph.value)
-                                    ? 'border-indigo-500 bg-indigo-500/20 text-indigo-300'
-                                    : 'border-border bg-bg-secondary text-text-soft',
-                            ]"
-                        >
-                            {{ ph.label }}
-                        </button>
-                    </div>
-                </div>
 
                 <!-- Детали: ПОЛЁТ -->
                 <div
@@ -202,24 +173,17 @@
                 >
                     <h4 class="text-xs font-semibold text-indigo-400">Детали полёта</h4>
                     <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                        <div>
-                            <label class="text-text-soft mb-1 block text-xs font-medium"
-                                >Стиль полёта</label
-                            >
-                            <AppSelect
-                                v-model="ensurePhenomenaDetails().flying!.type"
-                                :options="flyingTypeOptions"
-                            />
-                        </div>
-                        <div>
-                            <label class="text-text-soft mb-1 block text-xs font-medium"
-                                >Высота</label
-                            >
-                            <AppSelect
-                                v-model="ensurePhenomenaDetails().flying!.altitude"
-                                :options="flyingAltitudeOptions"
-                            />
-                        </div>
+                        <AppSelect
+                            v-model="ensurePhenomenaDetails().flying!.type"
+                            :options="flyingTypeOptions"
+                            label="Стиль полёта"
+                        />
+
+                        <AppSelect
+                            v-model="ensurePhenomenaDetails().flying!.altitude"
+                            :options="flyingAltitudeOptions"
+                            label="Высота"
+                        />
                     </div>
                 </div>
 
@@ -230,24 +194,17 @@
                 >
                     <h4 class="text-xs font-semibold text-indigo-400">Детали падения</h4>
                     <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                        <div>
-                            <label class="text-text-soft mb-1 block text-xs font-medium"
-                                >Откуда падение</label
-                            >
-                            <AppSelect
-                                v-model="ensurePhenomenaDetails().falling!.origin"
-                                :options="fallingOriginOptions"
-                            />
-                        </div>
-                        <div>
-                            <label class="text-text-soft mb-1 block text-xs font-medium"
-                                >Чем закончилось</label
-                            >
-                            <AppSelect
-                                v-model="ensurePhenomenaDetails().falling!.outcome"
-                                :options="fallingOutcomeOptions"
-                            />
-                        </div>
+                        <AppSelect
+                            v-model="ensurePhenomenaDetails().falling!.origin"
+                            :options="fallingOriginOptions"
+                            label="Откуда падение"
+                        />
+
+                        <AppSelect
+                            v-model="ensurePhenomenaDetails().falling!.outcome"
+                            :options="fallingOutcomeOptions"
+                            label="Чем закончилось"
+                        />
                     </div>
                 </div>
 
@@ -258,24 +215,17 @@
                 >
                     <h4 class="text-xs font-semibold text-indigo-400">Детали смерти во сне</h4>
                     <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                        <div>
-                            <label class="text-text-soft mb-1 block text-xs font-medium"
-                                >Причина / Контекст</label
-                            >
-                            <AppSelect
-                                v-model="ensurePhenomenaDetails().death!.cause"
-                                :options="deathCauseOptions"
-                            />
-                        </div>
-                        <div>
-                            <label class="text-text-soft mb-1 block text-xs font-medium"
-                                >Что произошло сразу после</label
-                            >
-                            <AppSelect
-                                v-model="ensurePhenomenaDetails().death!.aftermath"
-                                :options="deathAftermathOptions"
-                            />
-                        </div>
+                        <AppSelect
+                            v-model="ensurePhenomenaDetails().death!.cause"
+                            :options="deathCauseOptions"
+                            label="Причина / Контекст"
+                        />
+
+                        <AppSelect
+                            v-model="ensurePhenomenaDetails().death!.aftermath"
+                            :options="deathAftermathOptions"
+                            label="Что произошло сразу после"
+                        />
                     </div>
                 </div>
 
@@ -285,15 +235,12 @@
                     class="space-y-3 rounded-lg border border-indigo-500/30 bg-indigo-500/5 p-3"
                 >
                     <h4 class="text-xs font-semibold text-indigo-400">Детали сонного паралича</h4>
-                    <div>
-                        <label class="text-text-soft mb-1 block text-xs font-medium"
-                            >Момент возникновения</label
-                        >
-                        <AppSelect
-                            v-model="ensurePhenomenaDetails().paralysis!.timing"
-                            :options="paralysisTimingOptions"
-                        />
-                    </div>
+
+                    <AppSelect
+                        v-model="ensurePhenomenaDetails().paralysis!.timing"
+                        :options="paralysisTimingOptions"
+                        label="Момент возникновения"
+                    />
                 </div>
 
                 <!-- Детали: ЛОЖНОЕ ПРОБУЖДЕНИЕ -->
@@ -319,202 +266,117 @@
             <!-- 4. Визуальный стиль, Перспектива и Роли -->
             <div class="border-border bg-bg-primary space-y-4 rounded-xl border p-4 sm:p-6">
                 <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                    <div>
-                        <label class="text-text-soft mb-1 block text-xs font-medium"
-                            >Визуальный стиль</label
-                        >
-                        <AppSelect v-model="form.visualStyle" :options="availableVisualStyles" />
-                    </div>
+                    <AppSelect
+                        v-model="form.visualStyle"
+                        :options="availableVisualStyles"
+                        label="Визуальный стиль"
+                    />
 
-                    <div>
-                        <label class="text-text-soft mb-1 block text-xs font-medium"
-                            >Точка зрения (Перспектива)</label
-                        >
-                        <AppSelect v-model="form.perspective" :options="availablePerspectives" />
-                    </div>
+                    <AppSelect
+                        v-model="form.perspective"
+                        :options="availablePerspectives"
+                        label="Точка зрения (Перспектива)"
+                    />
                 </div>
 
                 <!-- Роли -->
-                <div>
-                    <label class="text-text-soft mb-2 block text-xs font-medium"
-                        >Ваши роли во сне</label
-                    >
-                    <div class="flex flex-wrap gap-2">
-                        <button
-                            v-for="r in availableRoles"
-                            :key="r.value"
-                            type="button"
-                            @click="toggleRole(r.value)"
-                            :class="[
-                                'rounded-lg border px-3 py-1.5 text-xs font-medium transition-colors',
-                                form.roles?.includes(r.value)
-                                    ? 'border-emerald-500 bg-emerald-500/20 text-emerald-400'
-                                    : 'border-border bg-bg-secondary text-text-soft',
-                            ]"
-                        >
-                            {{ r.label }}
-                        </button>
-                    </div>
-                </div>
+                <AppTagSelect
+                    v-model="form.roles"
+                    label="Ваши роли во сне"
+                    :options="availableRoles"
+                />
 
                 <!-- Органы чувств -->
-                <div>
-                    <label class="text-text-soft mb-2 block text-xs font-medium"
-                        >Ощущения / Органы чувств</label
-                    >
-                    <div class="flex flex-wrap gap-2">
-                        <button
-                            v-for="sens in availableSensations"
-                            :key="sens.value"
-                            type="button"
-                            @click="toggleSensation(sens.value)"
-                            :class="[
-                                'rounded-lg border px-3 py-1.5 text-xs font-medium transition-colors',
-                                form.sensations?.includes(sens.value)
-                                    ? 'border-amber-500 bg-amber-500/20 text-amber-400'
-                                    : 'border-border bg-bg-secondary text-text-soft',
-                            ]"
-                        >
-                            {{ sens.label }}
-                        </button>
-                    </div>
-                </div>
+                <AppTagSelect
+                    v-model="form.sensations"
+                    label="Ощущения / Органы чувств"
+                    :options="availableSensations"
+                />
             </div>
 
             <!-- 5. Оценки -->
             <div class="border-border bg-bg-primary space-y-4 rounded-xl border p-4 sm:p-6">
                 <div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
-                    <div>
-                        <div class="text-text-soft mb-1 flex justify-between text-xs font-medium">
-                            <span>Качество сна</span>
-                            <span class="text-text-primary font-bold">{{ form.quality }}/10</span>
-                        </div>
-                        <input
-                            v-model.number="form.quality"
-                            type="range"
-                            min="1"
-                            max="10"
-                            class="accent-accent w-full"
-                        />
-                    </div>
-                    <div>
-                        <div class="text-text-soft mb-1 flex justify-between text-xs font-medium">
-                            <span>Ясность / Яркость</span>
-                            <span class="text-text-primary font-bold">{{ form.clarity }}/10</span>
-                        </div>
-                        <input
-                            v-model.number="form.clarity"
-                            type="range"
-                            min="1"
-                            max="10"
-                            class="accent-accent w-full"
-                        />
-                    </div>
-                    <div>
-                        <div class="text-text-soft mb-1 flex justify-between text-xs font-medium">
-                            <span>Настроение после</span>
-                            <span class="text-text-primary font-bold">{{ form.moodAfter }}/10</span>
-                        </div>
-                        <input
-                            v-model.number="form.moodAfter"
-                            type="range"
-                            min="1"
-                            max="10"
-                            class="accent-accent w-full"
-                        />
-                    </div>
+                    <AppRange
+                        v-model.number="form.quality"
+                        label="Качество сна"
+                        :min="1"
+                        :max="10"
+                        :step="1"
+                        :value-formatter="(val, max) => `${val} / ${max}`"
+                    />
+
+                    <AppRange
+                        v-model.number="form.clarity"
+                        label="Ясность / Яркость"
+                        :min="1"
+                        :max="10"
+                        :step="1"
+                        :value-formatter="(val, max) => `${val} / ${max}`"
+                    />
+
+                    <AppRange
+                        v-model.number="form.moodAfter"
+                        label="Настроение после"
+                        :min="1"
+                        :max="10"
+                        :step="1"
+                        :value-formatter="(val, max) => `${val} / ${max}`"
+                    />
                 </div>
             </div>
 
             <!-- 6. Сущности / Аналитика -->
             <div class="border-border bg-bg-primary space-y-4 rounded-xl border p-4 sm:p-6">
                 <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                    <div>
-                        <label class="text-text-soft mb-1 block text-xs font-medium"
-                            >Персонажи (через запятую)</label
-                        >
-                        <input
-                            v-model="rawArrays.characters"
-                            type="text"
-                            placeholder="Друг, Незнакомец в маске..."
-                            class="border-border bg-bg-secondary text-text-primary focus:border-accent w-full rounded-lg border px-3 py-2 text-sm focus:outline-none"
-                        />
-                    </div>
-                    <div>
-                        <label class="text-text-soft mb-1 block text-xs font-medium"
-                            >Локации (через запятую)</label
-                        >
-                        <input
-                            v-model="rawArrays.locations"
-                            type="text"
-                            placeholder="Старый дом, Космодром..."
-                            class="border-border bg-bg-secondary text-text-primary focus:border-accent w-full rounded-lg border px-3 py-2 text-sm focus:outline-none"
-                        />
-                    </div>
-                    <div>
-                        <label class="text-text-soft mb-1 block text-xs font-medium"
-                            >Предметы (через запятую)</label
-                        >
-                        <input
-                            v-model="rawArrays.objects"
-                            type="text"
-                            placeholder="Ключ, Старинная книга..."
-                            class="border-border bg-bg-secondary text-text-primary focus:border-accent w-full rounded-lg border px-3 py-2 text-sm focus:outline-none"
-                        />
-                    </div>
-                    <div>
-                        <label class="text-text-soft mb-1 block text-xs font-medium"
-                            >Эмоции (через запятую)</label
-                        >
-                        <input
-                            v-model="rawArrays.emotions"
-                            type="text"
-                            placeholder="Страх, Удивление, Восторг..."
-                            class="border-border bg-bg-secondary text-text-primary focus:border-accent w-full rounded-lg border px-3 py-2 text-sm focus:outline-none"
-                        />
-                    </div>
+                    <AppTextInput
+                        v-model="rawArrays.characters"
+                        label="Персонажи (через запятую)"
+                        placeholder="Друг, Незнакомец в маске..."
+                    />
+
+                    <AppTextInput
+                        v-model="rawArrays.locations"
+                        label="Локации (через запятую)"
+                        placeholder="Старый дом, Космодром..."
+                    />
+
+                    <AppTextInput
+                        v-model="rawArrays.objects"
+                        label="Предметы (через запятую)"
+                        placeholder="Ключ, Старинная книга..."
+                    />
+
+                    <AppTextInput
+                        v-model="rawArrays.emotions"
+                        label="Эмоции (через запятую)"
+                        placeholder="Страх, Удивление, Восторг..."
+                    />
                 </div>
             </div>
 
             <!-- 7. Контекст, Толкования и Связанные сны -->
             <div class="border-border bg-bg-primary space-y-4 rounded-xl border p-4 sm:p-6">
-                <div>
-                    <label class="text-text-soft mb-1 block text-xs font-medium"
-                        >Контекст перед сном</label
-                    >
-                    <input
-                        v-model="form.PreSleepContext"
-                        type="text"
-                        placeholder="Смотрел фильм, был уставшим, пил чай..."
-                        class="border-border bg-bg-secondary text-text-primary focus:border-accent w-full rounded-lg border px-3 py-2 text-sm focus:outline-none"
-                    />
-                </div>
+                <AppTextInput
+                    v-model="form.PreSleepContext"
+                    label="Контекст перед сном"
+                    placeholder="Смотрел фильм, был уставшим, пил чай..."
+                />
 
-                <div>
-                    <label class="text-text-soft mb-1 block text-xs font-medium"
-                        >Личные заметки / Анализ</label
-                    >
-                    <textarea
-                        v-model="form.personalNotes"
-                        rows="2"
-                        placeholder="Мысли о том, с чем сон может быть связан..."
-                        class="border-border bg-bg-secondary text-text-primary focus:border-accent w-full resize-y rounded-lg border px-3 py-2 text-sm focus:outline-none"
-                    ></textarea>
-                </div>
+                <AppTextInput
+                    v-model="form.personalNotes"
+                    label="Личные заметки / Анализ"
+                    placeholder="Мысли о том, с чем сон может быть связан..."
+                />
 
                 <!-- Толкования -->
                 <div class="border-border border-t pt-2">
                     <div class="mb-3 flex items-center justify-between">
-                        <label class="text-text-soft text-xs font-medium"
-                            >Толкования и символы</label
-                        >
-                        <button
-                            type="button"
-                            @click="addInterpretation"
-                            class="text-accent text-xs font-medium hover:underline"
-                        >
-                            + Добавить символ
-                        </button>
+                        <span class="text-text-soft text-xs font-medium">Толкования и символы</span>
+
+                        <AppButton @click="addInterpretation" variant="add" :icon-left="PlusIcon">
+                            Добавить символ
+                        </AppButton>
                     </div>
 
                     <div
@@ -522,47 +384,37 @@
                         :key="idx"
                         class="mb-2 flex items-center gap-2"
                     >
-                        <input
-                            v-model="interp.tag"
-                            type="text"
-                            placeholder="Символ (напр. Вода)"
-                            class="border-border bg-bg-secondary text-text-primary w-1/3 rounded-lg border px-2.5 py-1.5 text-xs focus:outline-none"
-                        />
-                        <input
+                        <AppTextInput v-model="interp.tag" placeholder="Символ (напр. Вода)" />
+
+                        <AppTextInput
                             v-model="interp.meaning"
-                            type="text"
                             placeholder="Значение / Толкование"
-                            class="border-border bg-bg-secondary text-text-primary w-1/2 rounded-lg border px-2.5 py-1.5 text-xs focus:outline-none"
                         />
-                        <button
-                            type="button"
-                            @click="interp.isAccurate = !interp.isAccurate"
-                            :title="interp.isAccurate ? 'Сбылось / Точно' : 'Не сбылось'"
-                            class="border-border rounded border px-2 py-1.5 text-xs"
-                        >
-                            {{ interp.isAccurate ? '✅' : '❓' }}
-                        </button>
-                        <button
-                            type="button"
+
+                        <AppCheckbox
+                            v-model="interp.isAccurate"
+                            label="Сбылось"
+                            accent-color="bg-red-500 border-red-500"
+                            hint="Толкование сна подтвердилось в реальности?"
+                        />
+
+                        <AppButton
+                            size="xs"
                             @click="removeInterpretation(idx)"
-                            class="p-1 text-xs text-red-400 hover:text-red-300"
-                        >
-                            ✕
-                        </button>
+                            variant="danger"
+                            :icon-left="X"
+                        />
                     </div>
                 </div>
 
                 <!-- Связи с другими снами -->
                 <div class="border-border border-t pt-2">
                     <div class="mb-3 flex items-center justify-between">
-                        <label class="text-text-soft text-xs font-medium">Связанные сны</label>
-                        <button
-                            type="button"
-                            @click="addRelatedDream"
-                            class="text-accent text-xs font-medium hover:underline"
-                        >
-                            + Добавить связь
-                        </button>
+                        <span class="text-text-soft text-xs font-medium">Связанные сны</span>
+
+                        <AppButton @click="addRelatedDream" variant="add" :icon-left="PlusIcon">
+                            Добавить связь
+                        </AppButton>
                     </div>
 
                     <div
@@ -575,24 +427,21 @@
                             :options="dreamToLinkOptions"
                             class="w-1/3 text-xs"
                         />
+
                         <AppSelect
                             v-model="rel.relationType"
                             :options="availableRelationTypes"
                             class="w-1/3 text-xs"
                         />
-                        <input
-                            v-model="rel.note"
-                            type="text"
-                            placeholder="Примечание..."
-                            class="border-border bg-bg-secondary text-text-primary w-1/3 rounded-lg border px-2 py-1.5 text-xs focus:outline-none"
-                        />
-                        <button
-                            type="button"
+
+                        <AppTextarea v-model="rel.note" placeholder="Примечание..." :rows="2" />
+
+                        <AppButton
+                            size="xs"
                             @click="removeRelatedDream(idx)"
-                            class="p-1 text-xs text-red-400 hover:text-red-300"
-                        >
-                            ✕
-                        </button>
+                            variant="danger"
+                            :icon-left="X"
+                        />
                     </div>
                 </div>
             </div>
@@ -600,70 +449,50 @@
             <!-- 8. Флаги статусов -->
             <div class="border-border bg-bg-primary rounded-xl border p-4 sm:p-6">
                 <div class="flex flex-wrap gap-2">
-                    <button
-                        type="button"
+                    <!-- Закрепить -->
+                    <AppTag
+                        :is-pressed="form.isPinned"
+                        :icon="Pin"
                         @click="form.isPinned = !form.isPinned"
-                        :class="[
-                            'rounded-lg border px-3 py-1.5 text-xs font-medium transition-colors',
-                            form.isPinned
-                                ? 'border-blue-500 bg-blue-500/20 text-blue-400'
-                                : 'border-border bg-bg-secondary text-text-soft',
-                        ]"
                     >
-                        📌 {{ form.isPinned ? 'Закреплен' : 'Закрепить' }}
-                    </button>
+                        {{ form.isPinned ? 'Закреплен' : 'Закрепить' }}
+                    </AppTag>
 
-                    <button
-                        type="button"
+                    <!-- В избранное -->
+                    <AppTag
+                        :is-pressed="form.isFavorite"
+                        :icon="Bookmark"
                         @click="form.isFavorite = !form.isFavorite"
-                        :class="[
-                            'rounded-lg border px-3 py-1.5 text-xs font-medium transition-colors',
-                            form.isFavorite
-                                ? 'border-amber-500 bg-amber-500/20 text-amber-400'
-                                : 'border-border bg-bg-secondary text-text-soft',
-                        ]"
                     >
-                        ⭐ {{ form.isFavorite ? 'В избранном' : 'В избранное' }}
-                    </button>
+                        {{ form.isFavorite ? 'В избранном' : 'В избранное' }}
+                    </AppTag>
 
-                    <button
-                        type="button"
+                    <!-- Приватность (динамическая иконка: Замок / Глобус) -->
+                    <AppTag
+                        :is-pressed="form.isPrivate"
+                        :icon="form.isPrivate ? Lock : Globe"
                         @click="form.isPrivate = !form.isPrivate"
-                        :class="[
-                            'rounded-lg border px-3 py-1.5 text-xs font-medium transition-colors',
-                            form.isPrivate
-                                ? 'border-purple-500 bg-purple-500/20 text-purple-300'
-                                : 'border-border bg-bg-secondary text-text-soft',
-                        ]"
                     >
-                        {{ form.isPrivate ? '🔒 Приватный' : '🌐 Публичный' }}
-                    </button>
+                        {{ form.isPrivate ? 'Приватный' : 'Публичный' }}
+                    </AppTag>
 
-                    <button
-                        type="button"
+                    <!-- Черновик / Публикация (динамическая иконка: Документ / Галочка) -->
+                    <AppTag
+                        :is-pressed="form.isDraft"
+                        :icon="form.isDraft ? FileText : CheckCircle2"
                         @click="form.isDraft = !form.isDraft"
-                        :class="[
-                            'rounded-lg border px-3 py-1.5 text-xs font-medium transition-colors',
-                            form.isDraft
-                                ? 'border-yellow-500 bg-yellow-500/20 text-yellow-500'
-                                : 'border-border bg-bg-secondary text-text-soft',
-                        ]"
                     >
-                        📝 {{ form.isDraft ? 'Черновик' : 'Опубликован' }}
-                    </button>
+                        {{ form.isDraft ? 'Черновик' : 'Опубликован' }}
+                    </AppTag>
 
-                    <button
-                        type="button"
+                    <!-- Архив -->
+                    <AppTag
+                        :is-pressed="form.isArchived"
+                        :icon="Archive"
                         @click="form.isArchived = !form.isArchived"
-                        :class="[
-                            'rounded-lg border px-3 py-1.5 text-xs font-medium transition-colors',
-                            form.isArchived
-                                ? 'border-red-500 bg-red-500/20 text-red-400'
-                                : 'border-border bg-bg-secondary text-text-soft',
-                        ]"
                     >
-                        📦 {{ form.isArchived ? 'В архиве' : 'Архивировать' }}
-                    </button>
+                        {{ form.isArchived ? 'В архиве' : 'Архивировать' }}
+                    </AppTag>
                 </div>
             </div>
 
@@ -674,22 +503,19 @@
 
             <!-- Кнопки управления -->
             <div class="flex items-center justify-end gap-3 pt-4">
-                <button
-                    type="button"
-                    @click="goBack"
-                    class="text-text-soft hover:text-text-primary rounded-lg px-4 py-2 text-sm font-medium transition-colors focus-visible:outline-none"
+                <AppButton
+                    :to="{ name: 'dream-details', params: { id: id } }"
+                    size="xs"
+                    variant="ghost"
                 >
                     Отмена
-                </button>
-                <button
-                    type="submit"
-                    :disabled="sleepStore.loading"
-                    class="bg-accent hover:bg-accent-hover rounded-lg px-5 py-2 text-sm font-medium text-white transition-colors focus-visible:outline-none disabled:opacity-50"
-                >
+                </AppButton>
+
+                <AppButton size="xs" type="submit" variant="primary" :disabled="sleepStore.loading">
                     {{
                         sleepStore.loading ? 'Сохранение...' : isEditMode ? 'Сохранить' : 'Создать'
                     }}
-                </button>
+                </AppButton>
             </div>
         </form>
     </div>
@@ -697,16 +523,34 @@
 
 <script setup lang="ts">
     import { ref, computed, onMounted } from 'vue';
-    import { Moon, Sunrise, Sun, Sunset, HelpCircle } from 'lucide-vue-next';
+    import {
+        Moon,
+        Sunrise,
+        Sun,
+        Sunset,
+        HelpCircle,
+        PlusIcon,
+        MoveLeft,
+        X,
+        Pin,
+        Bookmark,
+        Lock,
+        Globe,
+        FileText,
+        CheckCircle2,
+        Archive,
+    } from 'lucide-vue-next';
     import { useRoute, useRouter } from 'vue-router';
     import { useSleepStore } from '@/stores/modules/sleep';
-    import BackButton from '@/components/ui/BackButton.vue';
+    import AppButton from '@/components/ui/AppButton.vue';
     import AppSelect from '@/components/ui/AppSelect.vue';
+    import AppTag from '@/components/ui/AppTag.vue';
     import AppTagSelect from '@/components/ui/AppTagSelect.vue';
+    import AppDatePicker from '@/components/ui/AppDatePicker.vue';
     import AppCheckbox from '@/components/ui/AppCheckbox.vue';
     import AppNumberInput from '@/components/ui/AppNumberInput.vue';
     import AppRange from '@/components/ui/AppRange.vue';
-    import AppInput from '@/components/ui/AppInput.vue';
+    import AppTextInput from '@/components/ui/AppTextInput.vue';
     import AppTextarea from '@/components/ui/AppTextarea.vue';
     import { formatToLocalDateStr } from '@/utils/date';
     import type {
@@ -960,6 +804,44 @@
         }
     };
 
+    const handleCategoryChange = (selectedValues: DreamCategory[] | DreamCategory | null) => {
+        const currentList = Array.isArray(selectedValues) ? selectedValues : [];
+        const details = ensureCategoryDetails();
+
+        if (currentList.includes('lucid') && !details.lucid) {
+            details.lucid = { controlLevel: 5, trigger: 'spontaneous' };
+        }
+        if (currentList.includes('nightmare') && !details.nightmare) {
+            details.nightmare = { fearLevel: 7, hasPhysicalResponse: false, copingMechanism: '' };
+        }
+        if (currentList.includes('prophetic') && !details.prophetic) {
+            details.prophetic = { isFulfilled: false, fulfillmentNotes: '' };
+        }
+    };
+
+    const handlePhenomenaChange = (selectedValues: DreamPhenomenon[] | DreamPhenomenon | null) => {
+        const currentList = Array.isArray(selectedValues) ? selectedValues : [];
+        if (currentList.length === 0) return;
+
+        const details = ensurePhenomenaDetails();
+
+        if (currentList.includes('flying') && !details.flying) {
+            details.flying = { type: 'effortless', altitude: 'cloud_level' };
+        }
+        if (currentList.includes('falling') && !details.falling) {
+            details.falling = { origin: 'building_or_cliff', outcome: 'hypnic_jerk' };
+        }
+        if (currentList.includes('death') && !details.death) {
+            details.death = { cause: 'peaceful', aftermath: 'woke_up' };
+        }
+        if (currentList.includes('paralysis') && !details.paralysis) {
+            details.paralysis = { timing: 'waking_up', hallucinations: [] };
+        }
+        if (currentList.includes('nested_dream') && !details.nestedDream) {
+            details.nestedDream = { nestingLevels: 1 };
+        }
+    };
+
     const togglePhenomenon = (ph: DreamPhenomenon) => {
         if (!form.value.phenomena) form.value.phenomena = [];
         toggleArrayItem(form.value.phenomena, ph);
@@ -1030,6 +912,7 @@
             // Если стор пуст (например, при прямой перезагрузке страницы /edit/123),
             // целесообразно загрузить сон из бэка:
             let existingDream = sleepStore.getDreamById(numericId);
+
             if (!existingDream && sleepStore.fetchDreamById) {
                 existingDream = await sleepStore.fetchDreamById(numericId);
             }
@@ -1107,13 +990,31 @@
             emotions: parseCommaSeparated(rawArrays.value.emotions),
         };
 
-        const success =
-            isEditMode.value && props.id
-                ? await sleepStore.updateDream(Number(props.id), payload)
-                : await sleepStore.addDream(payload);
+        if (isEditMode.value && props.id) {
+            // --- РЕДАКТИРОВАНИЕ ---
+            const targetId = Number(props.id);
+            const success = await sleepStore.updateDream(targetId, payload);
 
-        if (success) {
-            router.push(`/day/${form.value.date}`);
+            if (success) {
+                router.push({
+                    name: 'dream-details',
+                    params: { id: String(targetId) }, // Приводим к String для надежности роутера
+                });
+            }
+        } else {
+            // --- СОЗДАНИЕ ---
+            // Желательно, чтобы addDream возвращал созданный объект или его ID
+            const createdDream = await sleepStore.addDream(payload);
+
+            if (createdDream) {
+                // Если addDream возвращает объект с ID:
+                const newId = typeof createdDream === 'object' ? createdDream.id : createdDream;
+
+                router.push({
+                    name: 'dream-details',
+                    params: { id: String(newId) },
+                });
+            }
         }
     };
 

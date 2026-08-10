@@ -29,7 +29,7 @@ const router = createRouter({
         },
         {
             path: '/dream/:id',
-            name: 'dream-detail',
+            name: 'dream-details',
             component: () => import('../views/dreams/DreamDetailView.vue'),
             props: true,
         },

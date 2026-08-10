@@ -1,6 +1,6 @@
 <!--
 ===============================================================================
-  AppInput.vue — Text Input UI Component
+  AppTextInput.vue — Text Input UI Component
 ===============================================================================
 
   Features:
@@ -16,7 +16,7 @@
 -------------------------------------------------------------------------------
 
   1. Basic required input field:
-     <AppInput
+     <AppTextInput
          v-model="form.title"
          label="Dream Title"
          placeholder="e.g. Flying over an ancient city..."
@@ -24,7 +24,7 @@
      />
 
   2. With error handling and helper hint:
-     <AppInput
+     <AppTextInput
          v-model="form.title"
          label="Dream Title"
          :error-message="errors.title"
@@ -32,7 +32,7 @@
      />
 
   3. Disabled state with loading spinner:
-     <AppInput
+     <AppTextInput
          v-model="form.title"
          label="Dream Title"
          :is-loading="isSaving"
@@ -40,7 +40,7 @@
      />
 
   4. Alternative input types and event handlers:
-     <AppInput
+     <AppTextInput
          v-model="form.search"
          type="search"
          label="Search"

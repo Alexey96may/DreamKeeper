@@ -38,49 +38,53 @@
 -->
 
 <script setup lang="ts">
-import { computed, useId, type Component } from 'vue';
-import { Loader2 } from 'lucide-vue-next';
+    import { computed, useId, type Component } from 'vue';
+    import { Loader2 } from 'lucide-vue-next';
 
-interface Props {
-    isPressed?: boolean;
-    type?: 'button' | 'submit' | 'reset';
-    disabled?: boolean;
-    isLoading?: boolean;
-    icon?: Component;
-    id?: string;
-}
+    interface Props {
+        isPressed?: boolean;
+        type?: 'button' | 'submit' | 'reset';
+        disabled?: boolean;
+        isLoading?: boolean;
+        icon?: Component;
+        id?: string;
+        role?: string;
+        ariaChecked?: boolean;
+    }
 
-const props = withDefaults(defineProps<Props>(), {
-    isPressed: false,
-    type: 'button',
-    disabled: false,
-    isLoading: false,
-});
+    const props = withDefaults(defineProps<Props>(), {
+        isPressed: false,
+        type: 'button',
+        disabled: false,
+        isLoading: false,
+    });
 
-const emit = defineEmits<{
-    (e: 'click', event: MouseEvent): void;
-}>();
+    const emit = defineEmits<{
+        (e: 'click', event: MouseEvent): void;
+    }>();
 
-const defaultId = useId();
-const chipId = computed(() => props.id || `app-chip-${defaultId}`);
-const isDisabled = computed(() => props.disabled || props.isLoading);
+    const defaultId = useId();
+    const chipId = computed(() => props.id || `app-chip-${defaultId}`);
+    const isDisabled = computed(() => props.disabled || props.isLoading);
 
-const handleClick = (event: MouseEvent) => {
-    if (isDisabled.value) return;
-    emit('click', event);
-};
+    const handleClick = (event: MouseEvent) => {
+        if (isDisabled.value) return;
+        emit('click', event);
+    };
 </script>
 
 <template>
     <button
         :id="chipId"
         :type="type"
+        :role="role"
         :disabled="isDisabled"
-        :aria-pressed="isPressed"
-        class="inline-flex items-center gap-1.5 rounded-lg border px-3 py-1.5 text-xs font-medium transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-accent/50 disabled:cursor-not-allowed disabled:opacity-50"
+        :aria-pressed="role ? undefined : isPressed"
+        :aria-checked="ariaChecked"
+        class="focus:ring-accent/50 inline-flex items-center gap-1.5 rounded-lg border px-3 py-1.5 text-xs font-medium transition-colors duration-150 focus:ring-2 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50"
         :class="[
             isPressed
-                ? 'border-accent bg-accent/20 text-accent'
+                ? 'border-accent bg-accent/20 text-accent font-semibold'
                 : 'border-border bg-bg-secondary text-text-soft hover:border-border/80 hover:text-text-primary',
         ]"
         @click="handleClick"
@@ -88,17 +92,12 @@ const handleClick = (event: MouseEvent) => {
         <!-- Spinner when loading -->
         <Loader2
             v-if="isLoading"
-            class="h-3.5 w-3.5 shrink-0 animate-spin text-text-soft"
+            class="text-text-soft h-3.5 w-3.5 shrink-0 animate-spin"
             aria-hidden="true"
         />
 
         <!-- Optional Icon -->
-        <component
-            :is="icon"
-            v-else-if="icon"
-            class="h-3.5 w-3.5 shrink-0"
-            aria-hidden="true"
-        />
+        <component :is="icon" v-else-if="icon" class="h-3.5 w-3.5 shrink-0" aria-hidden="true" />
 
         <!-- Content/Text -->
         <span>

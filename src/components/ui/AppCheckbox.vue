@@ -8,8 +8,7 @@
     IDs (useId()), aria-invalid, aria-required, and aria-describedby for errors/hints.
   - Custom Styling: Replaces ugly default browser checkboxes with smooth, responsive,
     theme-aware custom borders, checkmark animations, and focus ring indicators.
-  - Flexible Formats: Supports single boolean toggles (v-model="boolean") as well as
-    array binding for group selections (v-model="array").
+  - Flexible Formats: Supports single boolean toggles (v-model="boolean").
   - State Support: Supports loading (with animated spinner), disabled, readonly,
     errorMessage, dynamic accent colors (e.g., accent-red-500), and helper hint states.
 
@@ -49,7 +48,7 @@
     import { Check, Loader2 } from 'lucide-vue-next';
 
     interface Props {
-        modelValue?: boolean | (string | number)[];
+        modelValue?: boolean | null | undefined;
         value?: string | number | boolean;
         label?: string;
         required?: boolean;
