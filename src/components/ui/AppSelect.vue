@@ -26,7 +26,7 @@
     interface Props {
         id?: string;
         modelValue: T | undefined;
-        options: SelectOption<T>[];
+        options: readonly SelectOption<T>[];
         label?: string;
         placeholder?: string;
         error?: string;

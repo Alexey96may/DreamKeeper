@@ -1,3 +1,5 @@
+import { type Component } from 'vue';
+
 export type DreamCategory =
     | 'lucid' // Осознанный (ОС)
     | 'nightmare' // Кошмар
@@ -5,9 +7,11 @@ export type DreamCategory =
 
 // --- Детали по категориям ---
 
+export type LucidTrigger = 'irrelevant' | 'reality_check' | 'anomaly' | 'spontaneous' | 'other';
+
 export interface LucidDetails {
     controlLevel?: number; // 1-10 (Уровень контроля)
-    trigger?: 'reality_check' | 'anomaly' | 'spontaneous' | 'other';
+    trigger?: LucidTrigger;
 }
 
 export interface NightmareDetails {
@@ -33,58 +37,88 @@ export interface DreamCategoryDetails {
 
 // 2. Особые события во сне
 export type DreamPhenomenon =
+    | 'irrelevant' // Не имело значения
     | 'death' // Смерть во сне
     | 'flying' // Полёт
     | 'falling' // Падение
     | 'nested_dream' // Ложное пробуждение
     | 'paralysis'; // Сонный паралич
 
+export type ParalysisTiming = 'falling_asleep' | 'waking_up' | 'irrelevant';
+export type ParalysisHallucinations = 'auditory' | 'visual' | 'tactile' | 'presence' | 'other';
+
 export interface ParalysisDetails {
-    timing?: 'falling_asleep' | 'waking_up';
-    hallucinations?: Array<'auditory' | 'visual' | 'tactile' | 'presence'>;
+    timing?: ParalysisTiming;
+    hallucinations?: ParalysisHallucinations[];
 }
 
 export interface NestedDreamDetails {
     nestingLevels?: number;
 }
 
+export type DeathCause =
+    | 'irrelevant'
+    | 'fall'
+    | 'attack_or_murder'
+    | 'disaster'
+    | 'execution'
+    | 'peaceful'
+    | 'natural'
+    | 'illness'
+    | 'accident'
+    | 'other';
+
+export type DeathAftermath =
+    | 'irrelevant'
+    | 'woke_up' // Мгновенно проснулся (испуг / скачок пульса)
+    | 'became_ghost' // Стал призраком / духом (переход в disembodied)
+    | 'reincarnated' // Переродился / возродился в новом теле
+    | 'black_void' // Попал в темноту / тишину, но продолжал спать
+    | 'scene_shift'; // Сюжет просто сменился на другой
+
 export interface DeathDetails {
     /** Причина / контекст смерти */
-    cause?: 'fall' | 'attack_or_murder' | 'disaster' | 'execution' | 'peaceful' | 'other';
+    cause?: DeathCause;
 
     /** Что произошло СРАЗУ ПОСЛЕ смерти во сне */
-    aftermath?:
-        | 'woke_up' // Мгновенно проснулся (испуг / скачок пульса)
-        | 'became_ghost' // Стал призраком / духом (переход в disembodied)
-        | 'reincarnated' // Переродился / возродился в новом теле
-        | 'black_void' // Попал в темноту / тишину, но продолжал спать
-        | 'scene_shift'; // Сюжет просто сменился на другой
+    aftermath?: DeathAftermath;
 }
+
+export type FlyingType =
+    | 'irrelevant'
+    | 'effortless' // Естественный / Легкий (как птица или супергерой)
+    | 'swimming' // Гребля руками (как в воде / с давлением)
+    | 'apparatus' // С помощью предмета (крылья, ранец, метла, транспорт)
+    | 'levitation' // Набор высоты / парение на месте
+    | 'uncontrollable'; // Неконтролируемый (уносит ветром / сложно снизиться)
+
+export type FlyingAltitude = 'irrelevant' | 'low' | 'cloud_level' | 'space';
 
 export interface FlyingDetails {
     /** Характер / стиль полёта */
-    type?:
-        | 'effortless' // Естественный / Легкий (как птица или супергерой)
-        | 'swimming' // Гребля руками (как в воде / с давлением)
-        | 'apparatus' // С помощью предмета (крылья, ранец, метла, транспорт)
-        | 'levitation' // Набор высоты / парение на месте
-        | 'uncontrollable'; // Неконтролируемый (уносит ветром / сложно снизиться)
+    type?: FlyingType;
 
     /** Высота полёта */
-    altitude?: 'low' | 'cloud_level' | 'space';
+    altitude?: FlyingAltitude;
 }
+
+export type FallingOrigin =
+    'irrelevant' | 'building_or_cliff' | 'sky_or_void' | 'abyss' | 'stumbling';
+
+export type FallingOutcome =
+    | 'irrelevant'
+    | 'hypnic_jerk' // Вздрогнул всей тушкой и проснулся (физический отклик)
+    | 'landed_safe' // Мягко приземлился / приземлился без повреждений
+    | 'impact' // Удар о землю (с развитием сюжета или переходом в death)
+    | 'woke_before_impact' // Проснулся за секунду до удара
+    | 'turned_into_flight'; // Падение переросло в полёт (взлетел)
 
 export interface FallingDetails {
     /** Откуда / Контекст падения */
-    origin?: 'building_or_cliff' | 'sky_or_void' | 'abyss' | 'stumbling';
+    origin?: FallingOrigin;
 
     /** Чем закончилось падение */
-    outcome?:
-        | 'hypnic_jerk' // Вздрогнул всей тушкой и проснулся (физический отклик)
-        | 'landed_safe' // Мягко приземлился / приземлился без повреждений
-        | 'impact' // Удар о землю (с развитием сюжета или переходом в death)
-        | 'woke_before_impact' // Проснулся за секунду до удара
-        | 'turned_into_flight'; // Падение переросло в полёт (взлетел)
+    outcome?: FallingOutcome;
 }
 
 export interface DreamPhenomenaDetails {
@@ -108,21 +142,14 @@ export interface TimeOfDayOption {
     description?: string;
     // Обрати внимание: тут просто string (например, имя иконки или путь),
     // чтобы не тащить Vue/Lucide зависимости в чистые типы.
-    iconName?: string;
-}
-
-export interface DreamCategoryOption {
-    value: DreamCategory;
-    label: string;
-    description: string;
-    iconName?: string;
+    icon: Component;
 }
 
 export interface DreamPhenomenonOption {
     value: DreamPhenomenon;
     label: string;
     description: string;
-    iconName?: string;
+    icon: Component;
 }
 
 // Визуальный стиль
@@ -135,6 +162,7 @@ export type VisualStyle =
 
 // Точка зрения (Перспектива)
 export type Perspective =
+    | 'irrelevant' // Не имело значения
     | 'first_person' // От первого лица (своими глазами)
     | 'third_person' // От третьего лица (со стороны)
     | 'shifting'; // Менялась в процессе

@@ -30,7 +30,7 @@
                         id="form-time-of-day"
                         v-model="form.timeOfDay"
                         label="Время суток"
-                        :options="timeOfDayOptions"
+                        :options="TIME_OF_DAY_OPTIONS"
                         placeholder="Выберите время суток"
                     />
                 </div>
@@ -59,7 +59,7 @@
                     v-model="form.categories"
                     label="Категории сна"
                     @change="handleCategoryChange"
-                    :options="availableCategories"
+                    :options="DREAM_CATEGORY_OPTIONS"
                 />
 
                 <!-- Детали категории LUCID -->
@@ -70,20 +70,23 @@
                     <h4 class="text-accent text-xs font-semibold">
                         Параметры Осознанного Сна (Lucid)
                     </h4>
-                    <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                    <div
+                        v-if="form.categoryDetails?.lucid"
+                        class="grid grid-cols-1 gap-3 sm:grid-cols-2"
+                    >
                         <AppRange
-                            v-model.number="ensureCategoryDetails().lucid!.controlLevel"
+                            v-model.number="form.categoryDetails.lucid.controlLevel"
                             label="Уровень контроля"
-                            :min="1"
+                            :min="0"
                             :max="10"
                             :step="1"
-                            :value-formatter="(val, max) => `${val} / ${max}`"
+                            :value-formatter="dreamValueFormatter"
                         />
 
                         <AppSelect
-                            v-model="ensureCategoryDetails().lucid!.trigger"
+                            v-model="form.categoryDetails.lucid.trigger"
                             label="Триггер осознания"
-                            :options="lucidTriggerOptions"
+                            :options="LUCID_TRIGGER_OPTIONS"
                         />
                     </div>
                 </div>
@@ -101,21 +104,23 @@
                         <AppRange
                             v-model="form.clarity"
                             label="Уровень страха"
-                            :min="1"
+                            :min="0"
                             :max="10"
                             :step="1"
-                            :value-formatter="(val, max) => `${val} / ${max}`"
+                            :value-formatter="dreamValueFormatter"
                         />
 
                         <AppCheckbox
-                            v-model="ensureCategoryDetails().nightmare!.hasPhysicalResponse"
+                            v-if="form.categoryDetails?.nightmare"
+                            v-model="form.categoryDetails.nightmare.hasPhysicalResponse"
                             label="Физическая реакция (пульс, пот, испуг)"
                             accent-color="bg-red-500 border-red-500"
                         />
                     </div>
 
                     <AppTextInput
-                        v-model="ensureCategoryDetails().nightmare!.copingMechanism"
+                        v-if="form.categoryDetails?.nightmare"
+                        v-model="form.categoryDetails.nightmare.copingMechanism"
                         label="Как справился / Завершение"
                         placeholder="Проснулся от крика, дал отпор..."
                     />
@@ -129,28 +134,32 @@
                     <h4 class="text-xs font-semibold text-purple-400">
                         Параметры Вещего Сна (Prophetic)
                     </h4>
-                    <div class="grid grid-cols-1 gap-3 sm:grid-cols-3">
+                    <div
+                        v-if="form.categoryDetails?.prophetic"
+                        class="grid grid-cols-1 gap-3 sm:grid-cols-3"
+                    >
                         <AppDatePicker
-                            v-model="ensureCategoryDetails().prophetic!.expectedByDate"
+                            v-model="form.categoryDetails.prophetic.expectedByDate"
                             label="Ожидаемый срок"
                             hint="Укажите дату, к которой сон должен реализоваться"
                         />
 
                         <AppDatePicker
-                            v-model="ensureCategoryDetails().prophetic!.fulfilledDate"
+                            v-model="form.categoryDetails.prophetic.fulfilledDate"
                             label="Дата исполнения"
                             hint="Укажите дату, к которой сон реализовался"
                         />
 
                         <AppCheckbox
-                            v-model="ensureCategoryDetails().prophetic!.isFulfilled"
+                            v-model="form.categoryDetails.prophetic.isFulfilled"
                             label="Уже сбылся"
                             accent-color="bg-purple-500 border-purple-500"
                         />
                     </div>
 
                     <AppTextInput
-                        v-model="ensureCategoryDetails().prophetic!.fulfillmentNotes"
+                        v-if="form.categoryDetails?.prophetic"
+                        v-model="form.categoryDetails.prophetic.fulfillmentNotes"
                         label="Что именно произошло в реальности"
                         placeholder="Описание события в реальной жизни..."
                     />
@@ -163,7 +172,7 @@
                     v-model="form.phenomena"
                     label="Феномены и события во сне"
                     @change="handlePhenomenaChange"
-                    :options="availablePhenomena"
+                    :options="DREAM_PHENOMENON_OPTIONS"
                 />
 
                 <!-- Детали: ПОЛЁТ -->
@@ -172,16 +181,19 @@
                     class="space-y-3 rounded-lg border border-indigo-500/30 bg-indigo-500/5 p-3"
                 >
                     <h4 class="text-xs font-semibold text-indigo-400">Детали полёта</h4>
-                    <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                    <div
+                        v-if="form.phenomenaDetails?.flying"
+                        class="grid grid-cols-1 gap-3 sm:grid-cols-2"
+                    >
                         <AppSelect
-                            v-model="ensurePhenomenaDetails().flying!.type"
-                            :options="flyingTypeOptions"
+                            v-model="form.phenomenaDetails.flying.type"
+                            :options="FLYING_TYPE_OPTIONS"
                             label="Стиль полёта"
                         />
 
                         <AppSelect
-                            v-model="ensurePhenomenaDetails().flying!.altitude"
-                            :options="flyingAltitudeOptions"
+                            v-model="form.phenomenaDetails.flying.altitude"
+                            :options="FLYING_ALTITUDE_OPTIONS"
                             label="Высота"
                         />
                     </div>
@@ -193,16 +205,19 @@
                     class="space-y-3 rounded-lg border border-indigo-500/30 bg-indigo-500/5 p-3"
                 >
                     <h4 class="text-xs font-semibold text-indigo-400">Детали падения</h4>
-                    <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                    <div
+                        v-if="form.phenomenaDetails?.falling"
+                        class="grid grid-cols-1 gap-3 sm:grid-cols-2"
+                    >
                         <AppSelect
-                            v-model="ensurePhenomenaDetails().falling!.origin"
-                            :options="fallingOriginOptions"
+                            v-model="form.phenomenaDetails.falling.origin"
+                            :options="FALLING_ORIGIN_OPTIONS"
                             label="Откуда падение"
                         />
 
                         <AppSelect
-                            v-model="ensurePhenomenaDetails().falling!.outcome"
-                            :options="fallingOutcomeOptions"
+                            v-model="form.phenomenaDetails.falling.outcome"
+                            :options="FALLING_OUTCOME_OPTIONS"
                             label="Чем закончилось"
                         />
                     </div>
@@ -215,17 +230,22 @@
                 >
                     <h4 class="text-xs font-semibold text-indigo-400">Детали смерти во сне</h4>
                     <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                        <AppSelect
-                            v-model="ensurePhenomenaDetails().death!.cause"
-                            :options="deathCauseOptions"
-                            label="Причина / Контекст"
-                        />
+                        <div
+                            v-if="form.phenomena?.includes('death') && form.phenomenaDetails?.death"
+                            class="space-y-4"
+                        >
+                            <AppSelect
+                                v-model="form.phenomenaDetails.death.cause"
+                                :options="DEATH_CAUSE_OPTIONS"
+                                label="Причина / Контекст"
+                            />
 
-                        <AppSelect
-                            v-model="ensurePhenomenaDetails().death!.aftermath"
-                            :options="deathAftermathOptions"
-                            label="Что произошло сразу после"
-                        />
+                            <AppSelect
+                                v-model="form.phenomenaDetails.death.aftermath"
+                                :options="DEATH_AFTERMATH_OPTIONS"
+                                label="Что произошло сразу после"
+                            />
+                        </div>
                     </div>
                 </div>
 
@@ -237,9 +257,17 @@
                     <h4 class="text-xs font-semibold text-indigo-400">Детали сонного паралича</h4>
 
                     <AppSelect
-                        v-model="ensurePhenomenaDetails().paralysis!.timing"
-                        :options="paralysisTimingOptions"
+                        v-if="form.phenomenaDetails?.paralysis"
+                        v-model="form.phenomenaDetails.paralysis.timing"
+                        :options="PARALYSIS_TIMING_OPTIONS"
                         label="Момент возникновения"
+                    />
+
+                    <AppTagSelect
+                        v-if="form.phenomenaDetails?.paralysis?.hallucinations"
+                        v-model="form.phenomenaDetails.paralysis.hallucinations"
+                        label="Галлюцинации"
+                        :options="PARALYSIS_HALLUCINATIONS_OPTIONS"
                     />
                 </div>
 
@@ -253,7 +281,8 @@
                     </h4>
 
                     <AppNumberInput
-                        v-model.number="ensurePhenomenaDetails().nestedDream!.nestingLevels"
+                        v-if="form.phenomenaDetails?.nestedDream"
+                        v-model.number="form.phenomenaDetails.nestedDream.nestingLevels"
                         label="Уровень вложенности (сколько раз «просыпался»)"
                         :min="1"
                         :max="1000"
@@ -268,13 +297,13 @@
                 <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
                     <AppSelect
                         v-model="form.visualStyle"
-                        :options="availableVisualStyles"
+                        :options="VISUAL_STYLE_OPTIONS"
                         label="Визуальный стиль"
                     />
 
                     <AppSelect
                         v-model="form.perspective"
-                        :options="availablePerspectives"
+                        :options="PERSPECTIVE_OPTIONS"
                         label="Точка зрения (Перспектива)"
                     />
                 </div>
@@ -283,14 +312,14 @@
                 <AppTagSelect
                     v-model="form.roles"
                     label="Ваши роли во сне"
-                    :options="availableRoles"
+                    :options="PARTICIPANT_ROLE_OPTIONS"
                 />
 
                 <!-- Органы чувств -->
                 <AppTagSelect
                     v-model="form.sensations"
                     label="Ощущения / Органы чувств"
-                    :options="availableSensations"
+                    :options="SENSORY_ASPECT_OPTIONS"
                 />
             </div>
 
@@ -300,28 +329,28 @@
                     <AppRange
                         v-model.number="form.quality"
                         label="Качество сна"
-                        :min="1"
+                        :min="0"
                         :max="10"
                         :step="1"
-                        :value-formatter="(val, max) => `${val} / ${max}`"
+                        :value-formatter="dreamValueFormatter"
                     />
 
                     <AppRange
                         v-model.number="form.clarity"
                         label="Ясность / Яркость"
-                        :min="1"
+                        :min="0"
                         :max="10"
                         :step="1"
-                        :value-formatter="(val, max) => `${val} / ${max}`"
+                        :value-formatter="dreamValueFormatter"
                     />
 
                     <AppRange
                         v-model.number="form.moodAfter"
                         label="Настроение после"
-                        :min="1"
+                        :min="0"
                         :max="10"
                         :step="1"
-                        :value-formatter="(val, max) => `${val} / ${max}`"
+                        :value-formatter="dreamValueFormatter"
                     />
                 </div>
             </div>
@@ -417,31 +446,29 @@
                         </AppButton>
                     </div>
 
-                    <div
-                        v-for="(rel, idx) in form.relatedDreams"
-                        :key="idx"
-                        class="mb-2 flex items-center gap-2"
-                    >
-                        <AppSelect
-                            v-model="rel.dreamId"
-                            :options="dreamToLinkOptions"
-                            class="w-1/3 text-xs"
-                        />
+                    <div v-for="(rel, idx) in form.relatedDreams" :key="idx">
+                        <div class="mb-2 flex items-center gap-2">
+                            <AppSelect
+                                v-model="rel.dreamId"
+                                :options="dreamToLinkOptions"
+                                class="w-1/3 text-xs"
+                            />
 
-                        <AppSelect
-                            v-model="rel.relationType"
-                            :options="availableRelationTypes"
-                            class="w-1/3 text-xs"
-                        />
+                            <AppSelect
+                                v-model="rel.relationType"
+                                :options="DREAM_RELATION_OPTIONS"
+                                class="w-1/3 text-xs"
+                            />
+
+                            <AppButton
+                                size="xs"
+                                @click="removeRelatedDream(idx)"
+                                variant="danger"
+                                :icon-left="X"
+                            />
+                        </div>
 
                         <AppTextarea v-model="rel.note" placeholder="Примечание..." :rows="2" />
-
-                        <AppButton
-                            size="xs"
-                            @click="removeRelatedDream(idx)"
-                            variant="danger"
-                            :icon-left="X"
-                        />
                     </div>
                 </div>
             </div>
@@ -524,11 +551,6 @@
 <script setup lang="ts">
     import { ref, computed, onMounted } from 'vue';
     import {
-        Moon,
-        Sunrise,
-        Sun,
-        Sunset,
-        HelpCircle,
         PlusIcon,
         MoveLeft,
         X,
@@ -551,6 +573,25 @@
     import AppNumberInput from '@/components/ui/AppNumberInput.vue';
     import AppRange from '@/components/ui/AppRange.vue';
     import AppTextInput from '@/components/ui/AppTextInput.vue';
+    import {
+        TIME_OF_DAY_OPTIONS,
+        DREAM_CATEGORY_OPTIONS,
+        DREAM_PHENOMENON_OPTIONS,
+        DEATH_CAUSE_OPTIONS,
+        DEATH_AFTERMATH_OPTIONS,
+        FLYING_TYPE_OPTIONS,
+        FLYING_ALTITUDE_OPTIONS,
+        FALLING_ORIGIN_OPTIONS,
+        FALLING_OUTCOME_OPTIONS,
+        DREAM_RELATION_OPTIONS,
+        VISUAL_STYLE_OPTIONS,
+        PERSPECTIVE_OPTIONS,
+        PARTICIPANT_ROLE_OPTIONS,
+        SENSORY_ASPECT_OPTIONS,
+        PARALYSIS_TIMING_OPTIONS,
+        LUCID_TRIGGER_OPTIONS,
+        PARALYSIS_HALLUCINATIONS_OPTIONS,
+    } from '@/constants/Dream';
     import AppTextarea from '@/components/ui/AppTextarea.vue';
     import { formatToLocalDateStr } from '@/utils/date';
     import type {
@@ -558,8 +599,6 @@
         DreamWrite,
         DreamCategory,
         DreamPhenomenon,
-        SensoryAspect,
-        ParticipantRole,
         DreamRelationType,
         DreamCategoryDetails,
         DreamPhenomenaDetails,
@@ -588,7 +627,7 @@
 
         timeOfDay: 'night',
         visualStyle: 'color',
-        perspective: 'first_person',
+        perspective: 'irrelevant',
         roles: ['protagonist'],
         sensations: [],
 
@@ -618,135 +657,14 @@
         emotions: '',
     });
 
-    // --- Справочники и Опции ---
-
-    const availableCategories: { value: DreamCategory; label: string }[] = [
-        { value: 'lucid', label: '🧠 Осознанный (ОС)' },
-        { value: 'nightmare', label: '😱 Кошмар' },
-        { value: 'prophetic', label: '🔮 Вещий' },
-    ];
-
-    const availablePhenomena: { value: DreamPhenomenon; label: string }[] = [
-        { value: 'flying', label: '🕊 Полёт' },
-        { value: 'falling', label: '🕳 Падение' },
-        { value: 'death', label: '💀 Смерть' },
-        { value: 'nested_dream', label: '🚪 Ложное пробуждение' },
-        { value: 'paralysis', label: '⚡ Сонный паралич' },
-    ];
-
-    const availableSensations: { value: SensoryAspect; label: string }[] = [
-        { value: 'sounds', label: '🔊 Звуки' },
-        { value: 'smells', label: '👃 Запахи' },
-        { value: 'tactile', label: '🖐 Прикосновения' },
-        { value: 'temperature', label: '🌡 Тепло/Холод' },
-        { value: 'taste', label: '👅 Вкус' },
-        { value: 'pain', label: '💥 Боль' },
-        { value: 'kinesthetic', label: '🌀 Вращение/Перегрузки' },
-        { value: 'breathing', label: '🫁 Дыхание/Одышка' },
-        { value: 'speech_voice', label: '🗣 Голос/Немота' },
-        { value: 'vision_anomaly', label: '👁 Искажения зрения' },
-    ];
-
-    const availableVisualStyles = [
-        { value: 'color', label: '🎨 Цветной' },
-        { value: 'vivid', label: '✨ Яркий / Неоновый' },
-        { value: 'monochrome', label: '🔳 Чёрно-белый / Сепия' },
-        { value: 'blurred', label: '🌫 Размытый' },
-        { value: 'dark', label: '🌙 Тёмный' },
-    ];
-
-    const availablePerspectives = [
-        { value: 'first_person', label: '👀 От 1-го лица' },
-        { value: 'third_person', label: '🎥 Со стороны (3-е лицо)' },
-        { value: 'shifting', label: '🔄 Менялась' },
-    ];
-
-    const availableRoles: { value: ParticipantRole; label: string }[] = [
-        { value: 'protagonist', label: '🦸 Главный герой' },
-        { value: 'observer', label: '👁 Наблюдатель' },
-        { value: 'victim', label: '🎯 Жертва' },
-        { value: 'shapeshifter', label: '🦊 Другое существо' },
-        { value: 'camera_operator', label: '📹 Оператор' },
-        { value: 'disembodied', label: '👻 Бестелесный дух' },
-    ];
-
-    const availableRelationTypes = [
-        { value: 'similar_theme', label: 'Похожая тема' },
-        { value: 'recurring_instance', label: 'Повторяющийся сюжет' },
-        { value: 'continuation', label: 'Продолжение' },
-        { value: 'prequel', label: 'Предыстория' },
-        { value: 'same_location', label: 'Та же локация' },
-        { value: 'reference', label: 'Пересечение/Упоминание' },
-    ];
-
-    const timeOfDayOptions = [
-        { value: 'night', label: 'Ночь', icon: Moon },
-        { value: 'morning', label: 'Утро', icon: Sunrise },
-        { value: 'day', label: 'День', icon: Sun },
-        { value: 'evening', label: 'Вечер', icon: Sunset },
-        { value: 'unknown', label: 'Неизвестно', icon: HelpCircle },
-    ];
-
-    // Детали категорий/феноменов
-    const lucidTriggerOptions = [
-        { value: 'spontaneous', label: 'Спонтанно' },
-        { value: 'reality_check', label: 'Проверка реальности (Reality Check)' },
-        { value: 'anomaly', label: 'Аномалия в сюжете' },
-        { value: 'other', label: 'Другое' },
-    ];
-
-    const flyingTypeOptions = [
-        { value: 'effortless', label: 'Легкий / Естественный' },
-        { value: 'swimming', label: 'Гребля руками' },
-        { value: 'apparatus', label: 'С помощью предмета/транспорта' },
-        { value: 'levitation', label: 'Парение на месте' },
-        { value: 'uncontrollable', label: 'Неконтролируемый' },
-    ];
-
-    const flyingAltitudeOptions = [
-        { value: 'low', label: 'Низко над землей' },
-        { value: 'cloud_level', label: 'Уровень облаков' },
-        { value: 'space', label: 'Космос' },
-    ];
-
-    const fallingOriginOptions = [
-        { value: 'building_or_cliff', label: 'Здание или скала' },
-        { value: 'sky_or_void', label: 'Небо / Пустота' },
-        { value: 'abyss', label: 'Бездна' },
-        { value: 'stumbling', label: 'Оступился' },
-    ];
-
-    const fallingOutcomeOptions = [
-        { value: 'hypnic_jerk', label: 'Вздрогнул и проснулся' },
-        { value: 'landed_safe', label: 'Мягко приземлился' },
-        { value: 'impact', label: 'Удар о землю' },
-        { value: 'woke_before_impact', label: 'Проснулся за секунду до удара' },
-        { value: 'turned_into_flight', label: 'Переросло в полёт' },
-    ];
-
-    const deathCauseOptions = [
-        { value: 'peaceful', label: 'Мирно' },
-        { value: 'fall', label: 'Падение' },
-        { value: 'attack_or_murder', label: 'Нападение / Убийство' },
-        { value: 'disaster', label: 'Катастрофа' },
-        { value: 'execution', label: 'Казнь' },
-        { value: 'other', label: 'Другое' },
-    ];
-
-    const deathAftermathOptions = [
-        { value: 'woke_up', label: 'Мгновенно проснулся' },
-        { value: 'became_ghost', label: 'Стал призраком / духом' },
-        { value: 'reincarnated', label: 'Переродился' },
-        { value: 'black_void', label: 'Темнота / Пустота' },
-        { value: 'scene_shift', label: 'Смена сюжета' },
-    ];
-
-    const paralysisTimingOptions = [
-        { value: 'falling_asleep', label: 'При засыпании' },
-        { value: 'waking_up', label: 'При пробуждении' },
-    ];
-
     // --- Хелперы детальнее ---
+
+    const dreamValueFormatter = computed(() => {
+        return (val: number, max: number | string) => {
+            if (val === 0) return 'Не важно';
+            return `${val} / ${max}`;
+        };
+    });
 
     const ensureCategoryDetails = (): DreamCategoryDetails => {
         if (!form.value.categoryDetails) form.value.categoryDetails = {};
@@ -779,40 +697,15 @@
             .filter(Boolean);
     };
 
-    const toggleArrayItem = <T,>(array: T[], item: T) => {
-        const idx = array.indexOf(item);
-        if (idx > -1) {
-            array.splice(idx, 1);
-        } else {
-            array.push(item);
-        }
-    };
-
-    const toggleCategory = (cat: DreamCategory) => {
-        if (!form.value.categories) form.value.categories = [];
-        toggleArrayItem(form.value.categories, cat);
-        const details = ensureCategoryDetails();
-
-        if (cat === 'lucid' && !details.lucid) {
-            details.lucid = { controlLevel: 5, trigger: 'spontaneous' };
-        }
-        if (cat === 'nightmare' && !details.nightmare) {
-            details.nightmare = { fearLevel: 7, hasPhysicalResponse: false, copingMechanism: '' };
-        }
-        if (cat === 'prophetic' && !details.prophetic) {
-            details.prophetic = { isFulfilled: false, fulfillmentNotes: '' };
-        }
-    };
-
     const handleCategoryChange = (selectedValues: DreamCategory[] | DreamCategory | null) => {
         const currentList = Array.isArray(selectedValues) ? selectedValues : [];
         const details = ensureCategoryDetails();
 
         if (currentList.includes('lucid') && !details.lucid) {
-            details.lucid = { controlLevel: 5, trigger: 'spontaneous' };
+            details.lucid = { controlLevel: 0, trigger: 'irrelevant' };
         }
         if (currentList.includes('nightmare') && !details.nightmare) {
-            details.nightmare = { fearLevel: 7, hasPhysicalResponse: false, copingMechanism: '' };
+            details.nightmare = { fearLevel: 0, hasPhysicalResponse: false, copingMechanism: '' };
         }
         if (currentList.includes('prophetic') && !details.prophetic) {
             details.prophetic = { isFulfilled: false, fulfillmentNotes: '' };
@@ -826,52 +719,20 @@
         const details = ensurePhenomenaDetails();
 
         if (currentList.includes('flying') && !details.flying) {
-            details.flying = { type: 'effortless', altitude: 'cloud_level' };
+            details.flying = { type: 'irrelevant', altitude: 'irrelevant' };
         }
         if (currentList.includes('falling') && !details.falling) {
-            details.falling = { origin: 'building_or_cliff', outcome: 'hypnic_jerk' };
+            details.falling = { origin: 'irrelevant', outcome: 'irrelevant' };
         }
         if (currentList.includes('death') && !details.death) {
-            details.death = { cause: 'peaceful', aftermath: 'woke_up' };
+            details.death = { cause: 'irrelevant', aftermath: 'irrelevant' };
         }
         if (currentList.includes('paralysis') && !details.paralysis) {
-            details.paralysis = { timing: 'waking_up', hallucinations: [] };
+            details.paralysis = { timing: 'irrelevant', hallucinations: [] };
         }
         if (currentList.includes('nested_dream') && !details.nestedDream) {
             details.nestedDream = { nestingLevels: 1 };
         }
-    };
-
-    const togglePhenomenon = (ph: DreamPhenomenon) => {
-        if (!form.value.phenomena) form.value.phenomena = [];
-        toggleArrayItem(form.value.phenomena, ph);
-        const details = ensurePhenomenaDetails();
-
-        if (ph === 'flying' && !details.flying) {
-            details.flying = { type: 'effortless', altitude: 'cloud_level' };
-        }
-        if (ph === 'falling' && !details.falling) {
-            details.falling = { origin: 'building_or_cliff', outcome: 'hypnic_jerk' };
-        }
-        if (ph === 'death' && !details.death) {
-            details.death = { cause: 'peaceful', aftermath: 'woke_up' };
-        }
-        if (ph === 'paralysis' && !details.paralysis) {
-            details.paralysis = { timing: 'waking_up', hallucinations: [] };
-        }
-        if (ph === 'nested_dream' && !details.nestedDream) {
-            details.nestedDream = { nestingLevels: 1 };
-        }
-    };
-
-    const toggleSensation = (sens: SensoryAspect) => {
-        if (!form.value.sensations) form.value.sensations = [];
-        toggleArrayItem(form.value.sensations, sens);
-    };
-
-    const toggleRole = (role: ParticipantRole) => {
-        if (!form.value.roles) form.value.roles = [];
-        toggleArrayItem(form.value.roles, role);
     };
 
     // --- Динамические списки ---
@@ -931,13 +792,13 @@
                         JSON.stringify(existingDream.phenomenaDetails || {}),
                     ),
 
-                    quality: existingDream.quality ?? 7,
-                    clarity: existingDream.clarity ?? 7,
-                    moodAfter: existingDream.moodAfter ?? 5,
+                    quality: existingDream.quality ?? 0,
+                    clarity: existingDream.clarity ?? 0,
+                    moodAfter: existingDream.moodAfter ?? 0,
 
                     timeOfDay: existingDream.timeOfDay || 'night',
                     visualStyle: existingDream.visualStyle || 'color',
-                    perspective: existingDream.perspective || 'first_person',
+                    perspective: existingDream.perspective || 'irrelevant',
                     roles: [...(existingDream.roles || ['protagonist'])],
                     sensations: [...(existingDream.sensations || [])],
 
