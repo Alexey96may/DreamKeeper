@@ -78,8 +78,6 @@ export const useSleepStore = defineStore('sleep', () => {
 
             // 3. СИДЕР: Если БД пустая — наполняем тестовыми данными
             if (allDreams.length === 0) {
-                console.log('🌱 База данных пуста. Запускаем сидер...');
-
                 for (const seedData of initialDreamsSeed) {
                     // Репозиторий сохраняет и присваивает ID
                     await addDream(seedData);

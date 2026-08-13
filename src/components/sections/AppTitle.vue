@@ -47,7 +47,7 @@
         subtitle?: string;
         showButton?: boolean;
         buttonText?: string;
-        buttonVariant?: 'dream' | 'default';
+        buttonVariant?: 'primary' | 'secondary';
         buttonDisabled?: boolean;
         buttonAriaLabel?: string;
     }
@@ -57,7 +57,7 @@
         subtitle: 'Хранитель твоих снов и состояния',
         showButton: true,
         buttonText: '✨ Новый сон',
-        buttonVariant: 'dream',
+        buttonVariant: 'primary',
         buttonDisabled: false,
         buttonAriaLabel: undefined,
     });

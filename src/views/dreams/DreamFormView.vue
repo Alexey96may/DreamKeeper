@@ -100,9 +100,12 @@
                     <h4 class="text-xs font-semibold text-red-400">
                         Параметры Кошмара (Nightmare)
                     </h4>
-                    <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                    <div
+                        v-if="form.categoryDetails?.nightmare"
+                        class="grid grid-cols-1 gap-3 sm:grid-cols-2"
+                    >
                         <AppRange
-                            v-model="form.clarity"
+                            v-model="form.categoryDetails.nightmare.fearLevel"
                             label="Уровень страха"
                             :min="0"
                             :max="10"
@@ -111,7 +114,6 @@
                         />
 
                         <AppCheckbox
-                            v-if="form.categoryDetails?.nightmare"
                             v-model="form.categoryDetails.nightmare.hasPhysicalResponse"
                             label="Физическая реакция"
                             hint="Учащённый пульс, пот, испуг?"
@@ -536,13 +538,7 @@
 
             <!-- Кнопки управления -->
             <div class="flex items-center justify-end gap-3 pt-4">
-                <AppButton
-                    :to="{ name: 'dream-details', params: { id: id } }"
-                    size="xs"
-                    variant="ghost"
-                >
-                    Отмена
-                </AppButton>
+                <AppButton @click="goBack" variant="ghost"> Отмена </AppButton>
 
                 <AppButton size="xs" type="submit" variant="primary" :disabled="sleepStore.loading">
                     {{
@@ -555,7 +551,7 @@
 </template>
 
 <script setup lang="ts">
-    import { ref, computed, onMounted } from 'vue';
+    import { ref, computed, onMounted, watch } from 'vue';
     import {
         PlusIcon,
         MoveLeft,
@@ -611,6 +607,7 @@
     } from '@/types/Dream';
 
     const props = defineProps<{ id?: string }>();
+
     const route = useRoute();
     const router = useRouter();
     const sleepStore = useSleepStore();
@@ -683,7 +680,9 @@
     };
 
     const dreamToLinkOptions = computed(() => {
-        const currentId = Number(props.id || route.params.id);
+        const rawId = props.id || route.params.id;
+        const currentId = rawId ? Number(rawId) : null;
+
         const options = (sleepStore.sleeps || [])
             .filter((d: Dream) => d.id !== currentId)
             .map((d: Dream) => ({
@@ -773,76 +772,73 @@
     // --- Lifecycle ---
 
     onMounted(async () => {
-        if (isEditMode.value && props.id) {
-            const numericId = Number(props.id);
+        if (!isEditMode.value || !props.id) return;
 
-            // Если стор пуст (например, при прямой перезагрузке страницы /edit/123),
-            // целесообразно загрузить сон из бэка:
-            let existingDream = sleepStore.getDreamById(numericId);
+        // 1. Ждем инициализации стора, если репозиторий еще не подгружен
+        if (sleepStore.loading) {
+            // Если инициализация еще идет в App.vue или во внешнем триггере,
+            // даем стору заполниться. Либо вызываем init() напрямую:
+            await sleepStore.init();
+        } else if (sleepStore.sleeps.length === 0) {
+            // Если стор не загружался совсем
+            await sleepStore.init();
+        }
 
-            if (!existingDream && sleepStore.fetchDreamById) {
-                existingDream = await sleepStore.fetchDreamById(numericId);
-            }
+        const numericId = Number(props.id);
+        const existingDream = sleepStore.getDreamById(numericId);
 
-            if (existingDream) {
-                form.value = {
-                    date: existingDream.date,
-                    title: existingDream.title || '',
-                    description: existingDream.description || '',
-                    categories: [...(existingDream.categories || [])],
-                    categoryDetails: JSON.parse(
-                        JSON.stringify(existingDream.categoryDetails || {}),
-                    ),
-                    phenomena: [...(existingDream.phenomena || [])],
-                    phenomenaDetails: JSON.parse(
-                        JSON.stringify(existingDream.phenomenaDetails || {}),
-                    ),
+        if (existingDream) {
+            form.value = {
+                date: existingDream.date,
+                title: existingDream.title || '',
+                description: existingDream.description || '',
+                categories: [...(existingDream.categories || [])],
+                categoryDetails: JSON.parse(JSON.stringify(existingDream.categoryDetails || {})),
+                phenomena: [...(existingDream.phenomena || [])],
+                phenomenaDetails: JSON.parse(JSON.stringify(existingDream.phenomenaDetails || {})),
 
-                    quality: existingDream.quality ?? 0,
-                    clarity: existingDream.clarity ?? 0,
-                    moodAfter: existingDream.moodAfter ?? 0,
+                quality: existingDream.quality ?? 0,
+                clarity: existingDream.clarity ?? 0,
+                moodAfter: existingDream.moodAfter ?? 0,
 
-                    timeOfDay: existingDream.timeOfDay || 'night',
-                    visualStyle: existingDream.visualStyle || 'color',
-                    perspective: existingDream.perspective || 'irrelevant',
-                    roles: [...(existingDream.roles || ['protagonist'])],
-                    sensations: [...(existingDream.sensations || [])],
+                timeOfDay: existingDream.timeOfDay || 'night',
+                visualStyle: existingDream.visualStyle || 'color',
+                perspective: existingDream.perspective || 'irrelevant',
+                roles: [...(existingDream.roles || ['protagonist'])],
+                sensations: [...(existingDream.sensations || [])],
 
-                    characters: [...(existingDream.characters || [])],
-                    locations: [...(existingDream.locations || [])],
-                    objects: [...(existingDream.objects || [])],
-                    emotions: [...(existingDream.emotions || [])],
+                characters: [...(existingDream.characters || [])],
+                locations: [...(existingDream.locations || [])],
+                objects: [...(existingDream.objects || [])],
+                emotions: [...(existingDream.emotions || [])],
 
-                    interpretations: JSON.parse(
-                        JSON.stringify(existingDream.interpretations || []),
-                    ),
-                    personalNotes: existingDream.personalNotes || '',
-                    relatedDreams: JSON.parse(JSON.stringify(existingDream.relatedDreams || [])),
-                    PreSleepContext: existingDream.PreSleepContext || '',
+                interpretations: JSON.parse(JSON.stringify(existingDream.interpretations || [])),
+                personalNotes: existingDream.personalNotes || '',
+                relatedDreams: JSON.parse(JSON.stringify(existingDream.relatedDreams || [])),
+                PreSleepContext: existingDream.PreSleepContext || '',
 
-                    isFavorite: existingDream.isFavorite ?? false,
-                    isPinned: existingDream.isPinned ?? false,
-                    isArchived: existingDream.isArchived ?? false,
-                    isDraft: existingDream.isDraft ?? false,
-                    isPrivate: existingDream.isPrivate ?? true,
-                };
+                isFavorite: existingDream.isFavorite ?? false,
+                isPinned: existingDream.isPinned ?? false,
+                isArchived: existingDream.isArchived ?? false,
+                isDraft: existingDream.isDraft ?? false,
+                isPrivate: existingDream.isPrivate ?? true,
+            };
 
-                rawArrays.value = {
-                    characters: (existingDream.characters || []).join(', '),
-                    locations: (existingDream.locations || []).join(', '),
-                    objects: (existingDream.objects || []).join(', '),
-                    emotions: (existingDream.emotions || []).join(', '),
-                };
-            } else {
-                router.replace('/');
-            }
+            rawArrays.value = {
+                characters: (existingDream.characters || []).join(', '),
+                locations: (existingDream.locations || []).join(', '),
+                objects: (existingDream.objects || []).join(', '),
+                emotions: (existingDream.emotions || []).join(', '),
+            };
+        } else {
+            // Только если стор точно инициализирован и запись не найдена
+            router.replace('/');
         }
     });
 
     // --- Submit ---
 
     const handleSubmit = async () => {
-        // Очищаем привязанные сны от пустышек перед отправкой
         const cleanedRelated = (form.value.relatedDreams || []).map((rel) => ({
             ...rel,
             dreamId: rel.dreamId ? Number(rel.dreamId) : undefined,
@@ -860,26 +856,27 @@
         if (isEditMode.value && props.id) {
             // --- РЕДАКТИРОВАНИЕ ---
             const targetId = Number(props.id);
-            const success = await sleepStore.updateDream(targetId, payload);
+            const updatedDream = await sleepStore.updateDream(targetId, payload);
 
-            if (success) {
+            if (updatedDream) {
                 router.push({
                     name: 'dream-details',
-                    params: { id: String(targetId) }, // Приводим к String для надежности роутера
+                    params: { id: String(targetId) },
                 });
             }
         } else {
             // --- СОЗДАНИЕ ---
-            // Желательно, чтобы addDream возвращал созданный объект или его ID
             const createdDream = await sleepStore.addDream(payload);
 
-            if (createdDream) {
-                // Если addDream возвращает объект с ID:
-                const newId = typeof createdDream === 'object' ? createdDream.id : createdDream;
-
+            if (createdDream && createdDream.id) {
                 router.push({
                     name: 'dream-details',
-                    params: { id: String(newId) },
+                    params: { id: String(createdDream.id) },
+                });
+            } else {
+                router.push({
+                    name: 'day-details',
+                    params: { date: payload.date },
                 });
             }
         }

@@ -98,7 +98,10 @@
     const goToNewDream = () => {
         const dateStr = formatToLocalDateStr();
 
-        router.push(`/dream/new?date=${dateStr}`);
+        router.push({
+            name: 'dream-create',
+            query: { date: dateStr },
+        });
     };
 
     onMounted(async () => {

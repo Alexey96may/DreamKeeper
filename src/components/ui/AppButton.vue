@@ -60,6 +60,7 @@
 
 <script setup lang="ts">
     import { computed, useSlots, type Component } from 'vue';
+    import { RouterLink } from 'vue-router';
     import { Loader2 } from 'lucide-vue-next';
 
     type ButtonVariant = 'primary' | 'secondary' | 'danger' | 'outline' | 'ghost' | 'add' | 'back';
@@ -101,7 +102,7 @@
 
     // Determine component tag dynamically
     const tag = computed(() => {
-        if (props.to) return 'RouterLink';
+        if (props.to) return RouterLink;
         if (props.href) return 'a';
         return 'button';
     });

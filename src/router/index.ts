@@ -28,15 +28,15 @@ const router = createRouter({
             component: () => import('../views/dreams/DreamFormView.vue'),
         },
         {
-            path: '/dream/:id',
-            name: 'dream-details',
-            component: () => import('../views/dreams/DreamDetailView.vue'),
-            props: true,
-        },
-        {
             path: '/dream/:id/edit',
             name: 'dream-edit',
             component: () => import('../views/dreams/DreamFormView.vue'),
+            props: true,
+        },
+        {
+            path: '/dream/:id',
+            name: 'dream-details',
+            component: () => import('../views/dreams/DreamDetailView.vue'),
             props: true,
         },
     ],
