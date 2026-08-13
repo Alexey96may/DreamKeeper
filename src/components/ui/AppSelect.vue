@@ -15,6 +15,7 @@
 <script setup lang="ts" generic="T">
     import { ref, computed, onMounted, onUnmounted, nextTick, useId, type Component } from 'vue';
     import { ChevronDown, Check } from 'lucide-vue-next';
+    import AppTooltip from '@/components/ui/AppTooltip.vue';
 
     export interface SelectOption<ValueType = string | number> {
         value: ValueType;
@@ -27,6 +28,7 @@
         id?: string;
         modelValue: T | undefined;
         options: readonly SelectOption<T>[];
+        hint?: string;
         label?: string;
         placeholder?: string;
         error?: string;
@@ -190,10 +192,11 @@
             v-if="label"
             :id="`${id}-label`"
             :for="id"
-            class="text-text-soft mb-1 block text-sm font-medium"
+            class="text-text-soft mb-1 flex items-center gap-1.5 text-sm font-medium"
             @click="toggleOpen"
         >
-            {{ label }}
+            <AppTooltip v-if="hint" :content="hint" />
+            <span>{{ label }}</span>
         </label>
 
         <!-- Кнопка-триггер выпадающего списка -->

@@ -25,6 +25,7 @@
     import { computed, useId } from 'vue';
     import { DatePicker as VDatePicker } from 'v-calendar-3';
     import { Calendar as CalendarIcon, AlertCircle } from 'lucide-vue-next';
+    import AppTooltip from '@/components/ui/AppTooltip.vue';
     import 'v-calendar-3/style.css';
 
     interface Props {
@@ -104,8 +105,9 @@
                 isDisabled ? 'cursor-not-allowed' : 'cursor-pointer',
             ]"
         >
-            <span>
-                {{ label }}
+            <span class="flex items-center gap-1.5">
+                <AppTooltip v-if="hint" :content="hint" :required="required" />
+                <span>{{ label }}</span>
                 <span v-if="required" class="ml-0.5 font-bold text-red-500" aria-hidden="true"
                     >*</span
                 >
@@ -168,11 +170,6 @@
         >
             <AlertCircle class="h-3.5 w-3.5 shrink-0" aria-hidden="true" />
             <span>{{ errorMessage }}</span>
-        </p>
-
-        <!-- Подсказка (Hint) -->
-        <p v-else-if="hint" :id="hintId" class="text-text-soft mt-0.5 text-xs">
-            {{ hint }}
         </p>
     </div>
 </template>

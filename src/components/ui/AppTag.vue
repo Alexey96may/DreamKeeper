@@ -40,6 +40,7 @@
 <script setup lang="ts">
     import { computed, useId, type Component } from 'vue';
     import { Loader2 } from 'lucide-vue-next';
+    import AppTooltip from '@/components/ui/AppTooltip.vue';
 
     interface Props {
         isPressed?: boolean;
@@ -47,6 +48,7 @@
         disabled?: boolean;
         isLoading?: boolean;
         icon?: Component;
+        hint?: string;
         id?: string;
         role?: string;
         ariaChecked?: boolean;
@@ -103,5 +105,7 @@
         <span>
             <slot />
         </span>
+
+        <AppTooltip v-if="hint" :content="hint" />
     </button>
 </template>

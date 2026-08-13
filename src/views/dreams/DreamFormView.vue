@@ -113,7 +113,8 @@
                         <AppCheckbox
                             v-if="form.categoryDetails?.nightmare"
                             v-model="form.categoryDetails.nightmare.hasPhysicalResponse"
-                            label="Физическая реакция (пульс, пот, испуг)"
+                            label="Физическая реакция"
+                            hint="Учащённый пульс, пот, испуг?"
                             accent-color="bg-red-500 border-red-500"
                         />
                     </div>
@@ -154,6 +155,7 @@
                             v-model="form.categoryDetails.prophetic.isFulfilled"
                             label="Уже сбылся"
                             accent-color="bg-purple-500 border-purple-500"
+                            hint="Отметьте, если сон уже сбылся."
                         />
                     </div>
 
@@ -283,7 +285,8 @@
                     <AppNumberInput
                         v-if="form.phenomenaDetails?.nestedDream"
                         v-model.number="form.phenomenaDetails.nestedDream.nestingLevels"
-                        label="Уровень вложенности (сколько раз «просыпался»)"
+                        label="Уровень вложенности "
+                        hint="Сколько раз «просыпался» во сне?"
                         :min="1"
                         :max="1000"
                         :step="1"
@@ -304,7 +307,8 @@
                     <AppSelect
                         v-model="form.perspective"
                         :options="PERSPECTIVE_OPTIONS"
-                        label="Точка зрения (Перспектива)"
+                        hint="Перспектива"
+                        label="Точка зрения"
                     />
                 </div>
 
@@ -318,7 +322,8 @@
                 <!-- Органы чувств -->
                 <AppTagSelect
                     v-model="form.sensations"
-                    label="Ощущения / Органы чувств"
+                    label="Ощущения"
+                    hint="Органы чувств"
                     :options="SENSORY_ASPECT_OPTIONS"
                 />
             </div>
@@ -329,6 +334,7 @@
                     <AppRange
                         v-model.number="form.quality"
                         label="Качество сна"
+                        hint="Состояние после сна, уровень высыпания. "
                         :min="0"
                         :max="10"
                         :step="1"

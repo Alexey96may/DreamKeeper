@@ -1,13 +1,8 @@
-import type { Component } from 'vue';
-
 import type {
     TimeOfDay,
-    TimeOfDayOption,
     DreamCategory,
     DreamPhenomenon,
-    DreamPhenomenonOption,
     DreamRelationType,
-    RelationTypeOption,
     VisualStyle,
     Perspective,
     ParticipantRole,
@@ -21,6 +16,7 @@ import type {
     FallingOutcome,
     ParalysisTiming,
     ParalysisHallucinations,
+    DreamOption,
 } from '@/types/Dream';
 
 import {
@@ -61,7 +57,7 @@ import {
 // 1. ВРЕМЯ СУТОК (TimeOfDay)
 // ==========================================
 
-export const TIME_OF_DAY_OPTIONS: TimeOfDayOption[] = [
+export const TIME_OF_DAY_OPTIONS: DreamOption<TimeOfDay>[] = [
     {
         value: 'night',
         label: 'Ночной',
@@ -94,26 +90,22 @@ export const TIME_OF_DAY_OPTIONS: TimeOfDayOption[] = [
     },
 ];
 
-export const TIME_OF_DAY_MAP: Record<TimeOfDay, TimeOfDayOption> = TIME_OF_DAY_OPTIONS.reduce(
+export const TIME_OF_DAY_MAP: Record<
+    TimeOfDay,
+    DreamOption<TimeOfDay>
+> = TIME_OF_DAY_OPTIONS.reduce(
     (acc, option) => {
         acc[option.value] = option;
         return acc;
     },
-    {} as Record<TimeOfDay, TimeOfDayOption>,
+    {} as Record<TimeOfDay, DreamOption<TimeOfDay>>,
 );
 
 // ==========================================
 // 2. КАТЕГОРИИ / ЖАНРЫ (DreamCategory)
 // ==========================================
 
-export interface DreamCategoryOption {
-    value: DreamCategory;
-    label: string;
-    description: string;
-    icon: Component;
-}
-
-export const DREAM_CATEGORY_OPTIONS: DreamCategoryOption[] = [
+export const DREAM_CATEGORY_OPTIONS: DreamOption<DreamCategory>[] = [
     {
         value: 'lucid',
         label: 'Осознанный сон',
@@ -134,20 +126,22 @@ export const DREAM_CATEGORY_OPTIONS: DreamCategoryOption[] = [
     },
 ];
 
-export const DREAM_CATEGORY_MAP: Record<DreamCategory, DreamCategoryOption> =
-    DREAM_CATEGORY_OPTIONS.reduce(
-        (acc, option) => {
-            acc[option.value] = option;
-            return acc;
-        },
-        {} as Record<DreamCategory, DreamCategoryOption>,
-    );
+export const DREAM_CATEGORY_MAP: Record<
+    DreamCategory,
+    DreamOption<DreamCategory>
+> = DREAM_CATEGORY_OPTIONS.reduce(
+    (acc, option) => {
+        acc[option.value] = option;
+        return acc;
+    },
+    {} as Record<DreamCategory, DreamOption<DreamCategory>>,
+);
 
 // ==========================================
 // 3. ФЕНОМЕНЫ И СОБЫТИЯ (DreamPhenomenon)
 // ==========================================
 
-export const DREAM_PHENOMENON_OPTIONS: DreamPhenomenonOption[] = [
+export const DREAM_PHENOMENON_OPTIONS: DreamOption<DreamPhenomenon>[] = [
     {
         value: 'death',
         label: 'Смерть во сне',
@@ -180,22 +174,24 @@ export const DREAM_PHENOMENON_OPTIONS: DreamPhenomenonOption[] = [
     },
 ];
 
-export const DREAM_PHENOMENON_MAP: Record<DreamPhenomenon, DreamPhenomenonOption> =
-    DREAM_PHENOMENON_OPTIONS.reduce(
-        (acc, option) => {
-            acc[option.value] = option;
-            return acc;
-        },
-        {} as Record<DreamPhenomenon, DreamPhenomenonOption>,
-    );
+export const DREAM_PHENOMENON_MAP: Record<
+    DreamPhenomenon,
+    DreamOption<DreamPhenomenon>
+> = DREAM_PHENOMENON_OPTIONS.reduce(
+    (acc, option) => {
+        acc[option.value] = option;
+        return acc;
+    },
+    {} as Record<DreamPhenomenon, DreamOption<DreamPhenomenon>>,
+);
 
 // ==========================================
 // 4. ДЕТАЛИ ФЕНОМЕНОВ (Селекторы для форм)
 // ==========================================
 
 /** Причины смерти во сне */
-export const DEATH_CAUSE_OPTIONS: { value: DeathCause; label: string }[] = [
-    { value: 'irrelevant', label: 'Не имеет значения' },
+export const DEATH_CAUSE_OPTIONS: DreamOption<DeathCause>[] = [
+    { value: 'irrelevant', label: 'Не важно' },
     { value: 'natural', label: 'Естественная смерть / Остановка сердца' },
     { value: 'illness', label: 'Болезнь / Недомогание' },
     { value: 'fall', label: 'Падение с высоты' },
@@ -207,8 +203,8 @@ export const DEATH_CAUSE_OPTIONS: { value: DeathCause; label: string }[] = [
 ] as const;
 
 /** Послествие смерти во сне */
-export const DEATH_AFTERMATH_OPTIONS: { value: DeathAftermath; label: string }[] = [
-    { value: 'irrelevant', label: 'Не имеет значения' },
+export const DEATH_AFTERMATH_OPTIONS: DreamOption<DeathAftermath>[] = [
+    { value: 'irrelevant', label: 'Не важно' },
     { value: 'woke_up', label: 'Мгновенно проснулся' },
     { value: 'became_ghost', label: 'Стал призраком / духом' },
     { value: 'reincarnated', label: 'Переродился в новом теле' },
@@ -217,8 +213,8 @@ export const DEATH_AFTERMATH_OPTIONS: { value: DeathAftermath; label: string }[]
 ] as const;
 
 /** Стиль полёта */
-export const FLYING_TYPE_OPTIONS: { value: FlyingType; label: string }[] = [
-    { value: 'irrelevant', label: 'Не имеет значения' },
+export const FLYING_TYPE_OPTIONS: DreamOption<FlyingType>[] = [
+    { value: 'irrelevant', label: 'Не важно' },
     { value: 'effortless', label: 'Естественный / Легкий' },
     { value: 'swimming', label: 'С усилием (гребля руками)' },
     { value: 'apparatus', label: 'С помощью предмета / транспорта' },
@@ -227,16 +223,16 @@ export const FLYING_TYPE_OPTIONS: { value: FlyingType; label: string }[] = [
 ] as const;
 
 /** Высота полёта */
-export const FLYING_ALTITUDE_OPTIONS: { value: FlyingAltitude; label: string }[] = [
-    { value: 'irrelevant', label: 'Не имеет значения' },
+export const FLYING_ALTITUDE_OPTIONS: DreamOption<FlyingAltitude>[] = [
+    { value: 'irrelevant', label: 'Не важно' },
     { value: 'low', label: 'Низкая (над землёй / крышами)' },
     { value: 'cloud_level', label: 'Облака / Птичий полёт' },
     { value: 'space', label: 'Космос / Стратосфера' },
 ] as const;
 
 /** Контекст падения */
-export const FALLING_ORIGIN_OPTIONS: { value: FallingOrigin; label: string }[] = [
-    { value: 'irrelevant', label: 'Не имеет значения' },
+export const FALLING_ORIGIN_OPTIONS: DreamOption<FallingOrigin>[] = [
+    { value: 'irrelevant', label: 'Не важно' },
     { value: 'building_or_cliff', label: 'С здания или обрыва' },
     { value: 'sky_or_void', label: 'С неба / из пустоты' },
     { value: 'abyss', label: 'В бездонную яму / провал' },
@@ -244,8 +240,8 @@ export const FALLING_ORIGIN_OPTIONS: { value: FallingOrigin; label: string }[] =
 ] as const;
 
 /** Исход падения */
-export const FALLING_OUTCOME_OPTIONS: { value: FallingOutcome; label: string }[] = [
-    { value: 'irrelevant', label: 'Не имеет значения' },
+export const FALLING_OUTCOME_OPTIONS: DreamOption<FallingOutcome>[] = [
+    { value: 'irrelevant', label: 'Не важно' },
     { value: 'hypnic_jerk', label: 'Вздрогнул и проснулся (толчок)' },
     { value: 'landed_safe', label: 'Мягко приземлился' },
     { value: 'impact', label: 'Удар о землю' },
@@ -254,21 +250,15 @@ export const FALLING_OUTCOME_OPTIONS: { value: FallingOutcome; label: string }[]
 ] as const;
 
 /** Паралич: Момент возникновения */
-export const PARALYSIS_TIMING_OPTIONS: { value: ParalysisTiming; label: string }[] = [
-    { value: 'irrelevant', label: 'Не имеет значения' },
+export const PARALYSIS_TIMING_OPTIONS: DreamOption<ParalysisTiming>[] = [
+    { value: 'irrelevant', label: 'Не важно' },
     { value: 'falling_asleep', label: 'При засыпании' },
     { value: 'waking_up', label: 'При пробуждении' },
 ] as const;
 
 /** Паралич: Галлюцинации */
-export interface ParalysisHallucinationOption {
-    value: ParalysisHallucinations;
-    label: string;
-    description: string;
-    icon: Component;
-}
 
-export const PARALYSIS_HALLUCINATIONS_OPTIONS: ParalysisHallucinationOption[] = [
+export const PARALYSIS_HALLUCINATIONS_OPTIONS: DreamOption<ParalysisHallucinations>[] = [
     {
         value: 'auditory',
         label: 'Слуховые',
@@ -302,8 +292,8 @@ export const PARALYSIS_HALLUCINATIONS_OPTIONS: ParalysisHallucinationOption[] = 
 ];
 
 /** Осознанный Сон: Триггер */
-export const LUCID_TRIGGER_OPTIONS: { value: LucidTrigger; label: string }[] = [
-    { value: 'irrelevant', label: 'Не имеет значения' },
+export const LUCID_TRIGGER_OPTIONS: DreamOption<LucidTrigger>[] = [
+    { value: 'irrelevant', label: 'Не важно' },
     { value: 'spontaneous', label: 'Спонтанно' },
     { value: 'reality_check', label: 'Проверка реальности (Reality Check)' },
     { value: 'anomaly', label: 'Аномалия в сюжете' },
@@ -313,7 +303,7 @@ export const LUCID_TRIGGER_OPTIONS: { value: LucidTrigger; label: string }[] = [
 // 5. ТИПЫ СВЯЗЕЙ СНОВ (DreamRelationType)
 // ==========================================
 
-export const DREAM_RELATION_OPTIONS: RelationTypeOption[] = [
+export const DREAM_RELATION_OPTIONS: DreamOption<DreamRelationType>[] = [
     {
         value: 'recurring_instance',
         label: 'Повторяющийся сюжет',
@@ -346,27 +336,22 @@ export const DREAM_RELATION_OPTIONS: RelationTypeOption[] = [
     },
 ];
 
-export const DREAM_RELATION_MAP: Record<DreamRelationType, RelationTypeOption> =
-    DREAM_RELATION_OPTIONS.reduce(
-        (acc, option) => {
-            acc[option.value] = option;
-            return acc;
-        },
-        {} as Record<DreamRelationType, RelationTypeOption>,
-    );
+export const DREAM_RELATION_MAP: Record<
+    DreamRelationType,
+    DreamOption<DreamRelationType>
+> = DREAM_RELATION_OPTIONS.reduce(
+    (acc, option) => {
+        acc[option.value] = option;
+        return acc;
+    },
+    {} as Record<DreamRelationType, DreamOption<DreamRelationType>>,
+);
 
 // ==========================================
 // 6. СВОЙСТВА ВОСПРИЯТИЯ (Стили, Камера, Ощущения)
 // ==========================================
 
-export interface VisualStyleOption {
-    value: VisualStyle;
-    label: string;
-    description: string;
-    icon: Component;
-}
-
-export const VISUAL_STYLE_OPTIONS: VisualStyleOption[] = [
+export const VISUAL_STYLE_OPTIONS: DreamOption<VisualStyle>[] = [
     {
         value: 'color',
         label: 'Цветной',
@@ -399,21 +384,14 @@ export const VISUAL_STYLE_OPTIONS: VisualStyleOption[] = [
     },
 ];
 
-export const PERSPECTIVE_OPTIONS: Array<{ value: Perspective; label: string }> = [
-    { value: 'irrelevant', label: 'Не имеет значения' },
+export const PERSPECTIVE_OPTIONS: DreamOption<Perspective>[] = [
+    { value: 'irrelevant', label: 'Не важно' },
     { value: 'first_person', label: 'От 1-го лица (своими глазами)' },
     { value: 'third_person', label: 'От 3-го лица (со стороны)' },
     { value: 'shifting', label: 'Менялась в процессе' },
 ];
 
-export interface ParticipantRoleOption {
-    value: ParticipantRole;
-    label: string;
-    description: string;
-    icon: Component;
-}
-
-export const PARTICIPANT_ROLE_OPTIONS: ParticipantRoleOption[] = [
+export const PARTICIPANT_ROLE_OPTIONS: DreamOption<ParticipantRole>[] = [
     {
         value: 'protagonist',
         label: 'Главный герой',
@@ -452,14 +430,7 @@ export const PARTICIPANT_ROLE_OPTIONS: ParticipantRoleOption[] = [
     },
 ];
 
-export interface SensoryAspectOption {
-    value: SensoryAspect;
-    label: string;
-    description: string;
-    icon: Component;
-}
-
-export const SENSORY_ASPECT_OPTIONS: SensoryAspectOption[] = [
+export const SENSORY_ASPECT_OPTIONS: DreamOption<SensoryAspect>[] = [
     {
         value: 'sounds',
         label: 'Звуки / Музыка',

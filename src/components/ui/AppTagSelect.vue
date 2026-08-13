@@ -24,20 +24,15 @@
 ===============================================================================
 -->
 
-<script setup lang="ts" generic="T extends string | number">
-    import { computed, useId, type Component } from 'vue';
+<script setup lang="ts" generic="T">
+    import { computed, useId } from 'vue';
     import AppChip from '@/components/ui/AppTag.vue';
-
-    export interface ChipOption<ValueType = string | number> {
-        label: string;
-        value: ValueType;
-        icon?: Component;
-        disabled?: boolean;
-    }
+    import AppTooltip from '@/components/ui/AppTooltip.vue';
+    import { DreamOption } from '@/types/Dream';
 
     interface Props {
         modelValue?: T[] | T | null;
-        options: ChipOption<T>[];
+        options: DreamOption<T>[];
         label?: string;
         multiple?: boolean;
         required?: boolean;
@@ -119,9 +114,10 @@
         <label
             v-if="label"
             :id="`${groupId}-label`"
-            class="text-text-soft mb-2 block text-xs font-medium"
+            class="text-text-soft mb-2 flex items-center gap-1.5 text-xs font-medium"
         >
-            {{ label }}
+            <AppTooltip v-if="hint" :content="hint" />
+            <span>{{ label }}</span>
             <span v-if="required" class="font-bold text-red-500" aria-hidden="true">*</span>
         </label>
 
@@ -140,6 +136,7 @@
                 :role="multiple ? undefined : 'radio'"
                 :aria-checked="multiple ? undefined : isSelected(cat.value)"
                 :icon="cat.icon"
+                :hint="cat?.description ?? ''"
                 :disabled="isDisabled || cat.disabled"
                 :is-loading="isLoading"
                 @click="handleToggle(cat.value)"
@@ -151,11 +148,6 @@
         <!-- Error Message -->
         <p v-if="errorMessage" :id="errorId" role="alert" class="mt-1.5 text-xs text-red-500">
             {{ errorMessage }}
-        </p>
-
-        <!-- Helper Hint -->
-        <p v-else-if="hint" :id="hintId" class="text-text-soft/70 mt-1.5 text-xs">
-            {{ hint }}
         </p>
     </div>
 </template>

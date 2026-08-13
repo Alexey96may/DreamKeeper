@@ -45,6 +45,7 @@
 <script setup lang="ts">
     import { computed, onUnmounted, useId } from 'vue';
     import { ChevronUp, ChevronDown, Loader2 } from 'lucide-vue-next';
+    import AppTooltip from '@/components/ui/AppTooltip.vue';
 
     interface Props {
         modelValue: number | null | undefined;
@@ -217,7 +218,8 @@
             :for="inputId"
             class="text-text-soft mb-1 flex items-center justify-between text-xs font-medium"
         >
-            <span class="flex items-center gap-1">
+            <span class="flex items-center gap-1.5">
+                <AppTooltip v-if="hint" :content="hint" :required="required" />
                 <span>{{ label }}</span>
                 <span v-if="required" class="font-bold text-red-500" aria-hidden="true">*</span>
             </span>
@@ -300,11 +302,6 @@
         <!-- Error Message (Accessibility: role="alert") -->
         <p v-if="errorMessage" :id="errorId" role="alert" class="mt-1 text-xs text-red-500">
             {{ errorMessage }}
-        </p>
-
-        <!-- Helper Hint -->
-        <p v-else-if="hint" :id="hintId" class="text-text-soft/70 mt-1 text-xs">
-            {{ hint }}
         </p>
     </div>
 </template>
