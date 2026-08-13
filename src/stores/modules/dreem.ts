@@ -5,7 +5,7 @@ import { defineStore } from 'pinia';
 import type { Dream, DreamWrite } from '@/types/Dream';
 
 import { ServiceFactory } from '@/services/factories/ServiceFactory';
-import { SleepRepository } from '@/services/repositories/SleepRepository';
+import { DreamRepository } from '@/services/repositories/DreamRepository';
 import { initialDreamsSeed } from '@/services/seeders/dreamSeeder';
 
 export const useSleepStore = defineStore('sleep', () => {
@@ -13,7 +13,7 @@ export const useSleepStore = defineStore('sleep', () => {
     const sleeps = ref<Dream[]>([]);
     const loading = ref<boolean>(false);
     const error = ref<string | null>(null);
-    const repository = ref<SleepRepository | null>(null);
+    const repository = ref<DreamRepository | null>(null);
 
     // ===== GETTERS =====
     const totalDreams = computed(() => sleeps.value.length);
@@ -35,6 +35,41 @@ export const useSleepStore = defineStore('sleep', () => {
 
     const getDreamById = (id: number): Dream | undefined => {
         return sleeps.value.find((sleep: Dream) => sleep.id === id);
+    };
+
+    /**
+     * Получение сна по slug.
+     * Сначала ищет в локальном реактивном состоянии,
+     * а при отсутствии — запрашивает через репозиторий.
+     */
+    const getDreamBySlug = async (slug: string): Promise<Dream | null> => {
+        // 1. Быстрый поиск в уже загруженном реактивном массиве
+        const localDream = sleeps.value.find((s) => s.slug === slug);
+        if (localDream) {
+            return localDream;
+        }
+
+        // 2. Если в памяти нет, но репозиторий готов — ищем в IndexedDB
+        if (repository.value) {
+            loading.value = true;
+            try {
+                const fetchedDream = await repository.value.getBySlug(slug);
+                if (fetchedDream) {
+                    // Синхронизируем с локальным состоянием, если его там не было
+                    const exists = sleeps.value.some((s) => s.id === fetchedDream.id);
+                    if (!exists) {
+                        sleeps.value.push(fetchedDream);
+                    }
+                    return fetchedDream;
+                }
+            } catch (err) {
+                console.error(`Ошибка при получении сна по slug (${slug}):`, err);
+            } finally {
+                loading.value = false;
+            }
+        }
+
+        return null;
     };
 
     const getMonthStats = (year: number, month: number) => {
@@ -67,29 +102,32 @@ export const useSleepStore = defineStore('sleep', () => {
         if (repository.value) return;
 
         loading.value = true;
+        error.value = null;
+
         try {
             // 1. Инициализируем сервис и репозиторий
             const dataService = ServiceFactory.createService('indexeddb');
             await dataService.init();
-            repository.value = new SleepRepository(dataService);
+            repository.value = new DreamRepository(dataService);
 
             // 2. Достаем имеющиеся сны
             let allDreams = await repository.value.getAll();
 
-            // 3. СИДЕР: Если БД пустая — наполняем тестовыми данными
+            // 3. СИДЕР: Пакетная вставка, если БД пустая
             if (allDreams.length === 0) {
-                for (const seedData of initialDreamsSeed) {
-                    // Репозиторий сохраняет и присваивает ID
-                    await addDream(seedData);
-                }
+                // Запускаем все вставки параллельно (или используем bulkAdd, если поддерживается)
+                await Promise.all(
+                    initialDreamsSeed.map((seedData) => repository.value!.create(seedData)),
+                );
 
-                // Перезапрашиваем уже с засиженными данными
+                // Запрашиваем итоговый массив
                 allDreams = await repository.value.getAll();
             }
 
             sleeps.value = allDreams;
-        } catch (error) {
-            console.error('Ошибка инициализации стора снов:', error);
+        } catch (err) {
+            error.value = err instanceof Error ? err.message : 'Ошибка инициализации';
+            console.error('Ошибка инициализации стора снов:', err);
         } finally {
             loading.value = false;
         }
@@ -119,20 +157,16 @@ export const useSleepStore = defineStore('sleep', () => {
         error.value = null;
 
         try {
-            const newDream = {
-                ...dreamData,
-                createdAt: new Date().toISOString(),
-                updatedAt: new Date().toISOString(),
-            };
-            const id = await repository.value.create(newDream);
-            const savedDream = await repository.value.getById(id);
+            // Репозиторий сам подготавливает id, slug, createdAt, updatedAt и сохраняет
+            const savedDream = await repository.value.create(dreamData);
+
             if (savedDream) {
                 sleeps.value.push(savedDream);
             }
             return savedDream || null;
         } catch (err) {
             error.value = err instanceof Error ? err.message : 'Ошибка создания сна';
-            console.error('Failed to add dreams:', err);
+            console.error('Failed to add dream:', err);
             return null;
         } finally {
             loading.value = false;
@@ -204,6 +238,7 @@ export const useSleepStore = defineStore('sleep', () => {
         getDreamById,
         getMonthStats,
         getDreamsByQuality,
+        getDreamBySlug,
 
         // Actions
         init,

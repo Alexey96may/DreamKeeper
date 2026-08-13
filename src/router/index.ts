@@ -28,13 +28,13 @@ const router = createRouter({
             component: () => import('../views/dreams/DreamFormView.vue'),
         },
         {
-            path: '/dream/:id/edit',
+            path: '/dream/:slug/edit',
             name: 'dream-edit',
             component: () => import('../views/dreams/DreamFormView.vue'),
             props: true,
         },
         {
-            path: '/dream/:id',
+            path: '/dream/:slug',
             name: 'dream-details',
             component: () => import('../views/dreams/DreamDetailView.vue'),
             props: true,

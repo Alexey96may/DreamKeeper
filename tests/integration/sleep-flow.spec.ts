@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { setActivePinia, createPinia } from 'pinia';
-import { useSleepStore } from '@/stores/modules/sleep';
+import { useSleepStore } from '@/stores/modules/dreem';
 import { ServiceFactory } from '@/services/factories/ServiceFactory';
 import type { Dream } from '@/types/Dream';
 

@@ -1,7 +1,7 @@
 import type { StoreName } from '@/types/Store';
 import type { IDataService } from '@/types/databases/DataService';
 
-export abstract class BaseRepository<T> {
+export abstract class BaseRepository<T, CreateDTO = Partial<T>, Result = number> {
     protected dataService: IDataService;
     protected storeName: StoreName;
 
@@ -18,14 +18,14 @@ export abstract class BaseRepository<T> {
         return this.dataService.get<T>(this.storeName, id);
     }
 
-    async create(data: Omit<T, 'id'>): Promise<number> {
-        return this.dataService.add(this.storeName, data);
+    async create(data: CreateDTO): Promise<Result> {
+        return this.dataService.add(this.storeName, data) as Promise<Result>;
     }
 
     async update(id: number, data: Partial<T>): Promise<void> {
         const existing = await this.getById(id);
         if (!existing) {
-            throw new Error(`Record with id ${id} not found`);
+            throw new Error(`Record with id ${id} in ${this.storeName} not found`);
         }
         await this.dataService.put(this.storeName, { ...existing, ...data, id });
     }

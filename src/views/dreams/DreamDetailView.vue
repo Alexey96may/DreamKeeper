@@ -603,7 +603,7 @@
 <script setup lang="ts">
     import { computed, onMounted } from 'vue';
     import { useRouter } from 'vue-router';
-    import { useSleepStore } from '@/stores/modules/sleep';
+    import { useSleepStore } from '@/stores/modules/dreem';
     import type {
         DreamCategory,
         TimeOfDay,
@@ -620,7 +620,7 @@
     } from '@/types/Dream';
 
     const props = defineProps<{
-        id: string;
+        slug: string;
     }>();
 
     const router = useRouter();
@@ -628,10 +628,8 @@
 
     // Преобразуем строковый route param в number согласно интерфейсу Dream
     const dream = computed(() => {
-        const numericId = Number(props.id);
-        return sleepStore.getDreamById(
-            isNaN(numericId) ? (props.id as unknown as number) : numericId,
-        );
+        if (!props.slug) return null;
+        return sleepStore.sleeps.find((s) => s.slug === props.slug) || null;
     });
 
     // Обработка PreSleepContext (с учётом PascalCase из интерфейса)
@@ -892,7 +890,9 @@
 
     // Действия
     const goToEdit = () => {
-        router.push(`/dream/${props.id}/edit`);
+        if (!props.slug) return;
+
+        router.push(`/dream/${props.slug}/edit`);
     };
 
     const handleDelete = async () => {
@@ -911,10 +911,4 @@
     const goBack = () => {
         router.back();
     };
-
-    onMounted(async () => {
-        if (!sleepStore.initialized) {
-            await sleepStore.init();
-        }
-    });
 </script>

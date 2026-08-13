@@ -49,6 +49,7 @@ export type TimeOfDay =
 export interface Dream {
     // --- Обязательные (MVP) ---
     id: number;
+    slug: string;
     date: string;
     title: string; // Уникальный
     description: string;
@@ -106,7 +107,7 @@ export interface Dream {
     // isNSFW?: boolean / containsTriggerWarnings?: boolean — Пометка чувствительного контента (кошмары, эротические сны, насильственные сюжеты).
 }
 
-export type DreamWrite = Omit<Dream, 'id' | 'createdAt' | 'updatedAt'>;
+export type DreamWrite = Omit<Dream, 'id' | 'createdAt' | 'updatedAt' | 'slug'>;
 
 export interface DreamOption<T> {
     value: T;

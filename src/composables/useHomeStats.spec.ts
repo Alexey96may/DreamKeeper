@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { setActivePinia, createPinia } from 'pinia';
 import { useHomeStats } from './useHomeStats';
-import { useSleepStore } from '@/stores/modules/sleep';
+import { useSleepStore } from '@/stores/modules/dreem';
 import type { Dream } from '@/types/Dream';
 
 describe('useHomeStats', () => {

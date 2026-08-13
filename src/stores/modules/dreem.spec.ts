@@ -1,7 +1,7 @@
 import { createPinia, setActivePinia } from 'pinia';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { useSleepStore } from './sleep';
+import { useSleepStore } from './dreem';
 import type { Dream } from '@/types/Dream';
 
 const mockRepository = {

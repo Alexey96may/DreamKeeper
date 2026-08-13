@@ -27,21 +27,21 @@
                     <div
                         v-for="dream in dayDreams"
                         :key="dream.id"
-                        @click="goToDreamDetail(dream.id)"
+                        @click="goToDreamDetail(dream.slug)"
                         class="bg-bg-secondary/50 border-border/50 mb-2 cursor-pointer rounded-lg border p-3"
                     >
+                        <span
+                            v-if="dream.title"
+                            class="text-text-soft inline-block rounded-full py-0.5 text-xs"
+                        >
+                            {{ getDreamTypeLabel(dream.title) }}
+                        </span>
                         <div class="flex items-start justify-between">
                             <span class="text-text-primary">
                                 {{ dream.description || 'Без описания' }}
                             </span>
                             <span class="text-accent text-sm">⭐ {{ dream.quality }}/10</span>
                         </div>
-                        <span
-                            v-if="dream.type"
-                            class="bg-accent/10 text-accent mt-1 inline-block rounded-full px-2 py-0.5 text-xs"
-                        >
-                            {{ getDreamTypeLabel(dream.type) }}
-                        </span>
                     </div>
                 </div>
                 <p v-else class="text-text-mute mt-4 text-sm">Нет записей снов за этот день</p>
@@ -76,7 +76,7 @@
 <script setup lang="ts">
     import { computed, onMounted } from 'vue';
     import { useRouter } from 'vue-router';
-    import { useSleepStore } from '@/stores/modules/sleep';
+    import { useSleepStore } from '@/stores/modules/dreem';
     import { useUserStateStore } from '@/stores/modules/userState';
 
     const props = defineProps<{
@@ -120,10 +120,10 @@
         router.push('/');
     };
 
-    const goToDreamDetail = (id: number | undefined) => {
-        if (!id) return;
+    const goToDreamDetail = (slug: string | undefined) => {
+        if (!slug) return;
 
-        router.push(`/dream/${id}`);
+        router.push(`/dream/${slug}`);
     };
 
     const goToAddDream = () => {

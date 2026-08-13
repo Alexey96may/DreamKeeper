@@ -24,7 +24,7 @@
     import { useRouter } from 'vue-router';
     import { Calendar } from 'v-calendar-3';
     import 'v-calendar-3/style.css';
-    import { useSleepStore } from '@/stores/modules/sleep';
+    import { useSleepStore } from '@/stores/modules/dreem';
     import { useUserStateStore } from '@/stores/modules/userState';
     import { useHomeStats } from '@/composables/useHomeStats';
     import StatsGrid from '@/components/sections/StatsGrid.vue';

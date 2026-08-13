@@ -551,7 +551,7 @@
 </template>
 
 <script setup lang="ts">
-    import { ref, computed, onMounted, watch } from 'vue';
+    import { ref, computed, onMounted } from 'vue';
     import {
         PlusIcon,
         MoveLeft,
@@ -565,7 +565,7 @@
         Archive,
     } from 'lucide-vue-next';
     import { useRoute, useRouter } from 'vue-router';
-    import { useSleepStore } from '@/stores/modules/sleep';
+    import { useSleepStore } from '@/stores/modules/dreem';
     import AppButton from '@/components/ui/AppButton.vue';
     import AppSelect from '@/components/ui/AppSelect.vue';
     import AppTag from '@/components/ui/AppTag.vue';
@@ -606,13 +606,13 @@
         DreamPhenomenaDetails,
     } from '@/types/Dream';
 
-    const props = defineProps<{ id?: string }>();
+    const props = defineProps<{ slug?: string }>();
 
     const route = useRoute();
     const router = useRouter();
     const sleepStore = useSleepStore();
 
-    const isEditMode = computed(() => Boolean(props.id));
+    const isEditMode = computed(() => Boolean(props.slug));
 
     // --- Фабрика дефолтного состояния ---
     const createInitialForm = (): DreamWrite => ({
@@ -652,6 +652,7 @@
     });
 
     const form = ref<DreamWrite>(createInitialForm());
+    const dreamId = ref<number | null>(null);
 
     const rawArrays = ref({
         characters: '',
@@ -680,11 +681,11 @@
     };
 
     const dreamToLinkOptions = computed(() => {
-        const rawId = props.id || route.params.id;
-        const currentId = rawId ? Number(rawId) : null;
+        const rawSlug = props.slug || route.params.slug;
+        const currentSlug = rawSlug ? rawSlug : null;
 
         const options = (sleepStore.sleeps || [])
-            .filter((d: Dream) => d.id !== currentId)
+            .filter((d: Dream) => d.slug !== currentSlug)
             .map((d: Dream) => ({
                 value: d.id,
                 label: `${d.title || 'Без названия'} (${d.date})`,
@@ -772,7 +773,7 @@
     // --- Lifecycle ---
 
     onMounted(async () => {
-        if (!isEditMode.value || !props.id) return;
+        if (!isEditMode.value || !props.slug) return;
 
         // 1. Ждем инициализации стора, если репозиторий еще не подгружен
         if (sleepStore.loading) {
@@ -784,8 +785,10 @@
             await sleepStore.init();
         }
 
-        const numericId = Number(props.id);
-        const existingDream = sleepStore.getDreamById(numericId);
+        const dreamSlug = props.slug;
+        const existingDream = await sleepStore.getDreamBySlug(dreamSlug);
+
+        dreamId.value = existingDream?.id || null;
 
         if (existingDream) {
             form.value = {
@@ -853,25 +856,26 @@
             emotions: parseCommaSeparated(rawArrays.value.emotions),
         };
 
-        if (isEditMode.value && props.id) {
+        if (isEditMode.value && props.slug && dreamId.value) {
             // --- РЕДАКТИРОВАНИЕ ---
-            const targetId = Number(props.id);
+
+            const targetId = Number(dreamId.value);
             const updatedDream = await sleepStore.updateDream(targetId, payload);
 
             if (updatedDream) {
                 router.push({
                     name: 'dream-details',
-                    params: { id: String(targetId) },
+                    params: { slug: props.slug },
                 });
             }
         } else {
             // --- СОЗДАНИЕ ---
             const createdDream = await sleepStore.addDream(payload);
 
-            if (createdDream && createdDream.id) {
+            if (createdDream && createdDream.slug) {
                 router.push({
                     name: 'dream-details',
-                    params: { id: String(createdDream.id) },
+                    params: { slug: createdDream.slug },
                 });
             } else {
                 router.push({

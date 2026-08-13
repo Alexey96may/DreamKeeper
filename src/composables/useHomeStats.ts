@@ -1,7 +1,7 @@
 import { computed, ref } from 'vue';
 import type { MainStatItem } from '@/types/Stats';
 import type { Dream } from '@/types/Dream';
-import { useSleepStore } from '@/stores/modules/sleep';
+import { useSleepStore } from '@/stores/modules/dreem';
 
 export function useHomeStats() {
     const sleepStore = useSleepStore();
