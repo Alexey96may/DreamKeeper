@@ -2,7 +2,7 @@ export interface DreamInterpretationRef {
     interpretationId?: number; // ID из таблицы interpretations в IndexedDB
     tag: string; // Тег для быстрого поиска ("часы")
     meaning: string; // Зафиксированный текст (чтобы если сонник отредактируют, контекст сна не поплыл)
-    sourceId: string; // 'miller' | 'custom' | 'ai'
+    sourceId: number; //
     isAccurate?: boolean | null; // Отметка сновидца: "Сбылось/Похоже на правду"
 }
 

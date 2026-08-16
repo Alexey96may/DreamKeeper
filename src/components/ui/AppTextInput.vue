@@ -8,6 +8,7 @@
     alert roles for error messages (role="alert"), and screen-reader integrations.
   - State Support: Supports loading (with animated spinner), disabled, readonly,
     errorMessage, and helper hint states.
+  - Auto-focus on Error: Automatically focuses the input when an error occurs.
   - Semantic HTML & Event Forwarding: Native label/input bindings with full forwarding
     of blur, focus, change, and update:modelValue events.
 
@@ -23,30 +24,21 @@
          required
      />
 
-  2. With error handling and helper hint:
+  2. With error handling, hint, and auto-focus on error:
      <AppTextInput
          v-model="form.title"
          label="Dream Title"
          :error-message="errors.title"
+         auto-focus-on-error
          hint="Enter a short, descriptive title for your dream entry"
      />
 
-  3. Disabled state with loading spinner:
-     <AppTextInput
-         v-model="form.title"
-         label="Dream Title"
-         :is-loading="isSaving"
-         :disabled="isReadOnlyMode"
-     />
-
-  4. Alternative input types and event handlers:
-     <AppTextInput
-         v-model="form.search"
-         type="search"
-         label="Search"
-         autocomplete="off"
-         @blur="onSearchBlur"
-     />
+  3. Manual focus control via template ref:
+     <script setup>
+     const inputRef = ref(null);
+     // Call inputRef.value?.focus() on submit
+     </script>
+     <AppTextInput ref="inputRef" v-model="form.title" />
 
 ===============================================================================
 -->
@@ -55,6 +47,8 @@
     import { computed, useId } from 'vue';
     import { Loader2 } from 'lucide-vue-next';
     import AppTooltip from '@/components/ui/AppTooltip.vue';
+    import AppErrorMessage from '@/components/ui/AppErrorMessage.vue';
+    import { useFieldFocus } from '@/composables/useFieldFocus';
 
     interface Props {
         modelValue: string | number | null | undefined;
@@ -70,6 +64,10 @@
         autocomplete?: string;
         name?: string;
         id?: string;
+        /**
+         * Automatically focus the input element when errorMessage is provided.
+         */
+        autoFocusOnError?: boolean;
     }
 
     const props = withDefaults(defineProps<Props>(), {
@@ -79,6 +77,7 @@
         readonly: false,
         isLoading: false,
         autocomplete: 'off',
+        autoFocusOnError: true,
     });
 
     const emit = defineEmits<{
@@ -108,6 +107,17 @@
         const target = event.target as HTMLInputElement;
         emit('update:modelValue', target.value);
     };
+
+    const { targetRef, focus } = useFieldFocus({
+        errorMessage: () => props.errorMessage,
+        autoFocusOnError: () => props.autoFocusOnError,
+        isDisabled: () => isDisabled.value,
+    });
+
+    defineExpose({
+        focus,
+        inputRef: targetRef,
+    });
 </script>
 
 <template>
@@ -120,13 +130,14 @@
         >
             <AppTooltip v-if="hint" :content="hint" />
             <span>{{ label }}</span>
-            <span v-if="required" class="font-bold text-red-500" aria-hidden="true">*</span>
+            <span v-if="required" class="text-status-error font-bold" aria-hidden="true">*</span>
         </label>
 
         <!-- Input Field + Loading Spinner -->
         <div class="relative flex items-center">
             <input
                 :id="inputId"
+                ref="targetRef"
                 :name="name"
                 :type="type"
                 :value="modelValue"
@@ -140,7 +151,7 @@
                 :aria-required="required"
                 class="border-border bg-bg-secondary text-text-primary focus:border-accent w-full rounded-lg border px-3 py-2 text-sm transition-colors duration-150 focus:outline-none disabled:cursor-not-allowed disabled:opacity-60"
                 :class="{
-                    'border-red-500 focus:border-red-500 focus:ring-1 focus:ring-red-500':
+                    'border-status-error focus:border-status-error focus:ring-status-error focus:ring-1':
                         errorMessage,
                     'pr-9': isLoading,
                 }"
@@ -160,9 +171,6 @@
             </div>
         </div>
 
-        <!-- Error Message (Accessibility: role="alert") -->
-        <p v-if="errorMessage" :id="errorId" role="alert" class="mt-1 text-xs text-red-500">
-            {{ errorMessage }}
-        </p>
+        <AppErrorMessage :error-message="errorMessage" :error-id="errorId" />
     </div>
 </template>

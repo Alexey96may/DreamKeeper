@@ -46,6 +46,8 @@
     import { computed, onUnmounted, useId } from 'vue';
     import { ChevronUp, ChevronDown, Loader2 } from 'lucide-vue-next';
     import AppTooltip from '@/components/ui/AppTooltip.vue';
+    import AppErrorMessage from '@/components/ui/AppErrorMessage.vue';
+    import { useFieldFocus } from '@/composables/useFieldFocus';
 
     interface Props {
         modelValue: number | null | undefined;
@@ -65,6 +67,7 @@
         id?: string;
         holdDelay?: number; // Initial delay before rapid auto-repeat starts (ms)
         holdInterval?: number; // Rapid auto-repeat speed (ms)
+        autoFocusOnError?: boolean;
     }
 
     const props = withDefaults(defineProps<Props>(), {
@@ -78,6 +81,7 @@
         placeholder: '',
         holdDelay: 400,
         holdInterval: 60,
+        autoFocusOnError: true,
     });
 
     const emit = defineEmits<{
@@ -85,6 +89,7 @@
         (e: 'blur', event: FocusEvent): void;
         (e: 'focus', event: FocusEvent): void;
         (e: 'change', event: Event): void;
+        (e: 'clear-error'): void;
     }>();
 
     // Unique Vue ID for linkage (A11y)
@@ -139,11 +144,14 @@
 
     const updateValue = (newValue: number) => {
         const clamped = clamp(newValue);
+        emit('clear-error');
         emit('update:modelValue', clamped);
     };
 
     const handleInput = (event: Event) => {
         const target = event.target as HTMLInputElement;
+        emit('clear-error');
+
         if (target.value === '') {
             emit('update:modelValue', null);
             return;
@@ -208,6 +216,17 @@
     onUnmounted(() => {
         stopHold();
     });
+
+    const { targetRef, focus } = useFieldFocus({
+        errorMessage: () => props.errorMessage,
+        autoFocusOnError: () => props.autoFocusOnError,
+        isDisabled: () => isDisabled.value,
+    });
+
+    defineExpose({
+        focus,
+        inputRef: targetRef,
+    });
 </script>
 
 <template>
@@ -221,7 +240,9 @@
             <span class="flex items-center gap-1.5">
                 <AppTooltip v-if="hint" :content="hint" :required="required" />
                 <span>{{ label }}</span>
-                <span v-if="required" class="font-bold text-red-500" aria-hidden="true">*</span>
+                <span v-if="required" class="text-status-error font-bold" aria-hidden="true"
+                    >*</span
+                >
             </span>
 
             <!-- Formatted Value Badge (if formatter provided) -->
@@ -239,6 +260,7 @@
                 :id="inputId"
                 :name="name"
                 type="number"
+                ref="targetRef"
                 :min="min"
                 :max="max"
                 :step="step"
@@ -299,9 +321,6 @@
             </div>
         </div>
 
-        <!-- Error Message (Accessibility: role="alert") -->
-        <p v-if="errorMessage" :id="errorId" role="alert" class="mt-1 text-xs text-red-500">
-            {{ errorMessage }}
-        </p>
+        <AppErrorMessage :error-message="errorMessage" :error-id="errorId" />
     </div>
 </template>

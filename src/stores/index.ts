@@ -2,7 +2,7 @@
 import { createPinia } from 'pinia';
 
 // Экспорты Store
-export { useSleepStore } from './modules/dreem';
+export { useSleepStore } from './modules/dream';
 export { useUserStateStore } from './modules/userState';
 export { useUIStore } from './modules/ui';
 

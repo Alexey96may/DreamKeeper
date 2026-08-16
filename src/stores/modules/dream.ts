@@ -1,6 +1,8 @@
 import { computed, ref } from 'vue';
 
 import { defineStore } from 'pinia';
+import * as v from 'valibot';
+import { DreamWriteSchema, DreamUpdateSchema } from '@/services/schemas/dream.schema';
 
 import type { Dream, DreamWrite } from '@/types/Dream';
 
@@ -10,10 +12,12 @@ import { initialDreamsSeed } from '@/services/seeders/dreamSeeder';
 
 export const useSleepStore = defineStore('sleep', () => {
     // ===== STATE =====
-    const sleeps = ref<Dream[]>([]);
+    const sleeps = ref<Dream[]>([]); //todo dreams
     const loading = ref<boolean>(false);
     const error = ref<string | null>(null);
     const repository = ref<DreamRepository | null>(null);
+
+    const validationErrors = ref<Record<string, string>>({});
 
     // ===== GETTERS =====
     const totalDreams = computed(() => sleeps.value.length);
@@ -97,6 +101,9 @@ export const useSleepStore = defineStore('sleep', () => {
         };
     };
 
+    const getError = (key: string) => validationErrors.value[key];
+    const hasError = (key: string) => Boolean(validationErrors.value[key]);
+
     // ===== ACTIONS =====
     const init = async () => {
         if (repository.value) return;
@@ -150,15 +157,29 @@ export const useSleepStore = defineStore('sleep', () => {
         }
     };
 
+    /**
+     * Добавление сна с валидацией
+     */
     const addDream = async (dreamData: DreamWrite): Promise<Dream | null> => {
         if (!repository.value) return null;
 
         loading.value = true;
         error.value = null;
+        validationErrors.value = {};
+
+        // 1. Валидация входных данных
+        const validation = v.safeParse(DreamWriteSchema, dreamData);
+
+        if (!validation.success) {
+            validationErrors.value = extractErrors(validation.issues);
+            error.value = 'Пожалуйста, исправьте ошибки в форме';
+            loading.value = false;
+            return null;
+        }
 
         try {
-            // Репозиторий сам подготавливает id, slug, createdAt, updatedAt и сохраняет
-            const savedDream = await repository.value.create(dreamData);
+            // 2. Репозиторий создает запись и возвращает готовый Dream (с id, slug, createdAt, updatedAt)
+            const savedDream = await repository.value.create(validation.output);
 
             if (savedDream) {
                 sleeps.value.push(savedDream);
@@ -173,24 +194,42 @@ export const useSleepStore = defineStore('sleep', () => {
         }
     };
 
-    const updateDream = async (id: number, dreamData: Partial<Dream>): Promise<Dream | null> => {
+    /**
+     * Частичное обновление сна с валидацией
+     */
+    const updateDream = async (
+        id: number,
+        dreamData: Partial<DreamWrite>,
+    ): Promise<Dream | null> => {
         if (!repository.value) return null;
 
         loading.value = true;
         error.value = null;
+        validationErrors.value = {};
+
+        // 1. Валидируем только переданные частичные данные
+        const validation = v.safeParse(DreamUpdateSchema, dreamData);
+
+        if (!validation.success) {
+            validationErrors.value = extractErrors(validation.issues);
+            error.value = 'Пожалуйста, исправьте ошибки в форме';
+            loading.value = false;
+            return null;
+        }
 
         try {
-            const updated = {
-                ...dreamData,
-                updatedAt: new Date().toISOString(),
-            };
-            await repository.value.update(id, updated);
+            // 2. Репозиторий возвращает полностью обновленный объект Dream (с новым slug и updatedAt)
+            const updatedDream = await repository.value.update(id, validation.output);
 
-            const index = sleeps.value.findIndex((s: Dream) => s.id === id);
-            if (index !== -1) {
-                sleeps.value[index] = { ...sleeps.value[index], ...updated };
-                return sleeps.value[index];
+            // 3. Обновляем локальное состояние стора целиком из базы
+            if (updatedDream) {
+                const index = sleeps.value.findIndex((s) => s.id === id);
+                if (index !== -1) {
+                    sleeps.value[index] = updatedDream;
+                }
+                return updatedDream;
             }
+
             return null;
         } catch (err) {
             error.value = err instanceof Error ? err.message : 'Ошибка обновления сна';
@@ -224,11 +263,47 @@ export const useSleepStore = defineStore('sleep', () => {
         return sleeps.value.filter((sleep: Dream) => (sleep.quality || 0) >= minQuality);
     };
 
+    /**
+     * Преобразует массив ошибок Valibot в объект формата { [path]: message }
+     */
+    const extractErrors = (issues: v.GenericIssue[]): Record<string, string> => {
+        const fieldErrors: Record<string, string> = {};
+
+        for (const issue of issues) {
+            // 1. Собираем полный путь ключа через точку (например, "categoryDetails.lucid.controlLevel")
+            if (issue.path && issue.path.length > 0) {
+                const pathKey = issue.path
+                    .map((item) => item.key)
+                    .filter((key) => key !== undefined && key !== null)
+                    .join('.');
+
+                // Записываем только первую встреченную ошибку для конкретного поля
+                if (pathKey && !fieldErrors[pathKey]) {
+                    fieldErrors[pathKey] = issue.message;
+                }
+            } else {
+                // 2. Если ошибка общая (не привязана к конкретному полю объекта)
+                if (!fieldErrors['_global']) {
+                    fieldErrors['_global'] = issue.message;
+                }
+            }
+        }
+
+        return fieldErrors;
+    };
+
+    const clearError = (field: keyof typeof validationErrors.value) => {
+        if (validationErrors.value[field]) {
+            delete validationErrors.value[field];
+        }
+    };
+
     return {
         // State
         sleeps,
         loading,
         error,
+        validationErrors,
 
         // Getters
         totalDreams,
@@ -239,6 +314,8 @@ export const useSleepStore = defineStore('sleep', () => {
         getMonthStats,
         getDreamsByQuality,
         getDreamBySlug,
+        getError,
+        hasError,
 
         // Actions
         init,
@@ -246,5 +323,6 @@ export const useSleepStore = defineStore('sleep', () => {
         addDream,
         updateDream,
         deleteDream,
+        clearError,
     };
 });

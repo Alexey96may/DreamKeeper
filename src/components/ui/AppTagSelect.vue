@@ -29,6 +29,8 @@
     import AppChip from '@/components/ui/AppTag.vue';
     import AppTooltip from '@/components/ui/AppTooltip.vue';
     import { DreamOption } from '@/types/Dream';
+    import AppErrorMessage from '@/components/ui/AppErrorMessage.vue';
+    import { useFieldFocus } from '@/composables/useFieldFocus';
 
     interface Props {
         modelValue?: T[] | T | null;
@@ -41,6 +43,7 @@
         errorMessage?: string;
         hint?: string;
         id?: string;
+        autoFocusOnError?: boolean;
     }
 
     const props = withDefaults(defineProps<Props>(), {
@@ -49,11 +52,13 @@
         required: false,
         disabled: false,
         isLoading: false,
+        autoFocusOnError: true,
     });
 
     const emit = defineEmits<{
         (e: 'update:modelValue', value: T[] | T | null): void;
         (e: 'change', value: T[] | T | null): void;
+        (e: 'clear-error'): void;
     }>();
 
     const defaultId = useId();
@@ -98,6 +103,8 @@
             emit('update:modelValue', newValue);
             emit('change', newValue);
         }
+
+        emit('clear-error');
     };
 
     const ariaDescribedBy = computed(() => {
@@ -105,6 +112,17 @@
         if (props.errorMessage) ids.push(errorId.value);
         if (props.hint) ids.push(hintId.value);
         return ids.length ? ids.join(' ') : undefined;
+    });
+
+    const { targetRef, focus } = useFieldFocus({
+        errorMessage: () => props.errorMessage,
+        autoFocusOnError: () => props.autoFocusOnError,
+        isDisabled: () => isDisabled.value,
+    });
+
+    defineExpose({
+        focus,
+        inputRef: targetRef,
     });
 </script>
 
@@ -118,12 +136,16 @@
         >
             <AppTooltip v-if="hint" :content="hint" />
             <span>{{ label }}</span>
-            <span v-if="required" class="font-bold text-red-500" aria-hidden="true">*</span>
+            <span v-if="required" class="text-status-error font-bold" aria-hidden="true">*</span>
         </label>
+
+        <input type="text" />
 
         <!-- Generated Chip List -->
         <div
             :id="groupId"
+            ref="targetRef"
+            tabindex="-1"
             :role="multiple ? 'group' : 'radiogroup'"
             :aria-labelledby="label ? `${groupId}-label` : undefined"
             :aria-describedby="ariaDescribedBy"
@@ -145,9 +167,6 @@
             </AppChip>
         </div>
 
-        <!-- Error Message -->
-        <p v-if="errorMessage" :id="errorId" role="alert" class="mt-1.5 text-xs text-red-500">
-            {{ errorMessage }}
-        </p>
+        <AppErrorMessage :error-message="errorMessage" :error-id="errorId" />
     </div>
 </template>

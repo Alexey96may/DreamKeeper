@@ -16,12 +16,14 @@
     import { ref, computed, onMounted, onUnmounted, nextTick, useId, type Component } from 'vue';
     import { ChevronDown, Check } from 'lucide-vue-next';
     import AppTooltip from '@/components/ui/AppTooltip.vue';
+    import AppErrorMessage from '@/components/ui/AppErrorMessage.vue';
+    import { useFieldFocus } from '@/composables/useFieldFocus';
 
     export interface SelectOption<ValueType = string | number> {
         value: ValueType;
         label: string;
         icon?: Component;
-        disabled?: boolean;
+        isDisabled?: boolean;
     }
 
     interface Props {
@@ -31,8 +33,9 @@
         hint?: string;
         label?: string;
         placeholder?: string;
-        error?: string;
-        disabled?: boolean;
+        errorMessage?: string;
+        isDisabled?: boolean;
+        autoFocusOnError?: boolean;
     }
 
     const props = withDefaults(defineProps<Props>(), {
@@ -40,12 +43,14 @@
         label: '',
         placeholder: 'Выберите значение',
         error: '',
-        disabled: false,
+        isDisabled: false,
+        autoFocusOnError: true,
     });
 
     const emit = defineEmits<{
         (e: 'update:modelValue', value: T): void;
         (e: 'change', value: T): void;
+        (e: 'clear-error'): void;
     }>();
 
     const isOpen = ref(false);
@@ -60,7 +65,7 @@
 
     // Открытие / закрытие списка
     const toggleOpen = () => {
-        if (props.disabled) return;
+        if (props.isDisabled) return;
         if (isOpen.value) {
             closeListbox();
         } else {
@@ -85,15 +90,16 @@
 
     // Выбор элемента
     const selectOption = (option: SelectOption<T>) => {
-        if (option.disabled) return;
+        if (option.isDisabled) return;
         emit('update:modelValue', option.value);
         emit('change', option.value);
+        emit('clear-error');
         closeListbox();
     };
 
     // Навигация с клавиатуры
     const handleKeyDown = (event: KeyboardEvent) => {
-        if (props.disabled) return;
+        if (props.isDisabled) return;
 
         switch (event.key) {
             case 'Enter':
@@ -151,7 +157,7 @@
 
     const highlightNextOption = () => {
         let nextIndex = highlightedIndex.value + 1;
-        while (nextIndex < props.options.length && props.options[nextIndex]?.disabled) {
+        while (nextIndex < props.options.length && props.options[nextIndex]?.isDisabled) {
             nextIndex++;
         }
         if (nextIndex < props.options.length) {
@@ -161,7 +167,7 @@
 
     const highlightPrevOption = () => {
         let prevIndex = highlightedIndex.value - 1;
-        while (prevIndex >= 0 && props.options[prevIndex]?.disabled) {
+        while (prevIndex >= 0 && props.options[prevIndex]?.isDisabled) {
             prevIndex--;
         }
         if (prevIndex >= 0) {
@@ -182,6 +188,17 @@
 
     onUnmounted(() => {
         document.removeEventListener('click', handleClickOutside);
+    });
+
+    const { targetRef, focus } = useFieldFocus({
+        errorMessage: () => props.errorMessage,
+        autoFocusOnError: () => props.autoFocusOnError,
+        isDisabled: () => props.isDisabled,
+    });
+
+    defineExpose({
+        focus,
+        inputRef: targetRef,
     });
 </script>
 
@@ -204,19 +221,20 @@
             :id="id"
             type="button"
             role="combobox"
+            ref="targetRef"
             :aria-haspopup="'listbox'"
             :aria-expanded="isOpen"
             :aria-labelledby="label ? `${id}-label ${id}` : id"
             :aria-controls="`${id}-listbox`"
-            :aria-invalid="Boolean(error)"
-            :aria-describedby="error ? `${id}-error` : undefined"
+            :aria-invalid="Boolean(errorMessage)"
+            :aria-describedby="errorMessage ? `${id}-error` : undefined"
             :aria-activedescendant="
                 isOpen && highlightedIndex >= 0 ? `${id}-option-${highlightedIndex}` : undefined
             "
-            :disabled="disabled"
+            :disabled="isDisabled"
             class="bg-bg-secondary text-text-primary flex w-full items-center justify-between rounded-lg border p-2.5 text-left text-sm transition-colors focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
             :class="[
-                error
+                errorMessage
                     ? 'border-red-500 focus-visible:ring-2 focus-visible:ring-red-500/50'
                     : 'border-border focus-visible:ring-accent focus-visible:ring-2',
             ]"
@@ -241,24 +259,7 @@
             />
         </button>
 
-        <!-- Вывод текста ошибки с анимацией -->
-        <Transition
-            enter-active-class="transition duration-150 ease-out"
-            enter-from-class="opacity-0 -translate-y-1"
-            enter-to-class="opacity-100 translate-y-0"
-            leave-active-class="transition duration-100 ease-in"
-            leave-from-class="opacity-100 translate-y-0"
-            leave-to-class="opacity-0 -translate-y-1"
-        >
-            <p
-                v-if="error"
-                :id="`${id}-error`"
-                class="mt-1 text-xs font-medium text-red-500"
-                role="alert"
-            >
-                {{ error }}
-            </p>
-        </Transition>
+        <AppErrorMessage :error-message="errorMessage" :error-id="`${id}-error`" />
 
         <!-- Выпадающее меню с анимацией -->
         <Transition
@@ -285,10 +286,10 @@
                     :key="String(option.value)"
                     role="option"
                     :aria-selected="option.value === modelValue"
-                    :aria-disabled="option.disabled"
+                    :aria-disabled="option.isDisabled"
                     class="flex cursor-pointer items-center justify-between px-3 py-2 text-sm transition-colors"
                     :class="[
-                        option.disabled
+                        option.isDisabled
                             ? 'text-text-mute cursor-not-allowed opacity-50'
                             : index === highlightedIndex
                               ? 'bg-accent/10 text-text-primary'

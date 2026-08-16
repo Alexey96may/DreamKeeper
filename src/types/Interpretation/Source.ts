@@ -1,4 +1,4 @@
-export type SourceType = 'custom' | 'system' | 'author' | 'ai';
+export type SourceType = 'custom' | 'system' | 'author' | 'family' | 'ai';
 
 export type SourceCategory =
     | 'psychology' // Психоанализ и психология (Юнг, Фрейд)
@@ -10,8 +10,8 @@ export type SourceCategory =
 // Уровни приватности источника
 export type SourceVisibility = 'private' | 'shared' | 'public';
 
-export interface Source {
-    id: string; // 'custom_user_1', 'miller', 'freud', 'community_metal_symbols'
+export interface InterprSource {
+    id: number; // 'custom_user_1', 'miller', 'freud', 'community_metal_symbols'
     title: string; // "Мои ассоциации", "Сонник Миллера"
     description: string; // Описание сонника
     rating: number; // 1.0 - 5.0 (Средний рейтинг доверия / полезности)

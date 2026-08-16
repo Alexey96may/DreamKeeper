@@ -39,7 +39,7 @@ export const initialDreamsSeed: DreamWrite[] = [
                 tag: 'Полет',
                 meaning:
                     'Стремление вырваться из повседневной рутины или чувство контроля над ситуацией.',
-                sourceId: 'base_guide',
+                sourceId: 0,
                 isAccurate: true,
             },
         ],
@@ -127,7 +127,7 @@ export const initialDreamsSeed: DreamWrite[] = [
             {
                 tag: 'Маяк',
                 meaning: 'Поиск верного пути или ориентира в важной жизненной ситуации.',
-                sourceId: 'custom',
+                sourceId: 0,
                 isAccurate: null,
             },
         ],
@@ -175,7 +175,7 @@ export const initialDreamsSeed: DreamWrite[] = [
             {
                 tag: 'Часы',
                 meaning: 'Осознание ценности времени или переживания о нехватке ресурса.',
-                sourceId: 'base_guide',
+                sourceId: 0,
             },
         ],
         isFavorite: false,
@@ -366,7 +366,7 @@ export const initialDreamsSeed: DreamWrite[] = [
                 tag: 'Полет',
                 meaning:
                     'Стремление вырваться из повседневной рутины или чувство контроля над ситуацией.',
-                sourceId: 'base_guide',
+                sourceId: 0,
                 isAccurate: true,
             },
         ],
@@ -458,7 +458,7 @@ export const initialDreamsSeed: DreamWrite[] = [
             {
                 tag: 'Маяк',
                 meaning: 'Поиск верного ориентира или долгожданное решение сложного вопроса.',
-                sourceId: 'custom',
+                sourceId: 0,
                 isAccurate: null,
             },
         ],

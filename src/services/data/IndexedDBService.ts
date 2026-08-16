@@ -38,6 +38,16 @@ export class IndexedDBService implements IDataService {
                     stateStore.createIndex('mood', 'mood');
                     stateStore.createIndex('energy', 'energy');
                 }
+
+                if (!db.objectStoreNames.contains('interprSources')) {
+                    const sourceStore = db.createObjectStore('interprSources', {
+                        keyPath: 'id',
+                        autoIncrement: true,
+                    });
+                    sourceStore.createIndex('type', 'type');
+                    sourceStore.createIndex('category', 'category');
+                    sourceStore.createIndex('visibility', 'visibility');
+                }
             },
         });
     }
@@ -61,11 +71,17 @@ export class IndexedDBService implements IDataService {
         return db.get(store, id) as Promise<T | undefined>;
     }
 
-    async add<T>(store: StoreName, data: T): Promise<number> {
+    async add<T extends object, R = T & { id: number }>(store: StoreName, data: T): Promise<R> {
         const db = await this.getDB();
 
         const cleanData = JSON.parse(JSON.stringify(toRaw(data)));
-        return db.add(store, cleanData) as Promise<number>;
+
+        const id = (await db.add(store, cleanData)) as number;
+
+        return {
+            ...cleanData,
+            id,
+        } as unknown as R;
     }
 
     async put<T>(store: StoreName, data: T): Promise<number> {

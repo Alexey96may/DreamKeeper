@@ -49,6 +49,8 @@
     import { computed, useId } from 'vue';
     import { Loader2 } from 'lucide-vue-next';
     import AppTooltip from '@/components/ui/AppTooltip.vue';
+    import AppErrorMessage from '@/components/ui/AppErrorMessage.vue';
+    import { useFieldFocus } from '@/composables/useFieldFocus';
 
     interface Props {
         modelValue: string | null | undefined;
@@ -63,6 +65,7 @@
         hint?: string;
         name?: string;
         id?: string;
+        autoFocusOnError?: boolean;
     }
 
     const props = withDefaults(defineProps<Props>(), {
@@ -71,6 +74,7 @@
         disabled: false,
         readonly: false,
         isLoading: false,
+        autoFocusOnError: true,
     });
 
     const emit = defineEmits<{
@@ -100,6 +104,17 @@
         const target = event.target as HTMLTextAreaElement;
         emit('update:modelValue', target.value);
     };
+
+    const { targetRef, focus } = useFieldFocus({
+        errorMessage: () => props.errorMessage,
+        autoFocusOnError: () => props.autoFocusOnError,
+        isDisabled: () => isDisabled.value,
+    });
+
+    defineExpose({
+        focus,
+        inputRef: targetRef,
+    });
 </script>
 
 <template>
@@ -112,7 +127,7 @@
         >
             <AppTooltip v-if="hint" :content="hint" />
             <span>{{ label }}</span>
-            <span v-if="required" class="font-bold text-red-500" aria-hidden="true">*</span>
+            <span v-if="required" class="text-status-error font-bold" aria-hidden="true">*</span>
         </label>
 
         <!-- Textarea Container -->
@@ -120,6 +135,7 @@
             <textarea
                 :id="textareaId"
                 :name="name"
+                ref="targetRef"
                 :value="modelValue"
                 :rows="rows"
                 :placeholder="placeholder"
@@ -131,7 +147,7 @@
                 :aria-required="required"
                 class="border-border bg-bg-secondary text-text-primary focus:border-accent custom-scrollbar min-h-[100px] w-full resize-y rounded-lg border px-3 py-2 text-sm transition-colors duration-150 focus:outline-none disabled:cursor-not-allowed disabled:opacity-60"
                 :class="{
-                    'border-red-500 focus:border-red-500 focus:ring-1 focus:ring-red-500':
+                    'border-status-error focus:border-status-error focus:ring-status-error focus:ring-1':
                         errorMessage,
                 }"
                 @input="handleInput"
@@ -150,10 +166,7 @@
             </div>
         </div>
 
-        <!-- Error Message (Accessibility: role="alert") -->
-        <p v-if="errorMessage" :id="errorId" role="alert" class="mt-1 text-xs text-red-500">
-            {{ errorMessage }}
-        </p>
+        <AppErrorMessage :error-message="errorMessage" :error-id="errorId" />
     </div>
 </template>
 

@@ -3,7 +3,7 @@
     import { RouterView } from 'vue-router';
     import TheHeader from '@/components/sections/TheHeader.vue';
     import { useUIStore } from '@/stores/modules/ui';
-    import { useSleepStore } from '@/stores/modules/dreem';
+    import { useSleepStore } from '@/stores/modules/dream';
 
     const uiStore = useUIStore();
     const sleepStore = useSleepStore();

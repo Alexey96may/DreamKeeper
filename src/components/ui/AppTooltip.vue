@@ -151,7 +151,7 @@
         padding: 0;
         border: none;
         background: transparent;
-        color: #9ca3af; /* Tailwind gray-400 */
+        color: var(--color-text-soft, #9ca3af);
         cursor: pointer;
         border-radius: 9999px;
         transition:
@@ -163,26 +163,27 @@
     /* Base Hover / Active */
     .app-tooltip-trigger:hover,
     .app-tooltip-trigger.is-active {
-        color: #3b82f6; /* Tailwind blue-500 */
+        color: var(--color-accent, #3b82f6);
     }
 
     /* Required Styling Override */
     .app-tooltip-trigger.is-required {
-        color: #ef4444; /* Tailwind red-500 */
+        color: var(--color-status-error, #ef4444);
     }
 
     .app-tooltip-trigger.is-required:hover,
     .app-tooltip-trigger.is-required.is-active {
-        color: #dc2626; /* Tailwind red-600 */
+        color: var(--color-status-error, #dc2626);
+        filter: brightness(0.9);
     }
 
     .app-tooltip-trigger:focus-visible {
-        outline: 2px solid #3b82f6;
+        outline: 2px solid var(--color-accent, #3b82f6);
         outline-offset: 2px;
     }
 
     .app-tooltip-trigger.is-required:focus-visible {
-        outline-color: #ef4444;
+        outline-color: var(--color-status-error, #ef4444);
     }
 
     .app-tooltip-icon {
@@ -199,15 +200,16 @@
         width: max-content;
         max-width: 260px;
         padding: 0.5rem 0.75rem;
-        background-color: #1f2937; /* Tailwind gray-800 */
-        color: #f9fafb; /* Tailwind gray-50 */
+        background-color: var(--color-bg-secondary, #1f2937);
+        color: var(--color-text-primary, #f9fafb);
+        border: 1px solid var(--color-border, #374151);
         font-size: 0.75rem;
         line-height: 1.25rem;
         font-weight: 400;
         border-radius: 0.375rem;
         box-shadow:
-            0 10px 15px -3px rgba(0, 0, 0, 0.1),
-            0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            0 10px 15px -3px rgba(0, 0, 0, 0.2),
+            0 4px 6px -2px rgba(0, 0, 0, 0.1);
         pointer-events: auto;
         white-space: normal;
         word-break: break-word;
@@ -223,7 +225,7 @@
         height: 0;
         border-left: 5px solid transparent;
         border-right: 5px solid transparent;
-        border-top: 5px solid #1f2937;
+        border-top: 5px solid var(--color-bg-secondary, #1f2937);
     }
 
     /* Vue Animations */

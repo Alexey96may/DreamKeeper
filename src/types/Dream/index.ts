@@ -51,7 +51,7 @@ export interface Dream {
     id: number;
     slug: string;
     date: string;
-    title: string; // Уникальный
+    title: string;
     description: string;
     createdAt: string;
     updatedAt: string;

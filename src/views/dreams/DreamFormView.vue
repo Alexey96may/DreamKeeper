@@ -22,6 +22,8 @@
                         v-model="form.date"
                         label="Дата сна"
                         hint="Укажите дату, когда вам приснился сон"
+                        :error-message="sleepStore.validationErrors.date"
+                        @input="sleepStore.clearError('date')"
                         required
                     />
 
@@ -32,6 +34,8 @@
                         label="Время суток"
                         :options="TIME_OF_DAY_OPTIONS"
                         placeholder="Выберите время суток"
+                        :error-message="sleepStore.validationErrors.timeOfDay"
+                        @clear-error="sleepStore.clearError('timeOfDay')"
                     />
                 </div>
 
@@ -40,6 +44,8 @@
                     v-model="form.title"
                     label="Название сна"
                     placeholder="Например: Полет над древним городом..."
+                    :error-message="sleepStore.validationErrors.title"
+                    @input="sleepStore.clearError('title')"
                     required
                 />
 
@@ -48,6 +54,8 @@
                     v-model="form.description"
                     label="Подробное описание"
                     placeholder="Запишите все подробности, пока они свежи в памяти..."
+                    :error-message="sleepStore.validationErrors.description"
+                    @input="sleepStore.clearError('description')"
                     required
                     :rows="5"
                 />
@@ -59,6 +67,8 @@
                     v-model="form.categories"
                     label="Категории сна"
                     @change="handleCategoryChange"
+                    @clear-error="sleepStore.clearError('categories')"
+                    :error-message="sleepStore.validationErrors.categories"
                     :options="DREAM_CATEGORY_OPTIONS"
                 />
 
@@ -77,6 +87,10 @@
                         <AppRange
                             v-model.number="form.categoryDetails.lucid.controlLevel"
                             label="Уровень контроля"
+                            :error-message="
+                                sleepStore.validationErrors['categoryDetails.lucid.controlLevel']
+                            "
+                            @input="sleepStore.clearError('categoryDetails.lucid.controlLevel')"
                             :min="0"
                             :max="10"
                             :step="1"
@@ -86,7 +100,11 @@
                         <AppSelect
                             v-model="form.categoryDetails.lucid.trigger"
                             label="Триггер осознания"
+                            :error-message="
+                                sleepStore.validationErrors['categoryDetails.lucid.trigger']
+                            "
                             :options="LUCID_TRIGGER_OPTIONS"
+                            @clear-error="sleepStore.clearError('categoryDetails.lucid.trigger')"
                         />
                     </div>
                 </div>
@@ -111,6 +129,10 @@
                             :max="10"
                             :step="1"
                             :value-formatter="dreamValueFormatter"
+                            :error-message="
+                                sleepStore.validationErrors['categoryDetails.nightmare.fearLevel']
+                            "
+                            @input="sleepStore.clearError('categoryDetails.nightmare.fearLevel')"
                         />
 
                         <AppCheckbox
@@ -118,6 +140,16 @@
                             label="Физическая реакция"
                             hint="Учащённый пульс, пот, испуг?"
                             accent-color="bg-red-500 border-red-500"
+                            :error-message="
+                                sleepStore.validationErrors[
+                                    'categoryDetails.nightmare.hasPhysicalResponse'
+                                ]
+                            "
+                            @change="
+                                sleepStore.clearError(
+                                    'categoryDetails.nightmare.hasPhysicalResponse',
+                                )
+                            "
                         />
                     </div>
 
@@ -126,6 +158,10 @@
                         v-model="form.categoryDetails.nightmare.copingMechanism"
                         label="Как справился / Завершение"
                         placeholder="Проснулся от крика, дал отпор..."
+                        :error-message="
+                            sleepStore.validationErrors['categoryDetails.nightmare.copingMechanism']
+                        "
+                        @input="sleepStore.clearError('categoryDetails.nightmare.copingMechanism')"
                     />
                 </div>
 
@@ -145,12 +181,28 @@
                             v-model="form.categoryDetails.prophetic.expectedByDate"
                             label="Ожидаемый срок"
                             hint="Укажите дату, к которой сон должен реализоваться"
+                            :error-message="
+                                sleepStore.validationErrors[
+                                    'categoryDetails.prophetic.expectedByDate'
+                                ]
+                            "
+                            @input="
+                                sleepStore.clearError('categoryDetails.prophetic.expectedByDate')
+                            "
                         />
 
                         <AppDatePicker
                             v-model="form.categoryDetails.prophetic.fulfilledDate"
                             label="Дата исполнения"
                             hint="Укажите дату, к которой сон реализовался"
+                            :error-message="
+                                sleepStore.validationErrors[
+                                    'categoryDetails.prophetic.fulfilledDate'
+                                ]
+                            "
+                            @input="
+                                sleepStore.clearError('categoryDetails.prophetic.fulfilledDate')
+                            "
                         />
 
                         <AppCheckbox
@@ -158,6 +210,10 @@
                             label="Уже сбылся"
                             accent-color="bg-purple-500 border-purple-500"
                             hint="Отметьте, если сон уже сбылся."
+                            :error-message="
+                                sleepStore.validationErrors['categoryDetails.prophetic.isFulfilled']
+                            "
+                            @change="sleepStore.clearError('categoryDetails.prophetic.isFulfilled')"
                         />
                     </div>
 
@@ -166,6 +222,12 @@
                         v-model="form.categoryDetails.prophetic.fulfillmentNotes"
                         label="Что именно произошло в реальности"
                         placeholder="Описание события в реальной жизни..."
+                        :error-message="
+                            sleepStore.validationErrors[
+                                'categoryDetails.prophetic.fulfillmentNotes'
+                            ]
+                        "
+                        @input="sleepStore.clearError('categoryDetails.prophetic.fulfillmentNotes')"
                     />
                 </div>
             </div>
@@ -177,6 +239,8 @@
                     label="Феномены и события во сне"
                     @change="handlePhenomenaChange"
                     :options="DREAM_PHENOMENON_OPTIONS"
+                    @clear-error="sleepStore.clearError('phenomena')"
+                    :error-message="sleepStore.validationErrors.phenomena"
                 />
 
                 <!-- Детали: ПОЛЁТ -->
@@ -193,12 +257,20 @@
                             v-model="form.phenomenaDetails.flying.type"
                             :options="FLYING_TYPE_OPTIONS"
                             label="Стиль полёта"
+                            :error-message="
+                                sleepStore.validationErrors['phenomenaDetails.flying.type']
+                            "
+                            @clear-error="sleepStore.clearError('phenomenaDetails.flying.type')"
                         />
 
                         <AppSelect
                             v-model="form.phenomenaDetails.flying.altitude"
                             :options="FLYING_ALTITUDE_OPTIONS"
                             label="Высота"
+                            :error-message="
+                                sleepStore.validationErrors['phenomenaDetails.flying.altitude']
+                            "
+                            @clear-error="sleepStore.clearError('phenomenaDetails.flying.altitude')"
                         />
                     </div>
                 </div>
@@ -216,13 +288,23 @@
                         <AppSelect
                             v-model="form.phenomenaDetails.falling.origin"
                             :options="FALLING_ORIGIN_OPTIONS"
+                            :error="sleepStore.getError('phenomenaDetails.falling.origin')"
                             label="Откуда падение"
+                            :error-message="
+                                sleepStore.validationErrors['phenomenaDetails.falling.origin']
+                            "
+                            @clear-error="sleepStore.clearError('phenomenaDetails.falling.origin')"
                         />
 
                         <AppSelect
                             v-model="form.phenomenaDetails.falling.outcome"
                             :options="FALLING_OUTCOME_OPTIONS"
+                            :error="sleepStore.validationErrors.phenomenaDetails"
                             label="Чем закончилось"
+                            :error-message="
+                                sleepStore.validationErrors['phenomenaDetails.falling.outcome']
+                            "
+                            @clear-error="sleepStore.clearError('phenomenaDetails.falling.outcome')"
                         />
                     </div>
                 </div>
@@ -242,12 +324,22 @@
                                 v-model="form.phenomenaDetails.death.cause"
                                 :options="DEATH_CAUSE_OPTIONS"
                                 label="Причина / Контекст"
+                                :error-message="
+                                    sleepStore.validationErrors['phenomenaDetails.death.cause']
+                                "
+                                @clear-error="sleepStore.clearError('phenomenaDetails.death.cause')"
                             />
 
                             <AppSelect
                                 v-model="form.phenomenaDetails.death.aftermath"
                                 :options="DEATH_AFTERMATH_OPTIONS"
                                 label="Что произошло сразу после"
+                                :error-message="
+                                    sleepStore.validationErrors['phenomenaDetails.death.aftermath']
+                                "
+                                @clear-error="
+                                    sleepStore.clearError('phenomenaDetails.death.aftermath')
+                                "
                             />
                         </div>
                     </div>
@@ -265,6 +357,10 @@
                         v-model="form.phenomenaDetails.paralysis.timing"
                         :options="PARALYSIS_TIMING_OPTIONS"
                         label="Момент возникновения"
+                        :error-message="
+                            sleepStore.validationErrors['phenomenaDetails.paralysis.timing']
+                        "
+                        @clear-error="sleepStore.clearError('phenomenaDetails.paralysis.timing')"
                     />
 
                     <AppTagSelect
@@ -272,6 +368,12 @@
                         v-model="form.phenomenaDetails.paralysis.hallucinations"
                         label="Галлюцинации"
                         :options="PARALYSIS_HALLUCINATIONS_OPTIONS"
+                        :error-message="
+                            sleepStore.validationErrors['phenomenaDetails.paralysis.hallucinations']
+                        "
+                        @clear-error="
+                            sleepStore.clearError('phenomenaDetails.paralysis.hallucinations')
+                        "
                     />
                 </div>
 
@@ -293,6 +395,14 @@
                         :max="1000"
                         :step="1"
                         :formatter="(val) => `${val} раз`"
+                        :error-message="
+                            sleepStore.validationErrors[
+                                'phenomenaDetails.nestedDream.nestingLevels'
+                            ]
+                        "
+                        @clearError="
+                            sleepStore.clearError('phenomenaDetails.nestedDream.nestingLevels')
+                        "
                     />
                 </div>
             </div>
@@ -304,6 +414,8 @@
                         v-model="form.visualStyle"
                         :options="VISUAL_STYLE_OPTIONS"
                         label="Визуальный стиль"
+                        :error-message="sleepStore.validationErrors.visualStyle"
+                        @clear-error="sleepStore.clearError('visualStyle')"
                     />
 
                     <AppSelect
@@ -311,6 +423,8 @@
                         :options="PERSPECTIVE_OPTIONS"
                         hint="Перспектива"
                         label="Точка зрения"
+                        :error-message="sleepStore.validationErrors.perspective"
+                        @clear-error="sleepStore.clearError('perspective')"
                     />
                 </div>
 
@@ -319,6 +433,8 @@
                     v-model="form.roles"
                     label="Ваши роли во сне"
                     :options="PARTICIPANT_ROLE_OPTIONS"
+                    :error-message="sleepStore.validationErrors.roles"
+                    @clear-error="sleepStore.clearError('roles')"
                 />
 
                 <!-- Органы чувств -->
@@ -327,6 +443,8 @@
                     label="Ощущения"
                     hint="Органы чувств"
                     :options="SENSORY_ASPECT_OPTIONS"
+                    :error-message="sleepStore.validationErrors.sensations"
+                    @clear-error="sleepStore.clearError('sensations')"
                 />
             </div>
 
@@ -341,6 +459,8 @@
                         :max="10"
                         :step="1"
                         :value-formatter="dreamValueFormatter"
+                        :error-message="sleepStore.validationErrors.quality"
+                        @input="sleepStore.clearError('quality')"
                     />
 
                     <AppRange
@@ -350,6 +470,8 @@
                         :max="10"
                         :step="1"
                         :value-formatter="dreamValueFormatter"
+                        :error-message="sleepStore.validationErrors.clarity"
+                        @input="sleepStore.clearError('clarity')"
                     />
 
                     <AppRange
@@ -359,6 +481,8 @@
                         :max="10"
                         :step="1"
                         :value-formatter="dreamValueFormatter"
+                        :error-message="sleepStore.validationErrors.moodAfter"
+                        @input="sleepStore.clearError('moodAfter')"
                     />
                 </div>
             </div>
@@ -398,12 +522,16 @@
                     v-model="form.PreSleepContext"
                     label="Контекст перед сном"
                     placeholder="Смотрел фильм, был уставшим, пил чай..."
+                    :error-message="sleepStore.validationErrors.PreSleepContext"
+                    @input="sleepStore.clearError('PreSleepContext')"
                 />
 
                 <AppTextInput
                     v-model="form.personalNotes"
                     label="Личные заметки / Анализ"
                     placeholder="Мысли о том, с чем сон может быть связан..."
+                    :error-message="sleepStore.validationErrors.personalNotes"
+                    @input="sleepStore.clearError('personalNotes')"
                 />
 
                 <!-- Толкования -->
@@ -421,11 +549,22 @@
                         :key="idx"
                         class="mb-2 flex items-center gap-2"
                     >
-                        <AppTextInput v-model="interp.tag" placeholder="Символ (напр. Вода)" />
+                        <AppTextInput
+                            v-model="interp.tag"
+                            placeholder="Символ (напр. Вода)"
+                            :error-message="
+                                sleepStore.validationErrors[`interpretations.${idx}.tag`]
+                            "
+                            @input="sleepStore.clearError(`interpretations.${idx}.tag`)"
+                        />
 
                         <AppTextInput
                             v-model="interp.meaning"
                             placeholder="Значение / Толкование"
+                            :error-message="
+                                sleepStore.validationErrors[`interpretations.${idx}.meaning`]
+                            "
+                            @input="sleepStore.clearError(`interpretations.${idx}.meaning`)"
                         />
 
                         <AppCheckbox
@@ -433,6 +572,20 @@
                             label="Сбылось"
                             accent-color="bg-red-500 border-red-500"
                             hint="Толкование сна подтвердилось в реальности?"
+                            :error-message="
+                                sleepStore.validationErrors[`interpretations.${idx}.isAccurate`]
+                            "
+                            @change="sleepStore.clearError(`interpretations.${idx}.isAccurate`)"
+                        />
+
+                        <AppSelect
+                            v-model="interp.sourceId"
+                            :options="sourceOptions"
+                            label="Источник толкования"
+                            :error-message="
+                                sleepStore.validationErrors[`interpretations.${idx}.sourceId`]
+                            "
+                            @clear-error="sleepStore.clearError(`interpretations.${idx}.sourceId`)"
                         />
 
                         <AppButton
@@ -460,12 +613,22 @@
                                 v-model="rel.dreamId"
                                 :options="dreamToLinkOptions"
                                 class="w-1/3 text-xs"
+                                :error-message="
+                                    sleepStore.validationErrors[`relatedDreams.${idx}.dreamId`]
+                                "
+                                @clear-error="sleepStore.clearError(`relatedDreams.${idx}.dreamId`)"
                             />
 
                             <AppSelect
                                 v-model="rel.relationType"
                                 :options="DREAM_RELATION_OPTIONS"
                                 class="w-1/3 text-xs"
+                                :error-message="
+                                    sleepStore.validationErrors[`relatedDreams.${idx}.relationType`]
+                                "
+                                @clear-error="
+                                    sleepStore.clearError(`relatedDreams.${idx}.relationType`)
+                                "
                             />
 
                             <AppButton
@@ -476,7 +639,15 @@
                             />
                         </div>
 
-                        <AppTextarea v-model="rel.note" placeholder="Примечание..." :rows="2" />
+                        <AppTextarea
+                            v-model="rel.note"
+                            placeholder="Примечание..."
+                            :rows="2"
+                            :error-message="
+                                sleepStore.validationErrors[`relatedDreams.${idx}.note`]
+                            "
+                            @input="sleepStore.clearError(`relatedDreams.${idx}.note`)"
+                        />
                     </div>
                 </div>
             </div>
@@ -531,10 +702,7 @@
                 </div>
             </div>
 
-            <!-- Ошибка -->
-            <p v-if="sleepStore.error" role="alert" class="text-sm text-red-500">
-                {{ sleepStore.error }}
-            </p>
+            <AppErrorMessage :error-message="sleepStore.error" />
 
             <!-- Кнопки управления -->
             <div class="flex items-center justify-end gap-3 pt-4">
@@ -565,12 +733,14 @@
         Archive,
     } from 'lucide-vue-next';
     import { useRoute, useRouter } from 'vue-router';
-    import { useSleepStore } from '@/stores/modules/dreem';
+    import { useSleepStore } from '@/stores/modules/dream';
+    import { useInterpretationSourceStore } from '@/stores/modules/useInterpretationSourceStore';
     import AppButton from '@/components/ui/AppButton.vue';
     import AppSelect from '@/components/ui/AppSelect.vue';
     import AppTag from '@/components/ui/AppTag.vue';
     import AppTagSelect from '@/components/ui/AppTagSelect.vue';
     import AppDatePicker from '@/components/ui/AppDatePicker.vue';
+    import AppErrorMessage from '@/components/ui/AppErrorMessage.vue';
     import AppCheckbox from '@/components/ui/AppCheckbox.vue';
     import AppNumberInput from '@/components/ui/AppNumberInput.vue';
     import AppRange from '@/components/ui/AppRange.vue';
@@ -611,8 +781,19 @@
     const route = useRoute();
     const router = useRouter();
     const sleepStore = useSleepStore();
+    const sourceStore = useInterpretationSourceStore();
 
     const isEditMode = computed(() => Boolean(props.slug));
+
+    // Формируем опции для AppSelect
+    const sourceOptions = computed(() => {
+        const dynamicSources = (sourceStore.sources || []).map((s) => ({
+            value: s.id,
+            label: `${s.title}${s.authorName ? ` (${s.authorName})` : ''}`,
+        }));
+
+        return [...dynamicSources];
+    });
 
     // --- Фабрика дефолтного состояния ---
     const createInitialForm = (): DreamWrite => ({
@@ -707,6 +888,8 @@
         const currentList = Array.isArray(selectedValues) ? selectedValues : [];
         const details = ensureCategoryDetails();
 
+        console.log(sleepStore.validationErrors);
+
         if (currentList.includes('lucid') && !details.lucid) {
             details.lucid = { controlLevel: 0, trigger: 'irrelevant' };
         }
@@ -748,7 +931,7 @@
         form.value.interpretations.push({
             tag: '',
             meaning: '',
-            sourceId: 'custom',
+            sourceId: 0,
             isAccurate: null,
         });
     };
@@ -773,6 +956,11 @@
     // --- Lifecycle ---
 
     onMounted(async () => {
+        //  подгружаем источники интерпретаций
+        if (sourceStore.sources.length === 0) {
+            sourceStore.init();
+        }
+
         if (!isEditMode.value || !props.slug) return;
 
         // 1. Ждем инициализации стора, если репозиторий еще не подгружен

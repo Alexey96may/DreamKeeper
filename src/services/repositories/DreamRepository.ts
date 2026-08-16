@@ -8,9 +8,9 @@ import type { Dream, DreamWrite } from '@/types/Dream';
  * Наследуется от BaseRepository, определяя:
  *  - T: Dream
  *  - CreateDTO: DreamWrite
- *  - Result: Dream (метод create возвращает готовый созданный объект)
+ *  - UpdateDTO: Partial<DreamWrite>
  */
-export class DreamRepository extends BaseRepository<Dream, DreamWrite, Dream> {
+export class DreamRepository extends BaseRepository<Dream, DreamWrite, Partial<DreamWrite>> {
     constructor(dataService: IDataService) {
         super(dataService, 'dreams');
     }
@@ -31,16 +31,26 @@ export class DreamRepository extends BaseRepository<Dream, DreamWrite, Dream> {
     }
 
     /**
-     * Генерация уникального slug
+     * Генерация уникального slug.
+     * @param excludeId - ID текущего сна, который нужно игнорировать при проверке уникальности (при обновлении)
      */
-    private async generateUniqueSlug(title?: string, date?: string): Promise<string> {
+    private async generateUniqueSlug(
+        title?: string,
+        date?: string,
+        excludeId?: number,
+    ): Promise<string> {
         const baseText = title?.trim() || `dream-${date || 'entry'}`;
         const baseSlug = slugify(baseText);
 
         let slug = baseSlug;
         let counter = 1;
 
-        while (await this.getBySlug(slug)) {
+        while (true) {
+            const existing = await this.getBySlug(slug);
+            // Если слага нет ИЛИ найденный сон — это наш же обновляемый сон, слаг уникален
+            if (!existing || existing.id === excludeId) {
+                break;
+            }
             slug = `${baseSlug}-${counter}`;
             counter++;
         }
@@ -51,7 +61,6 @@ export class DreamRepository extends BaseRepository<Dream, DreamWrite, Dream> {
     override async create(dreamData: DreamWrite): Promise<Dream> {
         const now = new Date().toISOString();
 
-        // Учитываем dreamData.slug, если сид его уже содержит
         const slug = await this.generateUniqueSlug(dreamData.title, dreamData.date);
 
         const payload = {
@@ -61,11 +70,44 @@ export class DreamRepository extends BaseRepository<Dream, DreamWrite, Dream> {
             updatedAt: now,
         };
 
-        const id = await this.dataService.add(this.storeName, payload);
+        const dream = await this.dataService.add(this.storeName, payload);
 
-        return {
-            ...payload,
-            id,
-        } as Dream;
+        return dream;
+    }
+
+    /**
+     * Обновление сна по ID в IndexedDB
+     */
+    override async update(id: number, dreamData: Partial<DreamWrite>): Promise<Dream> {
+        // 1. Получаем текущую запись из базы
+        const existing = await this.getById(id);
+        if (!existing) {
+            throw new Error(`Сон с id ${id} не найден`);
+        }
+
+        // 2. Проверяем, изменились ли заголовок или дата
+        let newSlug = existing.slug;
+        const newTitle = dreamData.title ?? existing.title;
+        const newDate = dreamData.date ?? existing.date;
+
+        if (dreamData.title !== undefined || dreamData.date !== undefined) {
+            if (newTitle !== existing.title || newDate !== existing.date) {
+                // Передаем id, чтобы игнорировать текущую запись при проверке уникальности
+                newSlug = await this.generateUniqueSlug(newTitle, newDate, id);
+            }
+        }
+
+        // 3. Формируем финальный payload для сохранения
+        const updatedPayload: Dream = {
+            ...existing,
+            ...dreamData,
+            slug: newSlug,
+            updatedAt: new Date().toISOString(),
+        };
+
+        // 4. Записываем в IndexedDB через dataService
+        await this.dataService.put(this.storeName, updatedPayload);
+
+        return updatedPayload;
     }
 }

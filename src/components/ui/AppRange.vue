@@ -54,6 +54,8 @@
     import { computed, useId } from 'vue';
     import { Loader2 } from 'lucide-vue-next';
     import AppTooltip from '@/components/ui/AppTooltip.vue';
+    import AppErrorMessage from '@/components/ui/AppErrorMessage.vue';
+    import { useFieldFocus } from '@/composables/useFieldFocus';
 
     interface Props {
         modelValue: number | null | undefined;
@@ -71,6 +73,7 @@
         valueFormatter?: (value: number, max: number | string) => string;
         name?: string;
         id?: string;
+        autoFocusOnError?: boolean;
     }
 
     const props = withDefaults(defineProps<Props>(), {
@@ -82,6 +85,7 @@
         readonly: false,
         isLoading: false,
         accentColor: 'accent-accent',
+        autoFocusOnError: true,
     });
 
     const emit = defineEmits<{
@@ -89,6 +93,7 @@
         (e: 'blur', event: FocusEvent): void;
         (e: 'focus', event: FocusEvent): void;
         (e: 'change', event: Event): void;
+        (e: 'input'): void;
     }>();
 
     // Generate unique ID for linking label, input range, and error/hint elements (A11y)
@@ -120,8 +125,20 @@
 
     const handleInput = (event: Event) => {
         const target = event.target as HTMLInputElement;
+        emit('input');
         emit('update:modelValue', target.valueAsNumber);
     };
+
+    const { targetRef, focus } = useFieldFocus({
+        errorMessage: () => props.errorMessage,
+        autoFocusOnError: () => props.autoFocusOnError,
+        isDisabled: () => isDisabled.value,
+    });
+
+    defineExpose({
+        focus,
+        inputRef: targetRef,
+    });
 </script>
 
 <template>
@@ -134,7 +151,9 @@
             <label :for="rangeId" class="flex items-center gap-1.5">
                 <AppTooltip v-if="hint" :content="hint" :required="required" />
                 <span>{{ label }}</span>
-                <span v-if="required" class="font-bold text-red-500" aria-hidden="true">*</span>
+                <span v-if="required" class="text-status-error font-bold" aria-hidden="true"
+                    >*</span
+                >
             </label>
 
             <!-- Current Value Display -->
@@ -155,6 +174,7 @@
                 :value="currentValue"
                 :disabled="isDisabled"
                 :readonly="readonly"
+                ref="targetRef"
                 :aria-valuenow="currentValue"
                 :aria-valuemin="Number(min)"
                 :aria-valuemax="Number(max)"
@@ -179,9 +199,6 @@
             </div>
         </div>
 
-        <!-- Error Message (Accessibility: role="alert") -->
-        <p v-if="errorMessage" :id="errorId" role="alert" class="mt-1 text-xs text-red-500">
-            {{ errorMessage }}
-        </p>
+        <AppErrorMessage :error-message="errorMessage" :error-id="errorId" />
     </div>
 </template>

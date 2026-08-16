@@ -6,39 +6,11 @@
   Features:
   - Accessibility (A11y): Native interactive checkbox input linked with unique Vue 3
     IDs (useId()), aria-invalid, aria-required, and aria-describedby for errors/hints.
-  - Custom Styling: Replaces ugly default browser checkboxes with smooth, responsive,
+  - Custom Styling: Replaces default browser checkboxes with smooth, responsive,
     theme-aware custom borders, checkmark animations, and focus ring indicators.
-  - Flexible Formats: Supports single boolean toggles (v-model="boolean").
+  - Flexible Formats: Supports single boolean toggles (v-model="boolean") or array groups.
   - State Support: Supports loading (with animated spinner), disabled, readonly,
-    errorMessage, dynamic accent colors (e.g., accent-red-500), and helper hint states.
-
--------------------------------------------------------------------------------
-  USAGE EXAMPLES:
--------------------------------------------------------------------------------
-
-  1. Basic boolean checkbox with custom accent color (Nightmare details form):
-     <AppCheckbox
-         v-model="ensureCategoryDetails().nightmare!.hasPhysicalResponse"
-         label="Физическая реакция (пульс, пот, испуг)"
-         accent-color="bg-red-500 border-red-500"
-     />
-
-  2. Required checkbox with error validation & helper hint:
-     <AppCheckbox
-         v-model="form.termsAccepted"
-         label="I agree to the Terms of Service"
-         required
-         :error-message="errors.terms"
-         hint="You must accept the terms before saving your entry."
-     />
-
-  3. Disabled & Loading states:
-     <AppCheckbox
-         v-model="form.isPublic"
-         label="Publish entry publicly"
-         :is-loading="isSaving"
-         disabled
-     />
+    errorMessage, dynamic accent colors, and helper hint states.
 
 ===============================================================================
 -->
@@ -47,9 +19,11 @@
     import { computed, useId } from 'vue';
     import { Check, Loader2 } from 'lucide-vue-next';
     import AppTooltip from '@/components/ui/AppTooltip.vue';
+    import AppErrorMessage from '@/components/ui/AppErrorMessage.vue';
+    import { useFieldFocus } from '@/composables/useFieldFocus';
 
     interface Props {
-        modelValue?: boolean | null | undefined;
+        modelValue?: boolean | null | (string | number)[] | undefined;
         value?: string | number | boolean;
         label?: string;
         required?: boolean;
@@ -61,6 +35,7 @@
         accentColor?: string;
         name?: string;
         id?: string;
+        autoFocusOnError?: boolean;
     }
 
     const props = withDefaults(defineProps<Props>(), {
@@ -70,7 +45,8 @@
         disabled: false,
         readonly: false,
         isLoading: false,
-        accentColor: 'bg-accent border-accent',
+        accentColor: 'bg-accent border-accent text-text-inverse',
+        autoFocusOnError: true,
     });
 
     const emit = defineEmits<{
@@ -80,7 +56,7 @@
         (e: 'change', event: Event): void;
     }>();
 
-    // Generate unique ID for linking label, checkbox input, and error/hint elements (A11y)
+    // Unique ID for linking label, input, and error/hint elements (A11y)
     const defaultId = useId();
     const checkboxId = computed(() => props.id || `app-checkbox-${defaultId}`);
     const errorId = computed(() => `${checkboxId.value}-error`);
@@ -88,7 +64,7 @@
 
     const isDisabled = computed(() => props.disabled || props.isLoading);
 
-    // Handle both simple Boolean binding and Array group binding
+    // Support Boolean binding and Array group binding
     const isChecked = computed(() => {
         if (Array.isArray(props.modelValue)) {
             return props.modelValue.includes(props.value as string | number);
@@ -126,6 +102,17 @@
 
         emit('change', event);
     };
+
+    const { targetRef, focus } = useFieldFocus({
+        errorMessage: () => props.errorMessage,
+        autoFocusOnError: () => props.autoFocusOnError,
+        isDisabled: () => isDisabled.value,
+    });
+
+    defineExpose({
+        focus,
+        inputRef: targetRef,
+    });
 </script>
 
 <template>
@@ -140,6 +127,7 @@
             <div class="relative flex items-center pt-0.5">
                 <input
                     :id="checkboxId"
+                    ref="targetRef"
                     :name="name"
                     type="checkbox"
                     :checked="isChecked"
@@ -158,10 +146,10 @@
 
                 <!-- Custom Styled Checkbox Box -->
                 <div
-                    class="border-border bg-bg-secondary peer-focus-visible:ring-accent/50 group-hover:border-border/80 flex h-4 w-4 shrink-0 items-center justify-center rounded border transition-all duration-150 peer-focus-visible:ring-2"
+                    class="border-border-primary bg-bg-secondary peer-focus-visible:ring-accent/50 group-hover:border-border-hover flex h-4 w-4 shrink-0 items-center justify-center rounded border transition-all duration-150 peer-focus-visible:ring-2"
                     :class="[
                         isChecked ? accentColor : 'bg-bg-secondary',
-                        errorMessage ? '!border-red-500' : '',
+                        errorMessage ? '!border-status-error' : '',
                     ]"
                 >
                     <!-- Loading Spinner -->
@@ -174,7 +162,7 @@
                     <!-- Animated Checkmark Icon -->
                     <Check
                         v-else-if="isChecked"
-                        class="h-3 w-3 stroke-[3] text-white"
+                        class="text-text-inverse h-3 w-3 stroke-3"
                         aria-hidden="true"
                     />
                 </div>
@@ -186,16 +174,13 @@
                 class="text-text-primary flex items-center gap-1.5 text-xs leading-relaxed font-medium"
             >
                 <slot>{{ label }}</slot>
-                <span v-if="required" class="ml-0.5 font-bold text-red-500" aria-hidden="true"
+                <span v-if="required" class="text-status-error ml-0.5 font-bold" aria-hidden="true"
                     >*</span
                 >
                 <AppTooltip v-if="hint" :content="hint" :required="required" />
             </span>
         </label>
 
-        <!-- Error Message (Accessibility: role="alert") -->
-        <p v-if="errorMessage" :id="errorId" role="alert" class="mt-1 text-xs text-red-500">
-            {{ errorMessage }}
-        </p>
+        <AppErrorMessage :error-message="errorMessage" :error-id="errorId" />
     </div>
 </template>

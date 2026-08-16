@@ -76,7 +76,7 @@
 <script setup lang="ts">
     import { computed, onMounted } from 'vue';
     import { useRouter } from 'vue-router';
-    import { useSleepStore } from '@/stores/modules/dreem';
+    import { useSleepStore } from '@/stores/modules/dream';
     import { useUserStateStore } from '@/stores/modules/userState';
 
     const props = defineProps<{
