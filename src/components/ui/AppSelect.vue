@@ -13,23 +13,17 @@
 -->
 
 <script setup lang="ts" generic="T">
-    import { ref, computed, onMounted, onUnmounted, nextTick, useId, type Component } from 'vue';
+    import { ref, computed, onMounted, onUnmounted, nextTick, useId } from 'vue';
     import { ChevronDown, Check } from 'lucide-vue-next';
     import AppTooltip from '@/components/ui/AppTooltip.vue';
     import AppErrorMessage from '@/components/ui/AppErrorMessage.vue';
     import { useFieldFocus } from '@/composables/useFieldFocus';
-
-    export interface SelectOption<ValueType = string | number> {
-        value: ValueType;
-        label: string;
-        icon?: Component;
-        isDisabled?: boolean;
-    }
+    import type { DreamOption } from '@/types/Dream';
 
     interface Props {
         id?: string;
         modelValue: T | undefined;
-        options: readonly SelectOption<T>[];
+        options: readonly DreamOption<T>[];
         hint?: string;
         label?: string;
         placeholder?: string;
@@ -89,7 +83,7 @@
     };
 
     // Выбор элемента
-    const selectOption = (option: SelectOption<T>) => {
+    const selectOption = (option: DreamOption<T>) => {
         if (option.isDisabled) return;
         emit('update:modelValue', option.value);
         emit('change', option.value);

@@ -33,7 +33,7 @@ export const initialDreamsSeed: DreamWrite[] = [
         objects: ['Высотки', 'Разрушенный мост'],
         emotions: ['Восторг', 'Свобода', 'Спокойствие'],
 
-        PreSleepContext: 'Пил вечером крепкий мате и читал перед сном.',
+        preSleepContext: 'Пил вечером крепкий мате и читал перед сном.',
         interpretations: [
             {
                 tag: 'Полет',
@@ -84,7 +84,7 @@ export const initialDreamsSeed: DreamWrite[] = [
         objects: ['Закрытая дверь', 'Часы'],
         emotions: ['Тревога', 'Страх', 'Растерянность'],
 
-        PreSleepContext: 'Тяжелый рабочий день, переживал из-за дедлайна.',
+        preSleepContext: 'Тяжелый рабочий день, переживал из-за дедлайна.',
         relatedDreams: [
             {
                 relationType: 'recurring_instance',
@@ -170,7 +170,7 @@ export const initialDreamsSeed: DreamWrite[] = [
         objects: ['Старинные фолианты', 'Песочные часы'],
         emotions: ['Любопытство', 'Удивление'],
 
-        PreSleepContext: 'Слушал фоновую эмбиент-музыку перед сном.',
+        preSleepContext: 'Слушал фоновую эмбиент-музыку перед сном.',
         interpretations: [
             {
                 tag: 'Часы',
@@ -221,7 +221,7 @@ export const initialDreamsSeed: DreamWrite[] = [
         objects: ['Затопленные лужи', 'Яркие вывески'],
         emotions: ['Напряжение', 'Азарт', 'Страх'],
 
-        PreSleepContext: 'Поздно заснул после просмотра нуарного фильма.',
+        preSleepContext: 'Поздно заснул после просмотра нуарного фильма.',
         isFavorite: false,
         isPinned: false,
         isArchived: false,
@@ -319,7 +319,7 @@ export const initialDreamsSeed: DreamWrite[] = [
         objects: ['Кровать', 'Окно'],
         emotions: ['Паника', 'Оцепенение'],
 
-        PreSleepContext: 'Спал на спине, переутомился за день.',
+        preSleepContext: 'Спал на спине, переутомился за день.',
         isFavorite: false,
         isPinned: false,
         isArchived: false,
@@ -360,7 +360,7 @@ export const initialDreamsSeed: DreamWrite[] = [
         objects: ['Высотки', 'Разрушенный мост'],
         emotions: ['Восторг', 'Свобода', 'Спокойствие'],
 
-        PreSleepContext: 'Пил вечером крепкий мате и читал перед сном.',
+        preSleepContext: 'Пил вечером крепкий мате и читал перед сном.',
         interpretations: [
             {
                 tag: 'Полет',
@@ -413,7 +413,7 @@ export const initialDreamsSeed: DreamWrite[] = [
         objects: ['Печатный станок', 'Сушильная камера'],
         emotions: ['Тревога', 'Страх', 'Растерянность'],
 
-        PreSleepContext: 'Тяжелая смена на печатном производстве, усталость.',
+        preSleepContext: 'Тяжелая смена на печатном производстве, усталость.',
         relatedDreams: [
             {
                 relationType: 'recurring_instance',
@@ -497,7 +497,7 @@ export const initialDreamsSeed: DreamWrite[] = [
         objects: ['Свитков пергамента', 'Каменные колонны'],
         emotions: ['Любопытство', 'Удивление'],
 
-        PreSleepContext: 'Разбирал грамматические структуры текста вечером.',
+        preSleepContext: 'Разбирал грамматические структуры текста вечером.',
         isFavorite: false,
         isPinned: false,
         isArchived: false,
@@ -543,7 +543,7 @@ export const initialDreamsSeed: DreamWrite[] = [
         objects: ['Каменный парапет', 'Песчаные часы'],
         emotions: ['Напряжение', 'Замирание', 'Фатализм'],
 
-        PreSleepContext: 'Перечитывал главу фэнтези перед сном.',
+        preSleepContext: 'Перечитывал главу фэнтези перед сном.',
         isFavorite: false,
         isPinned: false,
         isArchived: false,
@@ -646,7 +646,7 @@ export const initialDreamsSeed: DreamWrite[] = [
         objects: ['Кровать'],
         emotions: ['Паника', 'Оцепенение'],
 
-        PreSleepContext: 'Устал за день, уснул на спине.',
+        preSleepContext: 'Устал за день, уснул на спине.',
         isFavorite: false,
         isPinned: false,
         isArchived: false,

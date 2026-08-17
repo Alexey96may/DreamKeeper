@@ -28,7 +28,7 @@
     import { computed, useId } from 'vue';
     import AppChip from '@/components/ui/AppTag.vue';
     import AppTooltip from '@/components/ui/AppTooltip.vue';
-    import { DreamOption } from '@/types/Dream';
+    import type { DreamOption } from '@/types/Dream';
     import AppErrorMessage from '@/components/ui/AppErrorMessage.vue';
     import { useFieldFocus } from '@/composables/useFieldFocus';
 
@@ -38,7 +38,7 @@
         label?: string;
         multiple?: boolean;
         required?: boolean;
-        disabled?: boolean;
+        isDisabled?: boolean;
         isLoading?: boolean;
         errorMessage?: string;
         hint?: string;
@@ -66,7 +66,7 @@
     const errorId = computed(() => `${groupId.value}-error`);
     const hintId = computed(() => `${groupId.value}-hint`);
 
-    const isDisabled = computed(() => props.disabled || props.isLoading);
+    const isDisabled = computed(() => props.isDisabled || props.isLoading);
 
     // Гибкая проверка выбранного значения (устойчивая к строкам/числам)
     const isSelected = (value: T): boolean => {
@@ -159,7 +159,7 @@
                 :aria-checked="multiple ? undefined : isSelected(cat.value)"
                 :icon="cat.icon"
                 :hint="cat?.description ?? ''"
-                :disabled="isDisabled || cat.disabled"
+                :disabled="isDisabled || cat.isDisabled"
                 :is-loading="isLoading"
                 @click="handleToggle(cat.value)"
             >

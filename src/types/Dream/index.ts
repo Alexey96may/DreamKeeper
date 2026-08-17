@@ -80,12 +80,13 @@ export interface Dream {
     objects?: string[];
     emotions?: string[];
 
-    // --- Интерпретация ---
-    interpretations?: DreamInterpretationRef[];
+    preSleepContext?: string;
     personalNotes?: string;
 
+    // --- Интерпретация ---
+    interpretations?: DreamInterpretationRef[];
+
     relatedDreams?: RelatedDreamRef[];
-    PreSleepContext?: string;
 
     isFavorite?: boolean;
     isPinned?: boolean;
@@ -114,5 +115,5 @@ export interface DreamOption<T> {
     label: string;
     description?: string;
     icon?: Component;
-    disabled?: boolean;
+    isDisabled?: boolean;
 }

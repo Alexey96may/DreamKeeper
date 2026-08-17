@@ -367,7 +367,7 @@ export const DreamWriteSchema = v.object({
     ),
     personalNotes: v.optional(v.pipe(v.string('Заметки должны быть строкой'), v.trim())),
     relatedDreams: v.optional(v.array(RelatedDreamRefSchema, 'Связанные сны должны быть массивом')),
-    PreSleepContext: v.optional(v.pipe(v.string('Контекст должен быть строкой'), v.trim())),
+    preSleepContext: v.optional(v.pipe(v.string('Контекст должен быть строкой'), v.trim())),
 
     // Флаги
     isFavorite: v.optional(v.boolean('Флаг должен быть булевым значением')),

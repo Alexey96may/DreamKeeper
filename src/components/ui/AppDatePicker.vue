@@ -169,7 +169,7 @@
                         :class="[
                             hasError
                                 ? 'border-status-error/50 text-status-error focus:border-status-error focus:ring-status-error/30'
-                                : 'border-border-primary hover:border-border-hover focus:border-accent focus:ring-accent/40',
+                                : 'border-border hover:border-border-hover focus:border-accent focus:ring-accent/40',
                             isDisabled ? 'cursor-not-allowed' : 'cursor-pointer',
                         ]"
                         v-on="inputEvents"

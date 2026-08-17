@@ -162,7 +162,7 @@
                     <!-- Animated Checkmark Icon -->
                     <Check
                         v-else-if="isChecked"
-                        class="text-text-inverse h-3 w-3 stroke-3"
+                        class="text-text-primary h-3 w-3 stroke-3"
                         aria-hidden="true"
                     />
                 </div>
