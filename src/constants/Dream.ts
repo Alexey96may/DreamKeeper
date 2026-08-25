@@ -53,6 +53,16 @@ import {
     EyeOff,
 } from 'lucide-vue-next';
 
+export interface OptionWithKey<K extends PropertyKey> {
+    value: K;
+}
+
+export function optionsToMap<K extends PropertyKey, T extends OptionWithKey<K>>(
+    options: readonly T[],
+): Record<K, T> {
+    return Object.fromEntries(options.map((option) => [option.value, option])) as Record<K, T>;
+}
+
 // ==========================================
 // 1. ВРЕМЯ СУТОК (TimeOfDay)
 // ==========================================
@@ -90,17 +100,6 @@ export const TIME_OF_DAY_OPTIONS: DreamOption<TimeOfDay>[] = [
     },
 ];
 
-export const TIME_OF_DAY_MAP: Record<
-    TimeOfDay,
-    DreamOption<TimeOfDay>
-> = TIME_OF_DAY_OPTIONS.reduce(
-    (acc, option) => {
-        acc[option.value] = option;
-        return acc;
-    },
-    {} as Record<TimeOfDay, DreamOption<TimeOfDay>>,
-);
-
 // ==========================================
 // 2. КАТЕГОРИИ / ЖАНРЫ (DreamCategory)
 // ==========================================
@@ -125,17 +124,6 @@ export const DREAM_CATEGORY_OPTIONS: DreamOption<DreamCategory>[] = [
         icon: Sparkles,
     },
 ];
-
-export const DREAM_CATEGORY_MAP: Record<
-    DreamCategory,
-    DreamOption<DreamCategory>
-> = DREAM_CATEGORY_OPTIONS.reduce(
-    (acc, option) => {
-        acc[option.value] = option;
-        return acc;
-    },
-    {} as Record<DreamCategory, DreamOption<DreamCategory>>,
-);
 
 // ==========================================
 // 3. ФЕНОМЕНЫ И СОБЫТИЯ (DreamPhenomenon)
@@ -173,17 +161,6 @@ export const DREAM_PHENOMENON_OPTIONS: DreamOption<DreamPhenomenon>[] = [
         icon: Zap,
     },
 ];
-
-export const DREAM_PHENOMENON_MAP: Record<
-    DreamPhenomenon,
-    DreamOption<DreamPhenomenon>
-> = DREAM_PHENOMENON_OPTIONS.reduce(
-    (acc, option) => {
-        acc[option.value] = option;
-        return acc;
-    },
-    {} as Record<DreamPhenomenon, DreamOption<DreamPhenomenon>>,
-);
 
 // ==========================================
 // 4. ДЕТАЛИ ФЕНОМЕНОВ (Селекторы для форм)
@@ -295,10 +272,11 @@ export const PARALYSIS_HALLUCINATIONS_OPTIONS: DreamOption<ParalysisHallucinatio
 export const LUCID_TRIGGER_OPTIONS: DreamOption<LucidTrigger>[] = [
     { value: 'irrelevant', label: 'Не важно' },
     { value: 'spontaneous', label: 'Спонтанно' },
-    { value: 'reality_check', label: 'Проверка реальности (Reality Check)' },
+    { value: 'reality_check', label: 'Проверка реальности' },
     { value: 'anomaly', label: 'Аномалия в сюжете' },
     { value: 'other', label: 'Другое' },
 ];
+
 // ==========================================
 // 5. ТИПЫ СВЯЗЕЙ СНОВ (DreamRelationType)
 // ==========================================
@@ -335,17 +313,6 @@ export const DREAM_RELATION_OPTIONS: DreamOption<DreamRelationType>[] = [
         description: 'Встречается та же деталь, предмет или персонаж',
     },
 ];
-
-export const DREAM_RELATION_MAP: Record<
-    DreamRelationType,
-    DreamOption<DreamRelationType>
-> = DREAM_RELATION_OPTIONS.reduce(
-    (acc, option) => {
-        acc[option.value] = option;
-        return acc;
-    },
-    {} as Record<DreamRelationType, DreamOption<DreamRelationType>>,
-);
 
 // ==========================================
 // 6. СВОЙСТВА ВОСПРИЯТИЯ (Стили, Камера, Ощущения)
@@ -492,3 +459,21 @@ export const SENSORY_ASPECT_OPTIONS: DreamOption<SensoryAspect>[] = [
         icon: EyeOff,
     },
 ];
+
+export const TIME_OF_DAY_MAP = optionsToMap(TIME_OF_DAY_OPTIONS);
+export const DREAM_CATEGORY_MAP = optionsToMap(DREAM_CATEGORY_OPTIONS);
+export const DREAM_PHENOMENON_MAP = optionsToMap(DREAM_PHENOMENON_OPTIONS);
+export const DEATH_CAUSE_MAP = optionsToMap(DEATH_CAUSE_OPTIONS);
+export const DEATH_AFTERMATH_MAP = optionsToMap(DEATH_AFTERMATH_OPTIONS);
+export const FLYING_TYPE_MAP = optionsToMap(FLYING_TYPE_OPTIONS);
+export const FLYING_ALTITUDE_MAP = optionsToMap(FLYING_ALTITUDE_OPTIONS);
+export const FALLING_ORIGIN_MAP = optionsToMap(FALLING_ORIGIN_OPTIONS);
+export const FALLING_OUTCOME_MAP = optionsToMap(FALLING_OUTCOME_OPTIONS);
+export const PARALYSIS_TIMING_MAP = optionsToMap(PARALYSIS_TIMING_OPTIONS);
+export const PARALYSIS_HALLUCINATIONS_MAP = optionsToMap(PARALYSIS_HALLUCINATIONS_OPTIONS);
+export const LUCID_TRIGGER_MAP = optionsToMap(LUCID_TRIGGER_OPTIONS);
+export const DREAM_RELATION_MAP = optionsToMap(DREAM_RELATION_OPTIONS);
+export const VISUAL_STYLE_MAP = optionsToMap(VISUAL_STYLE_OPTIONS);
+export const PERSPECTIVE_MAP = optionsToMap(PERSPECTIVE_OPTIONS);
+export const PARTICIPANT_ROLE_MAP = optionsToMap(PARTICIPANT_ROLE_OPTIONS);
+export const SENSORY_ASPECT_MAP = optionsToMap(SENSORY_ASPECT_OPTIONS);

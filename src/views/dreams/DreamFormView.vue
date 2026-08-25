@@ -103,6 +103,7 @@
     import DreamInterpretationSection from '@/views/dreams/partials/DreamInterpretationSection.vue';
     import DreamRelatedSection from '@/views/dreams/partials/DreamRelatedSection.vue';
     import DreamFlagSection from '@/views/dreams/partials/DreamFlagSection.vue';
+    import { useNavigation } from '@/composables/routing/useNavigation';
     import type { DreamWrite } from '@/types/Dream';
 
     const props = defineProps<{ slug?: string }>();
@@ -111,6 +112,8 @@
     const router = useRouter();
     const sleepStore = useSleepStore();
     const sourceStore = useInterpretationSourceStore();
+
+    const { goBack } = useNavigation();
 
     const isEditMode = computed(() => Boolean(props.slug));
 
@@ -257,9 +260,5 @@
                 });
             }
         }
-    };
-
-    const goBack = () => {
-        router.back();
     };
 </script>

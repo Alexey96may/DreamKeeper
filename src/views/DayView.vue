@@ -28,19 +28,35 @@
                         v-for="dream in dayDreams"
                         :key="dream.id"
                         @click="goToDreamDetail(dream.slug)"
-                        class="bg-bg-secondary/50 border-border/50 mb-2 cursor-pointer rounded-lg border p-3"
+                        class="bg-bg-secondary/50 border-border/50 mb-2 cursor-pointer rounded-lg border p-3 transition duration-200"
+                        :class="{ 'opacity-50': isDeleting(dream.id) }"
                     >
-                        <span
-                            v-if="dream.title"
-                            class="text-text-soft inline-block rounded-full py-0.5 text-xs"
-                        >
-                            {{ getDreamTypeLabel(dream.title) }}
-                        </span>
-                        <div class="flex items-start justify-between">
-                            <span class="text-text-primary">
-                                {{ dream.description || 'Без описания' }}
-                            </span>
-                            <span class="text-accent text-sm">⭐ {{ dream.quality }}/10</span>
+                        <div class="flex items-center justify-between gap-4">
+                            <div>
+                                <h4
+                                    v-if="dream.title"
+                                    class="text-text-soft inline-block rounded-full py-0.5 text-xs"
+                                >
+                                    {{ getDreamTypeLabel(dream.title) }}
+                                </h4>
+
+                                <p class="text-text-primary">
+                                    {{ dream.description || 'Без описания' }}
+                                </p>
+                            </div>
+
+                            <div class="flex min-w-1/5 items-center justify-end gap-2">
+                                <AppButton
+                                    @click.stop="handleDelete(dream.id, dream.date)"
+                                    size="xs"
+                                    variant="danger"
+                                    :disabled="isDeleting(dream.id)"
+                                >
+                                    Удалить
+                                </AppButton>
+
+                                <span class="text-accent text-sm">⭐ {{ dream.quality }}/10</span>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -63,7 +79,7 @@
                 </div>
 
                 <button
-                    @click="goToAddDream"
+                    @click="goToAddDream(date)"
                     class="text-accent hover:text-accent-hover mt-6 block text-sm font-medium transition-colors"
                 >
                     + Добавить запись за этот день
@@ -75,21 +91,26 @@
 
 <script setup lang="ts">
     import { computed, onMounted } from 'vue';
-    import { useRouter } from 'vue-router';
     import { useSleepStore } from '@/stores/modules/dream';
     import { useUserStateStore } from '@/stores/modules/userState';
+    import AppButton from '@/components/ui/AppButton.vue';
+    import { useCrud } from '@/composables/crud';
+    import { useNavigation } from '@/composables/routing/useNavigation';
 
     const props = defineProps<{
         date: string;
     }>();
 
-    const router = useRouter();
     const sleepStore = useSleepStore();
     const userStateStore = useUserStateStore();
+
+    const { goBack, goToDreamDetail, goToAddDream } = useNavigation();
 
     // --- Computed ---
     const dayDreams = computed(() => sleepStore.getDreamsByDate(props.date));
     const dayState = computed(() => userStateStore.getStateByDate(props.date));
+
+    const { handleDelete, isDeleting } = useCrud();
 
     const formattedDate = computed(() => {
         const d = new Date(props.date);
@@ -114,20 +135,6 @@
             normal: '💭 Обычный',
         };
         return labels[type] || type;
-    };
-
-    const goBack = () => {
-        router.push('/');
-    };
-
-    const goToDreamDetail = (slug: string | undefined) => {
-        if (!slug) return;
-
-        router.push(`/dream/${slug}`);
-    };
-
-    const goToAddDream = () => {
-        router.push(`/dream/new?date=${props.date}`);
     };
 
     onMounted(async () => {
