@@ -114,6 +114,11 @@
 
     const formattedDate = computed(() => {
         const d = new Date(props.date);
+
+        if (isNaN(d.getTime())) {
+            return '';
+        }
+
         return d.toLocaleDateString('ru-RU', {
             day: 'numeric',
             month: 'long',
@@ -123,6 +128,11 @@
 
     const weekday = computed(() => {
         const d = new Date(props.date);
+
+        if (isNaN(d.getTime())) {
+            return '';
+        }
+
         return d.toLocaleDateString('ru-RU', { weekday: 'long' });
     });
 

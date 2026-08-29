@@ -16,7 +16,7 @@
 </script>
 
 <template>
-    <div class="bg-bg-primary text-text-primary transition-theme duration-300">
+    <div class="bg-bg-primary text-text-primary transition-theme min-h-lvh duration-300">
         <TheHeader />
 
         <main class="py-6">

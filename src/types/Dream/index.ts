@@ -37,7 +37,13 @@ export type {
 
 export type { VisualStyle, Perspective, ParticipantRole, SensoryAspect } from './dream.styles';
 
-export type { DreamInterpretationRef, DreamRelationType, RelatedDreamRef } from './dream.relations';
+export type {
+    DreamInterpretationRef,
+    DreamRelationType,
+    RelatedDreamRef,
+    DreamInterpretationRefWithSource,
+    EnrichedRelatedDream,
+} from './dream.relations';
 
 export type TimeOfDay =
     | 'night' // Ночной (основной ночной сон)
@@ -45,6 +51,12 @@ export type TimeOfDay =
     | 'day' // Дневной (сиеста / дневной сон / nap)
     | 'evening' // Вечерний
     | 'unknown';
+
+export interface DreamElementsObject {
+    id: string;
+    title: string;
+    tags: string[];
+}
 
 export interface Dream {
     // --- Обязательные (MVP) ---

@@ -12,25 +12,9 @@
 
                 <!-- Статусные бейджи сна -->
                 <div v-if="dream" class="flex items-center gap-2">
-                    <span
-                        v-if="dream.isDraft"
-                        class="rounded border border-amber-500/20 bg-amber-500/10 px-2 py-0.5 text-xs font-semibold text-amber-500"
-                    >
-                        Черновик
-                    </span>
-                    <span
-                        v-if="dream.isArchived"
-                        class="rounded border border-gray-500/20 bg-gray-500/10 px-2 py-0.5 text-xs font-semibold text-gray-400"
-                    >
-                        В архиве
-                    </span>
-                    <span
-                        v-if="dream.isPrivate"
-                        class="rounded border border-purple-500/20 bg-purple-500/10 px-2 py-0.5 text-xs font-semibold text-purple-400"
-                        title="Приватный сон"
-                    >
-                        <Lock class="inline" /> Приватный
-                    </span>
+                    <AppTag v-if="dream.isDraft"> Черновик </AppTag>
+                    <AppTag v-if="dream.isArchived"> В архиве </AppTag>
+                    <AppTag v-if="dream.isPrivate"> <Lock class="inline" /> Приватный </AppTag>
                 </div>
             </div>
 
@@ -61,12 +45,10 @@
                         <div class="flex items-center gap-2 text-lg">
                             <span v-if="dream.isFavorite" title="В избранном"><Star /></span>
                             <span v-if="dream.isPinned" title="Закреплено"><Pin /></span>
-                            <span
-                                v-if="dream.timeOfDay"
-                                class="bg-bg-secondary text-text-soft rounded-full px-3 py-0.5 text-xs font-medium"
-                            >
-                                {{ TIME_OF_DAY_MAP[dream.timeOfDay].label }}
-                            </span>
+
+                            <AppTag>
+                                {{ TIME_OF_DAY_MAP[dream.timeOfDay || ''].label }}
+                            </AppTag>
                         </div>
                     </div>
 
@@ -83,13 +65,11 @@
                         class="mt-3 flex flex-wrap gap-2"
                         aria-label="Категории сна"
                     >
-                        <span
-                            v-for="cat in dream.categories"
-                            :key="cat"
-                            class="bg-accent/15 text-accent border-accent/20 rounded-md border px-2.5 py-1 text-xs font-semibold"
-                        >
-                            {{ DREAM_CATEGORY_MAP[cat].label }}
-                        </span>
+                        <div v-for="cat in dream.categories" :key="cat">
+                            <AppTag>
+                                {{ DREAM_CATEGORY_MAP[cat || ''].label }}
+                            </AppTag>
+                        </div>
                     </div>
                 </header>
 
@@ -100,26 +80,23 @@
                     aria-label="Оценки сна"
                 >
                     <div class="grid grid-cols-3 gap-2 text-center">
-                        <div v-if="dream.quality !== undefined && dream.quality > 0">
-                            <span class="text-text-mute block text-xs">Качество</span>
-                            <span class="text-text-primary text-lg font-bold">
-                                {{ dream.quality }}/10
-                            </span>
-                        </div>
+                        <AppRating
+                            v-if="dream.quality !== undefined && dream.quality > 0"
+                            label="Качество"
+                            :value="dream.quality"
+                        />
 
-                        <div v-if="dream.clarity !== undefined && dream.clarity > 0">
-                            <span class="text-text-mute block text-xs">Ясность</span>
-                            <span class="text-text-primary text-lg font-bold">
-                                {{ dream.clarity }}/10
-                            </span>
-                        </div>
+                        <AppRating
+                            v-if="dream.clarity !== undefined && dream.clarity > 0"
+                            label="Ясность"
+                            :value="dream.clarity"
+                        />
 
-                        <div v-if="dream.moodAfter !== undefined && dream.moodAfter > 0">
-                            <span class="text-text-mute block text-xs">Настроение после</span>
-                            <span class="text-text-primary text-lg font-bold">
-                                {{ dream.moodAfter }}/10
-                            </span>
-                        </div>
+                        <AppRating
+                            v-if="dream.moodAfter !== undefined && dream.moodAfter > 0"
+                            label="Настроение после"
+                            :value="dream.moodAfter"
+                        />
                     </div>
                 </section>
 
@@ -152,123 +129,26 @@
                         Детали категорий
                     </h2>
 
-                    <!-- Осознанный сон -->
-                    <div
+                    <DreamCategoryDetailsCard
                         v-if="dream.categoryDetails?.lucid"
-                        class="bg-bg-secondary/30 border-border/30 space-y-1.5 rounded-lg border p-3.5 text-xs"
-                    >
-                        <div class="text-accent font-bold">
-                            <component :is="DREAM_CATEGORY_MAP['lucid'].icon" />
-                            {{ DREAM_CATEGORY_MAP['lucid'].label }}
-                        </div>
-                        <div
-                            v-if="
-                                dream.categoryDetails.lucid.controlLevel !== undefined &&
-                                dream.categoryDetails.lucid.controlLevel > 0
-                            "
-                        >
-                            <span class="text-text-mute">Уровень контроля:</span>
-                            <span class="text-text-primary ml-1 font-semibold">
-                                {{ dream.categoryDetails.lucid.controlLevel }}/10
-                            </span>
-                        </div>
-                        <div v-if="dream.categoryDetails.lucid.trigger">
-                            <span class="text-text-mute">Триггер осознания:</span>
-                            <span class="text-text-primary ml-1 font-medium">
-                                {{ LUCID_TRIGGER_MAP[dream.categoryDetails.lucid.trigger].label }}
-                            </span>
-                        </div>
-                    </div>
+                        type="lucid"
+                        key="lucid"
+                        :details="dream.categoryDetails.lucid"
+                    />
 
-                    <!-- Кошмар -->
-                    <div
+                    <DreamCategoryDetailsCard
                         v-if="dream.categoryDetails?.nightmare"
-                        class="space-y-1.5 rounded-lg border border-red-500/20 bg-red-500/5 p-3.5 text-xs"
-                    >
-                        <div class="font-bold text-red-400">
-                            <component :is="DREAM_CATEGORY_MAP['nightmare'].icon" />
-                            {{ DREAM_CATEGORY_MAP['nightmare'].label }}
-                        </div>
-                        <div
-                            v-if="
-                                dream.categoryDetails.nightmare.fearLevel !== undefined &&
-                                dream.categoryDetails.nightmare.fearLevel > 0
-                            "
-                        >
-                            <span class="text-text-mute">Уровень страха:</span>
-                            <span class="text-text-primary ml-1 font-semibold">
-                                {{ dream.categoryDetails.nightmare.fearLevel }}/10
-                            </span>
-                        </div>
-                        <div v-if="dream.categoryDetails.nightmare.copingMechanism">
-                            <span class="text-text-mute">Как справился:</span>
-                            <p class="text-text-primary mt-0.5">
-                                {{ dream.categoryDetails.nightmare.copingMechanism }}
-                            </p>
-                        </div>
-                        <div
-                            v-if="dream.categoryDetails.nightmare.hasPhysicalResponse !== undefined"
-                        >
-                            <span class="text-text-mute">Физическая реакция:</span>
-                            <span class="text-text-primary ml-1 font-medium">
-                                {{
-                                    dream.categoryDetails.nightmare.hasPhysicalResponse
-                                        ? 'Да'
-                                        : 'Нет'
-                                }}
-                            </span>
-                        </div>
-                    </div>
+                        type="nightmare"
+                        key="nightmare"
+                        :details="dream.categoryDetails.nightmare"
+                    />
 
-                    <!-- Вещий сон -->
-                    <div
+                    <DreamCategoryDetailsCard
                         v-if="dream.categoryDetails?.prophetic"
-                        class="space-y-1.5 rounded-lg border border-indigo-500/20 bg-indigo-500/5 p-3.5 text-xs"
-                    >
-                        <div class="font-bold text-indigo-400">
-                            <component :is="DREAM_CATEGORY_MAP['prophetic'].icon" />
-                            {{ DREAM_CATEGORY_MAP['prophetic'].label }}
-                        </div>
-                        <div v-if="dream.categoryDetails.prophetic.isFulfilled !== undefined">
-                            <span class="text-text-mute">Статус:</span>
-                            <span
-                                :class="
-                                    dream.categoryDetails.prophetic.isFulfilled
-                                        ? 'text-emerald-400'
-                                        : 'text-amber-400'
-                                "
-                                class="ml-1 font-bold"
-                            >
-                                {{
-                                    dream.categoryDetails.prophetic.isFulfilled
-                                        ? 'Сбылся'
-                                        : 'Ожидает исполнения'
-                                }}
-                            </span>
-                        </div>
-                        <div v-if="dream.categoryDetails.prophetic.expectedByDate">
-                            <span class="text-text-mute">Ожидался до:</span>
-                            <span class="text-text-primary ml-1 font-medium">
-                                <AppSmartTime
-                                    :date="dream.categoryDetails.prophetic.expectedByDate"
-                                />
-                            </span>
-                        </div>
-                        <div v-if="dream.categoryDetails.prophetic.fulfilledDate">
-                            <span class="text-text-mute">Сбылся:</span>
-                            <span class="text-text-primary ml-1 font-medium">
-                                <AppSmartTime
-                                    :date="dream.categoryDetails.prophetic.fulfilledDate"
-                                />
-                            </span>
-                        </div>
-                        <div v-if="dream.categoryDetails.prophetic.fulfillmentNotes">
-                            <span class="text-text-mute">Что произошло:</span>
-                            <p class="text-text-primary mt-0.5">
-                                {{ dream.categoryDetails.prophetic.fulfillmentNotes }}
-                            </p>
-                        </div>
-                    </div>
+                        type="prophetic"
+                        key="prophetic"
+                        :details="dream.categoryDetails.prophetic"
+                    />
                 </section>
 
                 <!-- 6. Особые явления (Phenomena) и их детали -->
@@ -278,13 +158,9 @@
                     </h2>
 
                     <div class="flex flex-wrap gap-2">
-                        <span
-                            v-for="item in dream.phenomena"
-                            :key="item"
-                            class="bg-bg-secondary text-text-primary rounded-md px-2.5 py-1 text-xs font-medium"
-                        >
-                            {{ DREAM_PHENOMENON_MAP[item].label }}
-                        </span>
+                        <AppTag v-for="item in dream.phenomena" :key="item">
+                            {{ DREAM_PHENOMENON_MAP[item || ''].label }}
+                        </AppTag>
                     </div>
 
                     <!-- Детали феноменов -->
@@ -425,33 +301,17 @@
                         Восприятие
                     </h2>
 
-                    <div class="grid grid-cols-1 gap-2 text-xs sm:grid-cols-2">
-                        <div v-if="dream.visualStyle" class="bg-bg-secondary/30 rounded-lg p-2.5">
-                            <span class="text-text-mute">Визуальный стиль:</span>
-                            <span class="text-text-primary ml-1 font-semibold">
-                                {{ VISUAL_STYLE_MAP[dream.visualStyle].label }}
-                            </span>
-                        </div>
-
-                        <div v-if="dream.perspective" class="bg-bg-secondary/30 rounded-lg p-2.5">
-                            <span class="text-text-mute">Перспектива:</span>
-                            <span class="text-text-primary ml-1 font-semibold">
-                                {{ PERSPECTIVE_MAP[dream.perspective].label }}
-                            </span>
-                        </div>
+                    <div v-for="element in visualStyles" :key="element.id">
+                        <DreamElementsCard :element="element" />
                     </div>
 
                     <!-- Роли -->
                     <div v-if="dream.roles?.length" class="space-y-1">
                         <span class="text-text-mute text-xs">Роль в сюжетe:</span>
                         <div class="flex flex-wrap gap-1.5">
-                            <span
-                                v-for="role in dream.roles"
-                                :key="role"
-                                class="bg-bg-secondary text-text-primary rounded px-2 py-0.5 text-xs font-medium"
-                            >
+                            <AppTag v-for="role in dream.roles" :key="role">
                                 {{ PARTICIPANT_ROLE_MAP[role].label }}
-                            </span>
+                            </AppTag>
                         </div>
                     </div>
 
@@ -459,13 +319,9 @@
                     <div v-if="dream.sensations?.length" class="space-y-1">
                         <span class="text-text-mute text-xs">Сенсорные ощущения:</span>
                         <div class="flex flex-wrap gap-1.5">
-                            <span
-                                v-for="sensation in dream.sensations"
-                                :key="sensation"
-                                class="bg-bg-secondary text-text-primary rounded px-2 py-0.5 text-xs"
-                            >
+                            <AppTag v-for="sensation in dream.sensations" :key="sensation">
                                 {{ SENSORY_ASPECT_MAP[sensation].label }}
-                            </span>
+                            </AppTag>
                         </div>
                     </div>
                 </section>
@@ -475,45 +331,12 @@
                     <h2 class="text-text-soft text-xs font-semibold tracking-wider uppercase">
                         Аналитические элементы
                     </h2>
-                    <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                        <div
-                            v-if="dream.characters?.length"
-                            class="bg-bg-secondary/30 rounded-lg p-3 text-xs"
-                        >
-                            <span class="text-text-mute mb-1 block font-medium">Персонажи:</span>
-                            <p class="text-text-primary font-medium">
-                                {{ dream.characters.join(', ') }}
-                            </p>
-                        </div>
-
-                        <div
-                            v-if="dream.locations?.length"
-                            class="bg-bg-secondary/30 rounded-lg p-3 text-xs"
-                        >
-                            <span class="text-text-mute mb-1 block font-medium">Локации:</span>
-                            <p class="text-text-primary font-medium">
-                                {{ dream.locations.join(', ') }}
-                            </p>
-                        </div>
-
-                        <div
-                            v-if="dream.objects?.length"
-                            class="bg-bg-secondary/30 rounded-lg p-3 text-xs"
-                        >
-                            <span class="text-text-mute mb-1 block font-medium">Предметы:</span>
-                            <p class="text-text-primary font-medium">
-                                {{ dream.objects.join(', ') }}
-                            </p>
-                        </div>
-
-                        <div
-                            v-if="dream.emotions?.length"
-                            class="bg-bg-secondary/30 rounded-lg p-3 text-xs"
-                        >
-                            <span class="text-text-mute mb-1 block font-medium">Эмоции:</span>
-                            <p class="text-text-primary font-medium">
-                                {{ dream.emotions.join(', ') }}
-                            </p>
+                    <div
+                        v-if="analiticElements.length"
+                        class="grid grid-cols-1 gap-3 sm:grid-cols-2"
+                    >
+                        <div v-for="element in analiticElements" :key="element.id">
+                            <DreamElementsCard :element="element" />
                         </div>
                     </div>
                 </section>
@@ -523,39 +346,12 @@
                     <h2 class="text-text-soft text-xs font-semibold tracking-wider uppercase">
                         Интерпретации
                     </h2>
-                    <div class="space-y-2">
-                        <div
-                            v-for="(interp, idx) in interpretationsWithSource"
-                            :key="idx"
-                            class="bg-bg-secondary/40 border-border/40 rounded-lg border p-3.5 text-xs"
-                        >
-                            <div class="flex items-center justify-between">
-                                <span class="text-text-primary text-sm font-bold">
-                                    <Link class="inline" /> {{ interp.tag }}
-                                </span>
-                                <div class="flex items-center gap-2">
-                                    <span
-                                        v-if="
-                                            interp.isAccurate !== undefined &&
-                                            interp.isAccurate !== null
-                                        "
-                                        class="text-[10px]"
-                                    >
-                                        <component :is="interp.isAccurate ? Check : X"></component>
-                                        {{ interp.isAccurate ? ' Подтверждено' : ' Не совпало' }}
-                                    </span>
-                                    <span
-                                        class="bg-bg-secondary text-text-mute rounded px-1.5 py-0.5 text-[10px] font-semibold uppercase"
-                                    >
-                                        {{ interp.source.title }}
-                                    </span>
-                                </div>
-                            </div>
-                            <p class="text-text-mute mt-1.5 leading-relaxed">
-                                {{ interp.meaning }}
-                            </p>
-                        </div>
-                    </div>
+
+                    <DreamInterpretationCard
+                        v-for="interp in interpretationsWithSource"
+                        :key="interp.interpretationId"
+                        :interpretation="interp"
+                    />
                 </section>
 
                 <!-- 10. Личные заметки -->
@@ -575,29 +371,8 @@
                     <h2 class="text-text-soft text-xs font-semibold tracking-wider uppercase">
                         Связанные сны
                     </h2>
-                    <ul class="space-y-2" role="list">
-                        <li v-for="(rel, idx) in relatedDreams" :key="idx">
-                            <div
-                                class="bg-bg-secondary/40 border-border/40 flex flex-col justify-between gap-1 rounded-lg border p-2.5 text-xs sm:flex-row sm:items-center"
-                            >
-                                <div class="flex items-center gap-2">
-                                    <span class="text-accent font-semibold">
-                                        {{ DREAM_RELATION_MAP[rel?.relationType]?.label }}
-                                    </span>
-                                    <router-link
-                                        v-if="rel?.slug"
-                                        :to="`/dream/${rel?.slug}`"
-                                        class="text-text-primary font-bold hover:underline"
-                                    >
-                                        → Сон "{{ rel?.title }}"
-                                    </router-link>
-                                </div>
-                                <span v-if="rel?.note" class="text-text-mute italic">
-                                    "{{ rel?.note }}"
-                                </span>
-                            </div>
-                        </li>
-                    </ul>
+
+                    <DreamRelatedCard v-for="rel in relatedDreams" :key="rel.id" :relation="rel" />
                 </section>
 
                 <!-- Метаданные создания / редактирования -->
@@ -645,23 +420,19 @@
 <script setup lang="ts">
     import { computed, onMounted } from 'vue';
     import { useSleepStore } from '@/stores/modules/dream';
-    import {
-        CalendarDays,
-        Star,
-        Pin,
-        Lock,
-        Link,
-        MoveLeft,
-        Check,
-        X,
-        ArrowBigLeftDash,
-    } from 'lucide-vue-next';
+    import { CalendarDays, Star, Pin, Lock, MoveLeft, ArrowBigLeftDash } from 'lucide-vue-next';
     import AppButton from '@/components/ui/AppButton.vue';
+    import AppTag from '@/components/ui/AppTag.vue';
+    import DreamInterpretationCard from '@/components/cards/DreamInterpretationCard.vue';
+    import DreamRelatedCard from '@/components/cards/DreamRelatedCard.vue';
+    import DreamElementsCard from '@/components/cards/DreamElementsCard.vue';
+    import DreamCategoryDetailsCard from '@/components/cards/DreamCategoryDetailsCard.vue';
+    import AppRating from '@/components/ui/AppRating.vue';
     import { useCrud } from '@/composables/crud';
     import AppSmartTime from '@/components/ui/AppSmartTime.vue';
     import { useNavigation } from '@/composables/routing/useNavigation';
     import { useInterpretationSourceStore } from '@/stores/modules/useInterpretationSourceStore';
-
+    import type { DreamElementsObject } from '@/types/Dream';
     import {
         TIME_OF_DAY_MAP,
         DREAM_CATEGORY_MAP,
@@ -674,8 +445,6 @@
         FALLING_OUTCOME_MAP,
         PARALYSIS_TIMING_MAP,
         PARALYSIS_HALLUCINATIONS_MAP,
-        LUCID_TRIGGER_MAP,
-        DREAM_RELATION_MAP,
         VISUAL_STYLE_MAP,
         PERSPECTIVE_MAP,
         PARTICIPANT_ROLE_MAP,
@@ -778,6 +547,71 @@
                 };
             })
             .filter((item): item is NonNullable<typeof item> => item !== null);
+    });
+
+    const visualStyles = computed(() => {
+        const visualArray: DreamElementsObject[] = [];
+
+        if (dream.value?.visualStyle) {
+            const analiticObj: DreamElementsObject = {
+                id: 'visualStyle',
+                title: 'Визуальный стиль:',
+                tags: [VISUAL_STYLE_MAP[dream.value.visualStyle].label],
+            };
+            visualArray.push(analiticObj);
+        }
+        if (dream.value?.perspective) {
+            const analiticObj: DreamElementsObject = {
+                id: 'perspective',
+                title: 'Перспектива:',
+                tags: [PERSPECTIVE_MAP[dream.value.perspective].label],
+            };
+            visualArray.push(analiticObj);
+        }
+
+        return visualArray;
+    });
+
+    const analiticElements = computed(() => {
+        const analiticArray: DreamElementsObject[] = [];
+
+        if (dream.value?.characters?.length) {
+            const analiticObj: DreamElementsObject = {
+                id: 'characters',
+                title: 'Персонажи:',
+                tags: dream.value.characters,
+            };
+            analiticArray.push(analiticObj);
+        }
+
+        if (dream.value?.locations?.length) {
+            const analiticObj: DreamElementsObject = {
+                id: 'locations',
+                title: 'Локации:',
+                tags: dream.value.locations,
+            };
+            analiticArray.push(analiticObj);
+        }
+
+        if (dream.value?.objects?.length) {
+            const analiticObj: DreamElementsObject = {
+                id: 'objects',
+                title: 'Предметы:',
+                tags: dream.value.objects,
+            };
+            analiticArray.push(analiticObj);
+        }
+
+        if (dream.value?.emotions?.length) {
+            const analiticObj: DreamElementsObject = {
+                id: 'emotions',
+                title: 'Эмоции:',
+                tags: dream.value.emotions,
+            };
+            analiticArray.push(analiticObj);
+        }
+
+        return analiticArray;
     });
 
     onMounted(() => {

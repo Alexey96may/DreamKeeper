@@ -1,9 +1,16 @@
+import type { InterprSource } from '@/types/Interpretation/Source';
+import type { Dream } from '@/types/Dream';
+
 export interface DreamInterpretationRef {
     interpretationId?: number; // ID из таблицы interpretations в IndexedDB
     tag: string; // Тег для быстрого поиска ("часы")
     meaning: string; // Зафиксированный текст (чтобы если сонник отредактируют, контекст сна не поплыл)
     sourceId: number; //
     isAccurate?: boolean | null; // Отметка сновидца: "Сбылось/Похоже на правду"
+}
+
+export interface DreamInterpretationRefWithSource extends DreamInterpretationRef {
+    source: InterprSource;
 }
 
 export type DreamRelationType =
@@ -31,3 +38,5 @@ export interface RelatedDreamRef {
      */
     note?: string;
 }
+
+export type EnrichedRelatedDream = Dream & Omit<RelatedDreamRef, 'dreamId'>;
