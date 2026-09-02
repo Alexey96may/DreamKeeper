@@ -6,6 +6,7 @@ import { defineStore } from 'pinia';
 import type { UserState } from '@/types/UserState';
 
 import { ServiceFactory } from '@/services/factories/ServiceFactory';
+import { userStatesSeed } from '@/services/seeders/userStatesSeeder';
 import { UserStateRepository } from '@/services/repositories/UserStateRepository';
 
 export const useUserStateStore = defineStore('userState', () => {
@@ -65,7 +66,15 @@ export const useUserStateStore = defineStore('userState', () => {
         const service = ServiceFactory.createService('indexeddb');
         await service.init();
         repository.value = new UserStateRepository(service);
-        await loadAll();
+
+        if (states.value.length === 0) {
+            // Запускаем все вставки параллельно (или используем bulkAdd, если поддерживается)
+
+            await Promise.all(userStatesSeed.map((seedData) => repository.value!.create(seedData)));
+
+            // Запрашиваем итоговый массив
+            await loadAll();
+        }
     };
 
     const loadAll = async () => {

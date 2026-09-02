@@ -39,7 +39,18 @@ const router = createRouter({
             component: () => import('../views/dreams/DreamDetailView.vue'),
             props: true,
         },
+        {
+            path: '/:pathMatch(.*)*',
+            name: 'not-found',
+            component: () => import('@/views/NotFoundView.vue'),
+            meta: {
+                title: 'Страница не найдена — Дневник снов',
+            },
+        },
     ],
+    scrollBehavior() {
+        return { top: 0 };
+    },
 });
 
 export default router;

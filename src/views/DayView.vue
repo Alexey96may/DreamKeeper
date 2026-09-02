@@ -1,13 +1,9 @@
 <template>
     <div class="bg-bg-primary text-text-primary transition-theme duration-theme min-h-screen">
         <div class="container mx-auto max-w-2xl px-4 py-6">
-            <!-- Кнопка Назад -->
-            <button
-                @click="goBack"
-                class="text-text-mute hover:text-text-primary mb-4 flex items-center gap-2 transition-colors"
-            >
-                ← Назад к календарю
-            </button>
+            <AppButton @click="goBack" size="xs" variant="back" :icon-left="MoveLeft">
+                Назад к календарю
+            </AppButton>
 
             <div class="dream-card fade-in p-6">
                 <div class="flex items-start justify-between">
@@ -37,7 +33,7 @@
                                     v-if="dream.title"
                                     class="text-text-soft inline-block rounded-full py-0.5 text-xs"
                                 >
-                                    {{ getDreamTypeLabel(dream.title) }}
+                                    {{ dream.title }}
                                 </h4>
 
                                 <p class="text-text-primary">
@@ -55,7 +51,10 @@
                                     Удалить
                                 </AppButton>
 
-                                <span class="text-accent text-sm">⭐ {{ dream.quality }}/10</span>
+                                <AppRating
+                                    v-if="dream.quality !== undefined && dream.quality > 0"
+                                    :value="dream.quality"
+                                />
                             </div>
                         </div>
                     </div>
@@ -65,25 +64,50 @@
                 <!-- Состояние за день -->
                 <div v-if="dayState" class="border-border mt-4 border-t pt-4">
                     <h4 class="text-text-soft mb-2 text-sm font-medium">Состояние</h4>
+
                     <div class="flex flex-wrap gap-4">
-                        <span class="text-text-mute text-sm">
-                            😊 Настроение: {{ dayState.mood ?? '—' }}/10
-                        </span>
-                        <span class="text-text-mute text-sm">
-                            ⚡ Энергия: {{ dayState.energy ?? '—' }}/10
-                        </span>
-                        <span class="text-text-mute text-sm">
-                            🧠 Фокус: {{ dayState.focus ?? '—' }}/10
-                        </span>
+                        <AppRating
+                            v-if="dayState.mood !== undefined && dayState.mood > 0"
+                            label="Настроение"
+                            :value="dayState.mood"
+                        />
+
+                        <AppRating
+                            v-if="dayState.energy !== undefined && dayState.energy > 0"
+                            label="Фокус"
+                            :value="dayState.energy"
+                        />
+
+                        <AppRating
+                            v-if="dayState.focus !== undefined && dayState.focus > 0"
+                            label="Энергия"
+                            :value="dayState.focus"
+                        />
+
+                        <AppRating
+                            v-if="dayState.productivity !== undefined && dayState.productivity > 0"
+                            label="Продуктивность"
+                            :value="dayState.productivity"
+                        />
+
+                        <AppRating
+                            v-if="dayState.stress !== undefined && dayState.stress > 0"
+                            label="Стресс"
+                            :value="dayState.stress"
+                        />
                     </div>
+
+                    <p v-if="dayState.notes">{{ dayState.notes }}</p>
                 </div>
 
-                <button
+                <AppButton
                     @click="goToAddDream(date)"
-                    class="text-accent hover:text-accent-hover mt-6 block text-sm font-medium transition-colors"
+                    size="xs"
+                    variant="add"
+                    :icon-left="PlusIcon"
                 >
-                    + Добавить запись за этот день
-                </button>
+                    Добавить запись за этот день
+                </AppButton>
             </div>
         </div>
     </div>
@@ -93,9 +117,12 @@
     import { computed, onMounted } from 'vue';
     import { useSleepStore } from '@/stores/modules/dream';
     import { useUserStateStore } from '@/stores/modules/userState';
+    import { MoveLeft, PlusIcon } from 'lucide-vue-next';
+    import AppRating from '@/components/ui/AppRating.vue';
     import AppButton from '@/components/ui/AppButton.vue';
     import { useCrud } from '@/composables/crud';
     import { useNavigation } from '@/composables/routing/useNavigation';
+    import router from '@/router';
 
     const props = defineProps<{
         date: string;
@@ -116,7 +143,7 @@
         const d = new Date(props.date);
 
         if (isNaN(d.getTime())) {
-            return '';
+            router.replace({ name: 'not-found' });
         }
 
         return d.toLocaleDateString('ru-RU', {
@@ -130,26 +157,15 @@
         const d = new Date(props.date);
 
         if (isNaN(d.getTime())) {
-            return '';
+            router.replace({ name: 'not-found' });
         }
 
         return d.toLocaleDateString('ru-RU', { weekday: 'long' });
     });
 
-    // --- Handlers ---
-    const getDreamTypeLabel = (type: string): string => {
-        const labels: Record<string, string> = {
-            lucid: '🧠 Осознанный',
-            nightmare: '😱 Кошмар',
-            prophetic: '🔮 Вещий',
-            normal: '💭 Обычный',
-        };
-        return labels[type] || type;
-    };
-
     onMounted(async () => {
-        if (sleepStore.sleeps.length === 0) await sleepStore.loadAll();
-        if (userStateStore.states.length === 0) await userStateStore.loadAll();
+        if (sleepStore.sleeps.length === 0) await sleepStore.init();
+        if (userStateStore.states.length === 0) await userStateStore.init();
     });
 </script>
 

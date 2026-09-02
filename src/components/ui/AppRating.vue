@@ -1,7 +1,7 @@
 <script setup lang="ts">
     withDefaults(
         defineProps<{
-            label: string;
+            label?: string;
             value: number | string;
             max?: number;
         }>(),
@@ -17,7 +17,7 @@
 
 <template>
     <div class="flex flex-col items-center">
-        <span class="text-text-mute block text-xs">{{ label }}</span>
+        <span v-if="label" class="text-text-mute block text-xs">{{ label }}</span>
 
         <button
             type="button"
