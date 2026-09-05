@@ -106,7 +106,16 @@
                     variant="add"
                     :icon-left="PlusIcon"
                 >
-                    Добавить запись за этот день
+                    Добавить сон
+                </AppButton>
+
+                <AppButton
+                    v-if="isAllowedDay"
+                    size="xs"
+                    variant="add"
+                    :icon-left="dayState ? Edit2Icon : PlusIcon"
+                >
+                    {{ dayState ? 'Редактировать состояние' : 'Добавить состояние' }}
                 </AppButton>
             </div>
         </div>
@@ -117,11 +126,12 @@
     import { computed, onMounted } from 'vue';
     import { useSleepStore } from '@/stores/modules/dream';
     import { useUserStateStore } from '@/stores/modules/userState';
-    import { MoveLeft, PlusIcon } from 'lucide-vue-next';
+    import { MoveLeft, PlusIcon, Edit2Icon } from 'lucide-vue-next';
     import AppRating from '@/components/ui/AppRating.vue';
     import AppButton from '@/components/ui/AppButton.vue';
     import { useCrud } from '@/composables/crud';
     import { useNavigation } from '@/composables/routing/useNavigation';
+    import { isPastOrPresentDay } from '@/utils/date';
     import router from '@/router';
 
     const props = defineProps<{
@@ -136,6 +146,10 @@
     // --- Computed ---
     const dayDreams = computed(() => sleepStore.getDreamsByDate(props.date));
     const dayState = computed(() => userStateStore.getStateByDate(props.date));
+
+    const isAllowedDay = computed(() => {
+        return isPastOrPresentDay(props.date);
+    });
 
     const { handleDelete, isDeleting } = useCrud();
 

@@ -8,3 +8,23 @@ export const formatToLocalDateStr = (date: Date = new Date()): string => {
 
     return `${year}-${month}-${day}`;
 };
+
+/**
+ * Checks if a given date is today or in the past (non-future).
+ * Normalizes both dates to the start of the day (00:00:00.000) in local time.
+ *
+ * @param {Date | string | number} date - The date to check (Date object, string, or timestamp).
+ * @returns {boolean} Returns true if the date is in the past or today, and false for future dates.
+ *
+ * @example
+ * isPastOrPresentDay('2026-03-05'); // true or false depending on current date
+ */
+export function isPastOrPresentDay(date: Date | string | number): boolean {
+    const target = new Date(date);
+    const today = new Date();
+
+    target.setHours(0, 0, 0, 0);
+    today.setHours(0, 0, 0, 0);
+
+    return target <= today;
+}
