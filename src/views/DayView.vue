@@ -111,6 +111,7 @@
 
                 <AppButton
                     v-if="isAllowedDay"
+                    @click="isModalOpen = true"
                     size="xs"
                     variant="add"
                     :icon-left="dayState ? Edit2Icon : PlusIcon"
@@ -119,11 +120,22 @@
                 </AppButton>
             </div>
         </div>
+
+        <AppModal v-model="isModalOpen" title="Confirm Action" :close-on-overlay="true">
+            <!-- Body content -->
+            <p>Are you sure you want to proceed with this operation?</p>
+
+            <!-- Footer slot -->
+            <template #footer>
+                <button @click="isModalOpen = false">Cancel</button>
+                <button class="primary">Confirm</button>
+            </template>
+        </AppModal>
     </div>
 </template>
 
 <script setup lang="ts">
-    import { computed, onMounted } from 'vue';
+    import { computed, onMounted, ref } from 'vue';
     import { useSleepStore } from '@/stores/modules/dream';
     import { useUserStateStore } from '@/stores/modules/userState';
     import { MoveLeft, PlusIcon, Edit2Icon } from 'lucide-vue-next';
@@ -133,6 +145,7 @@
     import { useNavigation } from '@/composables/routing/useNavigation';
     import { isPastOrPresentDay } from '@/utils/date';
     import router from '@/router';
+    import AppModal from '@/components/sections/AppModal.vue';
 
     const props = defineProps<{
         date: string;
@@ -176,6 +189,8 @@
 
         return d.toLocaleDateString('ru-RU', { weekday: 'long' });
     });
+
+    const isModalOpen = ref(false);
 
     onMounted(async () => {
         if (sleepStore.sleeps.length === 0) await sleepStore.init();
