@@ -5,13 +5,16 @@
     import AppToast from '@/components/ui/AppToast.vue';
     import { useUIStore } from '@/stores/modules/ui';
     import { useSleepStore } from '@/stores/modules/dream';
+    import { useUserStateStore } from '@/stores/modules/userState';
 
     const uiStore = useUIStore();
     const sleepStore = useSleepStore();
+    const userStateStore = useUserStateStore();
 
     onMounted(() => {
         uiStore.initTheme();
         sleepStore.init();
+        userStateStore.init();
     });
 </script>
 
