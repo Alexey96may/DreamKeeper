@@ -1,5 +1,5 @@
 import * as v from 'valibot';
-import { Dream } from '@/types/Dream';
+import type { Dream } from '@/types/Dream';
 
 // ==========================================
 // 1. Enums / Enums Enums (Литеральные типы)

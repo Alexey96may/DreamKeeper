@@ -48,7 +48,16 @@
                                     variant="danger"
                                     :disabled="isDeleting(dream.id)"
                                 >
-                                    Удалить
+                                    <X />
+                                </AppButton>
+
+                                <AppButton
+                                    @click="goToEdit(dream.slug)"
+                                    size="xs"
+                                    variant="primary"
+                                    :disabled="isDeleting(dream.id)"
+                                >
+                                    <Edit2Icon />
                                 </AppButton>
 
                                 <AppRating
@@ -59,7 +68,17 @@
                         </div>
                     </div>
                 </div>
-                <p v-else class="text-text-mute mt-4 text-sm">Нет записей снов за этот день</p>
+                <p v-else class="text-text-mute mt-4 text-sm">Нет снов за этот день</p>
+
+                <AppButton
+                    v-if="isAllowedDay"
+                    @click="goToAddDream(date)"
+                    size="xs"
+                    variant="add"
+                    :icon-left="PlusIcon"
+                >
+                    Добавить сон
+                </AppButton>
 
                 <!-- Состояние за день -->
                 <div v-if="dayState" class="border-border mt-4 border-t pt-4">
@@ -74,13 +93,13 @@
 
                         <AppRating
                             v-if="dayState.energy !== undefined && dayState.energy > 0"
-                            label="Фокус"
+                            label="Энергия"
                             :value="dayState.energy"
                         />
 
                         <AppRating
                             v-if="dayState.focus !== undefined && dayState.focus > 0"
-                            label="Энергия"
+                            label="Фокус"
                             :value="dayState.focus"
                         />
 
@@ -99,15 +118,7 @@
 
                     <p v-if="dayState.notes">{{ dayState.notes }}</p>
                 </div>
-
-                <AppButton
-                    @click="goToAddDream(date)"
-                    size="xs"
-                    variant="add"
-                    :icon-left="PlusIcon"
-                >
-                    Добавить сон
-                </AppButton>
+                <p v-else class="text-text-mute mt-4 text-sm">Нет состояния за этот день</p>
 
                 <AppButton
                     v-if="isAllowedDay"
@@ -121,15 +132,12 @@
             </div>
         </div>
 
-        <AppModal v-model="isModalOpen" title="Confirm Action" :close-on-overlay="true">
-            <!-- Body content -->
-            <p>Are you sure you want to proceed with this operation?</p>
-
-            <!-- Footer slot -->
-            <template #footer>
-                <button @click="isModalOpen = false">Cancel</button>
-                <button class="primary">Confirm</button>
-            </template>
+        <AppModal
+            v-model="isModalOpen"
+            :close-on-overlay="true"
+            :title="dayState ? 'Редактировать состояние за день' : 'Добавить состояние за день'"
+        >
+            <UserStateForm :initial-data="dayState" :date="date" @change="isModalOpen = false" />
         </AppModal>
     </div>
 </template>
@@ -138,9 +146,10 @@
     import { computed, onMounted, ref } from 'vue';
     import { useSleepStore } from '@/stores/modules/dream';
     import { useUserStateStore } from '@/stores/modules/userState';
-    import { MoveLeft, PlusIcon, Edit2Icon } from 'lucide-vue-next';
+    import { MoveLeft, PlusIcon, Edit2Icon, X } from 'lucide-vue-next';
     import AppRating from '@/components/ui/AppRating.vue';
     import AppButton from '@/components/ui/AppButton.vue';
+    import UserStateForm from '@/components/sections/UserStateForm.vue';
     import { useCrud } from '@/composables/crud';
     import { useNavigation } from '@/composables/routing/useNavigation';
     import { isPastOrPresentDay } from '@/utils/date';
@@ -154,7 +163,7 @@
     const sleepStore = useSleepStore();
     const userStateStore = useUserStateStore();
 
-    const { goBack, goToDreamDetail, goToAddDream } = useNavigation();
+    const { goBack, goToDreamDetail, goToAddDream, goToEdit } = useNavigation();
 
     // --- Computed ---
     const dayDreams = computed(() => sleepStore.getDreamsByDate(props.date));
@@ -193,8 +202,10 @@
     const isModalOpen = ref(false);
 
     onMounted(async () => {
-        if (sleepStore.sleeps.length === 0) await sleepStore.init();
-        if (userStateStore.states.length === 0) await userStateStore.init();
+        // if (sleepStore.sleeps.length === 0) await sleepStore.init();
+        // if (userStateStore.states.length === 0) await userStateStore.init();
+
+        console.log(userStateStore.states.length);
     });
 </script>
 

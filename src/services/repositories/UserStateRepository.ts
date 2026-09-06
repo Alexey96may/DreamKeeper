@@ -43,26 +43,6 @@ export class UserStateRepository extends BaseRepository<UserState> {
         return Number((sum / withEnergy.length).toFixed(1));
     }
 
-    async updateOrCreate(date: string, data: Partial<UserState>): Promise<UserState> {
-        const existing = await this.getByDate(date);
-
-        if (existing?.id) {
-            await this.update(existing.id, { ...data, date });
-            const updated = await this.getById(existing.id);
-            return updated!;
-        } else {
-            const newState = {
-                ...data,
-                date,
-                createdAt: new Date().toISOString(),
-                updatedAt: new Date().toISOString(),
-            };
-            const id = await this.create(newState as Omit<UserState, 'id'>);
-            const created = await this.getById(id);
-            return created!;
-        }
-    }
-
     async getStats(): Promise<{
         total: number;
         avgMood: number;

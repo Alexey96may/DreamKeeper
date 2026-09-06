@@ -3,11 +3,13 @@ import { computed, ref } from 'vue';
 
 import { defineStore } from 'pinia';
 
-import type { UserState } from '@/types/UserState';
+import type { UserState, UserStateWrite } from '@/types/UserState';
+import * as v from 'valibot';
 
 import { ServiceFactory } from '@/services/factories/ServiceFactory';
 import { userStatesSeed } from '@/services/seeders/userStatesSeeder';
 import { UserStateRepository } from '@/services/repositories/UserStateRepository';
+import { UserStateWriteSchema, UserStateUpdateSchema } from '@/services/schemas/userState.schema';
 
 export const useUserStateStore = defineStore('userState', () => {
     // ===== STATE =====
@@ -16,7 +18,12 @@ export const useUserStateStore = defineStore('userState', () => {
     const error = ref<string | null>(null);
     const repository = ref<UserStateRepository | null>(null);
 
+    const validationErrors = ref<Record<string, string>>({});
+
     // ===== GETTERS =====
+    const getError = (key: string) => validationErrors.value[key];
+    const hasError = (key: string) => Boolean(validationErrors.value[key]);
+
     const totalStates = computed(() => states.value.length);
 
     const getStateByDate = (date: string): UserState | undefined => {
@@ -62,18 +69,32 @@ export const useUserStateStore = defineStore('userState', () => {
     // ===== ACTIONS =====
     const init = async () => {
         if (repository.value) return;
+        loading.value = true;
+        error.value = null;
 
-        const service = ServiceFactory.createService('indexeddb');
-        await service.init();
-        repository.value = new UserStateRepository(service);
+        try {
+            const service = ServiceFactory.createService('indexeddb');
+            await service.init();
+            repository.value = new UserStateRepository(service);
 
-        if (states.value.length === 0) {
-            // Запускаем все вставки параллельно (или используем bulkAdd, если поддерживается)
+            let allStates = await repository.value.getAll();
 
-            await Promise.all(userStatesSeed.map((seedData) => repository.value!.create(seedData)));
+            console.log(allStates);
 
-            // Запрашиваем итоговый массив
-            await loadAll();
+            if (allStates.length === 0) {
+                // Запускаем все вставки параллельно (или используем bulkAdd, если поддерживается)
+                await Promise.all(
+                    userStatesSeed.map((seedData) => repository.value!.create(seedData)),
+                );
+
+                // Запрашиваем итоговый массив
+                allStates = await repository.value.getAll();
+            }
+        } catch (err) {
+            error.value = err instanceof Error ? err.message : 'Ошибка инициализации';
+            console.error('Ошибка инициализации стора состояний:', err);
+        } finally {
+            loading.value = false;
         }
     };
 
@@ -94,11 +115,22 @@ export const useUserStateStore = defineStore('userState', () => {
         }
     };
 
-    const addState = async (stateData: Omit<UserState, 'id'>): Promise<UserState | null> => {
+    const addState = async (stateData: UserStateWrite): Promise<UserState | null> => {
         if (!repository.value) return null;
 
         loading.value = true;
         error.value = null;
+        validationErrors.value = {};
+
+        const validation = v.safeParse(UserStateWriteSchema, stateData);
+
+        if (!validation.success) {
+            validationErrors.value = extractErrors(validation.issues);
+            error.value = 'Пожалуйста, исправьте ошибки в форме';
+            loading.value = false;
+
+            return null;
+        }
 
         try {
             const newState = {
@@ -106,15 +138,14 @@ export const useUserStateStore = defineStore('userState', () => {
                 createdAt: new Date().toISOString(),
                 updatedAt: new Date().toISOString(),
             };
-            const id = await repository.value.create(newState);
-            const savedState = await repository.value.getById(id);
+            const savedState = await repository.value.create(newState);
             if (savedState) {
                 states.value.push(savedState);
             }
             return savedState || null;
         } catch (err) {
             error.value = err instanceof Error ? err.message : 'Ошибка создания состояния';
-            console.error('Failed to add state:', err);
+            console.error('Failed to add state:', error.value);
             return null;
         } finally {
             loading.value = false;
@@ -129,6 +160,16 @@ export const useUserStateStore = defineStore('userState', () => {
 
         loading.value = true;
         error.value = null;
+        validationErrors.value = {};
+
+        const validation = v.safeParse(UserStateUpdateSchema, stateData);
+
+        if (!validation.success) {
+            validationErrors.value = extractErrors(validation.issues);
+            error.value = 'Пожалуйста, исправьте ошибки в форме';
+            loading.value = false;
+            return null;
+        }
 
         try {
             const updated = {
@@ -171,16 +212,39 @@ export const useUserStateStore = defineStore('userState', () => {
         }
     };
 
-    const updateOrCreateState = async (
-        date: string,
-        data: Partial<UserState>,
-    ): Promise<UserState | null> => {
-        const existing = getStateByDate(date);
-        if (existing?.id) {
-            return updateState(existing.id, { ...data, date });
-        } else {
-            return addState({ ...data, date } as Omit<UserState, 'id'>);
+    const clearError = (field: keyof typeof validationErrors.value) => {
+        if (validationErrors.value[field]) {
+            delete validationErrors.value[field];
         }
+    };
+
+    /**
+     * Преобразует массив ошибок Valibot в объект формата { [path]: message }
+     */
+    const extractErrors = (issues: v.GenericIssue[]): Record<string, string> => {
+        const fieldErrors: Record<string, string> = {};
+
+        for (const issue of issues) {
+            // 1. Собираем полный путь ключа через точку (например, "categoryDetails.lucid.controlLevel")
+            if (issue.path && issue.path.length > 0) {
+                const pathKey = issue.path
+                    .map((item) => item.key)
+                    .filter((key) => key !== undefined && key !== null)
+                    .join('.');
+
+                // Записываем только первую встреченную ошибку для конкретного поля
+                if (pathKey && !fieldErrors[pathKey]) {
+                    fieldErrors[pathKey] = issue.message;
+                }
+            } else {
+                // 2. Если ошибка общая (не привязана к конкретному полю объекта)
+                if (!fieldErrors['_global']) {
+                    fieldErrors['_global'] = issue.message;
+                }
+            }
+        }
+
+        return fieldErrors;
     };
 
     return {
@@ -188,6 +252,7 @@ export const useUserStateStore = defineStore('userState', () => {
         states,
         loading,
         error,
+        validationErrors,
 
         // Getters
         totalStates,
@@ -196,6 +261,8 @@ export const useUserStateStore = defineStore('userState', () => {
         getAverageMood,
         getAverageEnergy,
         getMonthStats,
+        getError,
+        hasError,
 
         // Actions
         init,
@@ -203,6 +270,6 @@ export const useUserStateStore = defineStore('userState', () => {
         addState,
         updateState,
         deleteState,
-        updateOrCreateState,
+        clearError,
     };
 });

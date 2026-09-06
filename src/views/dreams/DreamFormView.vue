@@ -72,7 +72,7 @@
             <AppErrorMessage :error-message="sleepStore.error" />
 
             <div class="flex items-center justify-end gap-3 pt-4">
-                <AppButton @click="goBack" variant="ghost"> Отмена </AppButton>
+                <AppButton @click="goBack" variant="ghost">Отмена</AppButton>
 
                 <AppButton size="xs" type="submit" variant="primary" :disabled="sleepStore.loading">
                     {{

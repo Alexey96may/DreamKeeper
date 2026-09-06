@@ -1,5 +1,5 @@
 export interface UserState {
-    id?: number;
+    id: number;
     date: string;
     mood?: number;
     energy?: number;
@@ -10,3 +10,5 @@ export interface UserState {
     createdAt?: string;
     updatedAt?: string;
 }
+
+export type UserStateWrite = Omit<UserState, 'id' | 'createdAt' | 'updatedAt'>;
