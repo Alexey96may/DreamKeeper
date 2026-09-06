@@ -27,7 +27,9 @@ export const useUserStateStore = defineStore('userState', () => {
     const totalStates = computed(() => states.value.length);
 
     const getStateByDate = (date: string): UserState | undefined => {
-        return states.value.find((state) => state.date === date);
+        if (!date) return undefined;
+        const cleanArgDate = date.split('T')[0];
+        return states.value.find((state) => state.date?.split('T')[0] === cleanArgDate);
     };
 
     const getStatesByMonth = (year: number, month: number): UserState[] => {
@@ -79,8 +81,6 @@ export const useUserStateStore = defineStore('userState', () => {
 
             let allStates = await repository.value.getAll();
 
-            console.log(allStates);
-
             if (allStates.length === 0) {
                 // Запускаем все вставки параллельно (или используем bulkAdd, если поддерживается)
                 await Promise.all(
@@ -90,6 +90,8 @@ export const useUserStateStore = defineStore('userState', () => {
                 // Запрашиваем итоговый массив
                 allStates = await repository.value.getAll();
             }
+
+            states.value = allStates;
         } catch (err) {
             error.value = err instanceof Error ? err.message : 'Ошибка инициализации';
             console.error('Ошибка инициализации стора состояний:', err);
@@ -144,8 +146,8 @@ export const useUserStateStore = defineStore('userState', () => {
             }
             return savedState || null;
         } catch (err) {
-            error.value = err instanceof Error ? err.message : 'Ошибка создания состояния';
-            console.error('Failed to add state:', error.value);
+            error.value = 'Ошибка создания состояния';
+            console.error('Failed to add state:', err);
             return null;
         } finally {
             loading.value = false;
@@ -185,7 +187,7 @@ export const useUserStateStore = defineStore('userState', () => {
             }
             return null;
         } catch (err) {
-            error.value = err instanceof Error ? err.message : 'Ошибка обновления состояния';
+            error.value = 'Ошибка создания состояния';
             console.error('Failed to update state:', err);
             return null;
         } finally {

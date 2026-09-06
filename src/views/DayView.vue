@@ -52,7 +52,7 @@
                                 </AppButton>
 
                                 <AppButton
-                                    @click="goToEdit(dream.slug)"
+                                    @click.stop="goToEdit(dream.slug)"
                                     size="xs"
                                     variant="primary"
                                     :disabled="isDeleting(dream.id)"
@@ -202,8 +202,8 @@
     const isModalOpen = ref(false);
 
     onMounted(async () => {
-        // if (sleepStore.sleeps.length === 0) await sleepStore.init();
-        // if (userStateStore.states.length === 0) await userStateStore.init();
+        if (sleepStore.sleeps.length === 0) await sleepStore.init();
+        if (userStateStore.states.length === 0) await userStateStore.init();
 
         console.log(userStateStore.states.length);
     });
