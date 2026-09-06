@@ -4,9 +4,11 @@
             label?: string;
             value: number | string;
             max?: number;
+            isFiltering: boolean;
         }>(),
         {
             max: 10,
+            isFiltering: false,
         },
     );
 
@@ -17,11 +19,12 @@
 
 <template>
     <div class="flex flex-col items-center">
-        <span v-if="label" class="text-text-mute block text-xs">{{ label }}</span>
+        <span v-if="label" class="block text-xs">{{ label }}</span>
 
         <button
             type="button"
-            class="text-text-primary hover:text-accent focus-visible:text-accent inline-flex w-fit cursor-pointer items-baseline border-0 bg-transparent p-0 text-left text-lg font-bold transition-colors"
+            class="hover:text-accent focus-visible:text-accent inline-flex w-fit cursor-pointer items-baseline border-0 bg-transparent p-0 text-left text-lg font-bold transition-colors"
+            :class="[isFiltering ? 'text-accent' : 'text-text-primary']"
             :aria-label="`Фильтровать по критерию «${label}» со значением ${value} из ${max}`"
             @click="$emit('filter')"
         >

@@ -40,6 +40,11 @@ const router = createRouter({
             props: true,
         },
         {
+            path: '/dream/search',
+            name: 'dream-search',
+            component: () => import('../views/dreams/DreamSearchView.vue'),
+        },
+        {
             path: '/:pathMatch(.*)*',
             name: 'not-found',
             component: () => import('@/views/NotFoundView.vue'),

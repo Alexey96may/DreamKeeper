@@ -52,8 +52,18 @@ export type TimeOfDay =
     | 'evening' // Вечерний
     | 'unknown';
 
+export type AnaliticsIds =
+    | 'characters'
+    | 'locations'
+    | 'objects'
+    | 'emotions'
+    | 'visualStyle'
+    | 'perspective'
+    | 'categories'
+    | 'timeOfDay';
+
 export interface DreamElementsObject {
-    id: string;
+    id: AnaliticsIds;
     title: string;
     tags: string[];
 }
