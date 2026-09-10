@@ -53,14 +53,7 @@ export type TimeOfDay =
     | 'unknown';
 
 export type AnaliticsIds =
-    | 'characters'
-    | 'locations'
-    | 'objects'
-    | 'emotions'
-    | 'visualStyle'
-    | 'perspective'
-    | 'categories'
-    | 'timeOfDay';
+    'characters' | 'locations' | 'objects' | 'emotions' | 'categories' | 'timeOfDay';
 
 export interface DreamElementsObject {
     id: AnaliticsIds;

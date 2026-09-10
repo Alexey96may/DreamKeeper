@@ -399,12 +399,38 @@
                         Восприятие
                     </h2>
 
-                    <div v-for="element in visualStyles" :key="element.id">
-                        <DreamElementsCard
-                            :element="element"
-                            @pick-up="toggleAnaliticsFilter"
-                            :tags-arr="filterStore.filters[element.id] || null"
-                        />
+                    <div class="flex flex-col gap-2">
+                        <div class="flex items-center gap-2" v-if="dream.visualStyle">
+                            <h3>Визуальный стиль:</h3>
+
+                            <AppTag
+                                :is-in-filter="filterStore.filters.isActive"
+                                @click="
+                                    filterStore.toggleArrayFilter('visualStyle', dream.visualStyle)
+                                "
+                                :is-pressed="
+                                    filterStore.filters.visualStyle.includes(dream.visualStyle)
+                                "
+                            >
+                                {{ VISUAL_STYLE_MAP[dream.visualStyle].label }}
+                            </AppTag>
+                        </div>
+
+                        <div class="flex items-center gap-2" v-if="dream.perspective">
+                            <h3>Лицо:</h3>
+
+                            <AppTag
+                                :is-in-filter="filterStore.filters.isActive"
+                                @click="
+                                    filterStore.toggleArrayFilter('perspective', dream.perspective)
+                                "
+                                :is-pressed="
+                                    filterStore.filters.perspective.includes(dream.perspective)
+                                "
+                            >
+                                {{ PERSPECTIVE_MAP[dream.perspective].label }}
+                            </AppTag>
+                        </div>
                     </div>
 
                     <!-- Роли -->
@@ -676,29 +702,6 @@
                 };
             })
             .filter((item): item is NonNullable<typeof item> => item !== null);
-    });
-
-    const visualStyles = computed(() => {
-        const visualArray: DreamElementsObject[] = [];
-
-        if (dream.value?.visualStyle) {
-            const analiticObj: DreamElementsObject = {
-                id: 'visualStyle',
-                title: 'Визуальный стиль:',
-                tags: [VISUAL_STYLE_MAP[dream.value.visualStyle].label],
-            };
-            visualArray.push(analiticObj);
-        }
-        if (dream.value?.perspective) {
-            const analiticObj: DreamElementsObject = {
-                id: 'perspective',
-                title: 'Перспектива:',
-                tags: [PERSPECTIVE_MAP[dream.value.perspective].label],
-            };
-            visualArray.push(analiticObj);
-        }
-
-        return visualArray;
     });
 
     const analiticElements = computed(() => {

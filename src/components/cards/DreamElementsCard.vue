@@ -27,7 +27,7 @@
         <ul class="m-0 flex list-none flex-wrap gap-1.5 p-0" role="list">
             <li v-for="(tag, idx) in element.tags" :key="idx">
                 <AppTag
-                    :is-pressed="tagsArr?.includes(tag)"
+                    :is-pressed="tagsArr?.includes(tag) || element.id === tag"
                     :is-in-filter="filterStore.filters.isActive"
                     @click="emit('pick-up', element.id, tag)"
                 >

@@ -160,6 +160,8 @@ export const useDreamFilterStore = defineStore('dreamFilter', () => {
                 (!dream.timeOfDay || !filters.value.timeOfDay.includes(dream.timeOfDay))
             )
                 return false;
+
+            console.log(filters.value.visualStyle);
             if (
                 filters.value.visualStyle.length > 0 &&
                 (!dream.visualStyle || !filters.value.visualStyle.includes(dream.visualStyle))

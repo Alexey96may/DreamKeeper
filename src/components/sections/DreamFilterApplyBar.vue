@@ -14,7 +14,6 @@
                 title=""
             >
                 <AppTooltip content="Количество найденых снов" />
-
                 <span>{{ filterStore.matchingCount }}</span>
             </div>
 
