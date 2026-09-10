@@ -1,6 +1,7 @@
 <script setup lang="ts">
     import AppTag from '@/components/ui/AppTag.vue';
     import type { DreamElementsObject, AnaliticsIds } from '@/types/Dream';
+    import { useDreamFilterStore } from '@/stores/modules/dreamFilter';
 
     defineProps<{
         element: DreamElementsObject;
@@ -10,6 +11,8 @@
     const emit = defineEmits<{
         (e: 'pick-up', id: AnaliticsIds, tag: string): void;
     }>();
+
+    const filterStore = useDreamFilterStore();
 </script>
 
 <template>
@@ -25,6 +28,7 @@
             <li v-for="(tag, idx) in element.tags" :key="idx">
                 <AppTag
                     :is-pressed="tagsArr?.includes(tag)"
+                    :is-in-filter="filterStore.filters.isActive"
                     @click="emit('pick-up', element.id, tag)"
                 >
                     {{ tag }}

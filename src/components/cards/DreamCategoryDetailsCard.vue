@@ -122,13 +122,17 @@
                 </span>
             </div>
             <div v-if="(details as PropheticDetails).expectedByDate">
-                <span class="text-text-mute">Ожидался до:</span>
+                <span class="text-text-mute">{{
+                    (details as PropheticDetails).isFulfilled ? 'Ожидался:' : 'Ожидается:'
+                }}</span>
                 <span class="text-text-primary ml-1 font-medium">
                     <AppSmartTime :date="(details as PropheticDetails).expectedByDate!" />
                 </span>
             </div>
             <div v-if="(details as PropheticDetails).fulfilledDate">
-                <span class="text-text-mute">Сбылся:</span>
+                <span class="text-text-mute">{{
+                    (details as PropheticDetails).isFulfilled ? 'Сбылся:' : 'Сбудется:'
+                }}</span>
                 <span class="text-text-primary ml-1 font-medium">
                     <AppSmartTime :date="(details as PropheticDetails).fulfilledDate!" />
                 </span>

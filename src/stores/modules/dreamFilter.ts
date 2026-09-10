@@ -8,41 +8,31 @@ import type {
     Perspective,
     ParticipantRole,
     SensoryAspect,
+    DreamPhenomenon,
 } from '@/types/Dream';
 
 export interface DreamFilterState {
-    // Текстовый поиск
+    isActive: boolean;
     searchQuery: string;
-
-    // Даты
     dateFrom?: string;
     dateTo?: string;
-
-    // Категории и детали
     categories: DreamCategory[];
+    events: DreamPhenomenon[];
     minLucidControl?: number;
     maxNightmareFear?: number;
     propheticFulfilled?: boolean;
-
-    // Оценки (диапазоны или пороги)
     minQuality?: number;
     minClarity?: number;
     minMoodAfter?: number;
-
-    // Свойства сна
     timeOfDay: TimeOfDay[];
     visualStyle: VisualStyle[];
     perspective: Perspective[];
     roles: ParticipantRole[];
     sensations: SensoryAspect[];
-
-    // Аналитика (массивы)
     characters: string[];
     locations: string[];
     objects: string[];
     emotions: string[];
-
-    // Флаги состояния
     isFavorite?: boolean;
     isPinned?: boolean;
     isArchived?: boolean;
@@ -51,14 +41,37 @@ export interface DreamFilterState {
     isPrivate?: boolean;
 }
 
+type ArrayFilterKey =
+    | 'categories'
+    | 'events'
+    | 'timeOfDay'
+    | 'visualStyle'
+    | 'perspective'
+    | 'roles'
+    | 'sensations'
+    | 'characters'
+    | 'locations'
+    | 'objects'
+    | 'emotions';
+
+type BooleanFilterKeys = {
+    [K in keyof DreamFilterState]-?: NonNullable<DreamFilterState[K]> extends boolean ? K : never;
+}[keyof DreamFilterState];
+
+type NumberFilterKeys = {
+    [K in keyof DreamFilterState]-?: NonNullable<DreamFilterState[K]> extends number ? K : never;
+}[keyof DreamFilterState];
+
 export const useDreamFilterStore = defineStore('dreamFilter', () => {
     const sleepStore = useSleepStore();
 
     const filters = ref<DreamFilterState>({
+        isActive: false,
         searchQuery: '',
         dateFrom: undefined,
         dateTo: undefined,
         categories: [],
+        events: [],
         minLucidControl: undefined,
         maxNightmareFear: undefined,
         propheticFulfilled: undefined,
@@ -83,8 +96,11 @@ export const useDreamFilterStore = defineStore('dreamFilter', () => {
     });
 
     const filteredDreams = computed(() => {
+        if (!filters.value.isActive) {
+            return sleepStore.sleeps;
+        }
+
         return sleepStore.sleeps.filter((dream) => {
-            // 1. Текстовый поиск (title, description)
             if (filters.value.searchQuery.trim()) {
                 const query = filters.value.searchQuery.trim().toLowerCase();
                 const titleMatch = dream.title?.toLowerCase().includes(query) ?? false;
@@ -93,17 +109,23 @@ export const useDreamFilterStore = defineStore('dreamFilter', () => {
                 if (!titleMatch && !descMatch && !notesMatch) return false;
             }
 
-            // 2. Дата (диапазон)
             if (filters.value.dateFrom && dream.date < filters.value.dateFrom) return false;
             if (filters.value.dateTo && dream.date > filters.value.dateTo) return false;
 
-            // 3. Категории и их детали
             if (filters.value.categories.length > 0) {
-                const hasCategory = filters.value.categories.some((cat) =>
+                const hasCategory = filters.value.categories.every((cat) =>
                     dream.categories?.includes(cat),
                 );
                 if (!hasCategory) return false;
             }
+
+            if (filters.value.events.length > 0) {
+                const hasCategory = filters.value.events.every((ev) =>
+                    dream.phenomena?.includes(ev),
+                );
+                if (!hasCategory) return false;
+            }
+
             if (filters.value.minLucidControl !== undefined) {
                 const control = dream.categoryDetails?.lucid?.controlLevel ?? 0;
                 if (control < filters.value.minLucidControl) return false;
@@ -117,7 +139,6 @@ export const useDreamFilterStore = defineStore('dreamFilter', () => {
                 if (fulfilled !== filters.value.propheticFulfilled) return false;
             }
 
-            // 4. Оценки
             if (
                 filters.value.minQuality !== undefined &&
                 (dream.quality ?? 0) < filters.value.minQuality
@@ -134,7 +155,6 @@ export const useDreamFilterStore = defineStore('dreamFilter', () => {
             )
                 return false;
 
-            // 5. Свойства сна
             if (
                 filters.value.timeOfDay.length > 0 &&
                 (!dream.timeOfDay || !filters.value.timeOfDay.includes(dream.timeOfDay))
@@ -152,33 +172,35 @@ export const useDreamFilterStore = defineStore('dreamFilter', () => {
                 return false;
 
             if (filters.value.roles.length > 0) {
-                const hasRole = filters.value.roles.some((r) => dream.roles?.includes(r));
+                const hasRole = filters.value.roles.every((r) => dream.roles?.includes(r));
                 if (!hasRole) return false;
             }
             if (filters.value.sensations.length > 0) {
-                const hasSens = filters.value.sensations.some((s) => dream.sensations?.includes(s));
+                const hasSens = filters.value.sensations.every((s) =>
+                    dream.sensations?.includes(s),
+                );
                 if (!hasSens) return false;
             }
 
-            // 6. Аналитические массивы (characters, locations, objects, emotions)
             if (filters.value.characters.length > 0) {
-                const hasChar = filters.value.characters.some((c) => dream.characters?.includes(c));
+                const hasChar = filters.value.characters.every((c) =>
+                    dream.characters?.includes(c),
+                );
                 if (!hasChar) return false;
             }
             if (filters.value.locations.length > 0) {
-                const hasLoc = filters.value.locations.some((l) => dream.locations?.includes(l));
+                const hasLoc = filters.value.locations.every((l) => dream.locations?.includes(l));
                 if (!hasLoc) return false;
             }
             if (filters.value.objects.length > 0) {
-                const hasObj = filters.value.objects.some((o) => dream.objects?.includes(o));
+                const hasObj = filters.value.objects.every((o) => dream.objects?.includes(o));
                 if (!hasObj) return false;
             }
             if (filters.value.emotions.length > 0) {
-                const hasEmo = filters.value.emotions.some((e) => dream.emotions?.includes(e));
+                const hasEmo = filters.value.emotions.every((e) => dream.emotions?.includes(e));
                 if (!hasEmo) return false;
             }
 
-            // 7. Флаги состояния (Boolean)
             if (
                 filters.value.isFavorite !== undefined &&
                 !!dream.isFavorite !== filters.value.isFavorite
@@ -210,12 +232,19 @@ export const useDreamFilterStore = defineStore('dreamFilter', () => {
 
     const matchingCount = computed(() => filteredDreams.value.length);
 
+    // Метод для ручного переключения главного тумблера активности
+    const toggleActive = (forceState?: boolean) => {
+        filters.value.isActive = forceState ?? !filters.value.isActive;
+    };
+
     const resetFilters = () => {
         filters.value = {
+            isActive: false,
             searchQuery: '',
             dateFrom: undefined,
             dateTo: undefined,
             categories: [],
+            events: [],
             minLucidControl: undefined,
             maxNightmareFear: undefined,
             propheticFulfilled: undefined,
@@ -240,10 +269,12 @@ export const useDreamFilterStore = defineStore('dreamFilter', () => {
         };
     };
 
-    const toggleFilter = (id: keyof typeof filters.value, value: string) => {
-        const targetArray = filters.value[id];
-        if (!Array.isArray(targetArray)) return;
+    // Автоматически включаем фильтр при любом изменении параметров
+    const toggleArrayFilter = (id: ArrayFilterKey, value: string) => {
+        if (!filters.value.isActive) return;
 
+        filters.value.isActive = true;
+        const targetArray = filters.value[id] as string[];
         const index = targetArray.indexOf(value);
         if (index > -1) {
             targetArray.splice(index, 1);
@@ -252,20 +283,30 @@ export const useDreamFilterStore = defineStore('dreamFilter', () => {
         }
     };
 
-    const toggleBooleanFilter = (id: keyof typeof filters.value) => {
-        if (typeof filters.value[id] === 'boolean' || typeof filters.value[id] === 'undefined') {
-            filters.value[id] = !filters.value[id];
+    const toggleBooleanFilter = (id: BooleanFilterKeys) => {
+        if (!filters.value.isActive) return;
+
+        filters.value.isActive = true;
+        const currentValue = filters.value[id];
+        if (currentValue === undefined) {
+            filters.value[id] = true as any;
+        } else if (currentValue === true) {
+            filters.value[id] = false as any;
+        } else {
+            filters.value[id] = undefined as any;
         }
     };
 
-    const toggleNumberFilter = (id: keyof typeof filters.value, value: number) => {
-        if (
-            typeof filters.value[id] === 'number' ||
-            filters.value[id] === null ||
-            typeof filters.value[id] === 'undefined'
-        ) {
-            // Повторный клик по тому же числу сбрасывает его в null (или 0)
-            filters.value[id] = filters.value[id] === value ? null : value;
+    const toggleNumberFilter = (id: NumberFilterKeys, value: number) => {
+        if (!filters.value.isActive) return;
+
+        filters.value.isActive = true;
+        const currentValue = filters.value[id];
+        if (typeof currentValue === 'number') {
+            filters.value.isActive = true;
+            filters.value[id] = currentValue === value ? undefined : value;
+        } else {
+            filters.value[id] = value;
         }
     };
 
@@ -273,8 +314,9 @@ export const useDreamFilterStore = defineStore('dreamFilter', () => {
         filters,
         filteredDreams,
         matchingCount,
+        toggleActive,
         resetFilters,
-        toggleFilter,
+        toggleArrayFilter,
         toggleBooleanFilter,
         toggleNumberFilter,
     };

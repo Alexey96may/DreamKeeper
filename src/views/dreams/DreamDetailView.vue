@@ -15,6 +15,7 @@
                     <AppTag
                         @click="filterStore.toggleBooleanFilter('isFavorite')"
                         :is-pressed="filterStore.filters.isFavorite"
+                        :is-in-filter="filterStore.filters.isActive"
                         v-if="dream.isFavorite"
                     >
                         Любимый сон
@@ -22,6 +23,7 @@
                     <AppTag
                         @click="filterStore.toggleBooleanFilter('isPinned')"
                         :is-pressed="filterStore.filters.isPinned"
+                        :is-in-filter="filterStore.filters.isActive"
                         v-if="dream.isPinned"
                     >
                         Закрепленный сон
@@ -29,6 +31,7 @@
                     <AppTag
                         @click="filterStore.toggleBooleanFilter('isDeleted')"
                         :is-pressed="filterStore.filters.isDeleted"
+                        :is-in-filter="filterStore.filters.isActive"
                         v-if="dream.isDeleted"
                     >
                         Удаленный сон
@@ -36,6 +39,7 @@
                     <AppTag
                         @click="filterStore.toggleBooleanFilter('isDraft')"
                         :is-pressed="filterStore.filters.isDraft"
+                        :is-in-filter="filterStore.filters.isActive"
                         v-if="dream.isDraft"
                     >
                         Черновик
@@ -43,6 +47,7 @@
                     <AppTag
                         @click="filterStore.toggleBooleanFilter('isArchived')"
                         :is-pressed="filterStore.filters.isArchived"
+                        :is-in-filter="filterStore.filters.isActive"
                         v-if="dream.isArchived"
                     >
                         В архиве
@@ -50,6 +55,7 @@
                     <AppTag
                         @click="filterStore.toggleBooleanFilter('isPrivate')"
                         :is-pressed="filterStore.filters.isPrivate"
+                        :is-in-filter="filterStore.filters.isActive"
                         v-if="dream.isPrivate"
                     >
                         <Lock class="inline" /> Приватный
@@ -86,12 +92,14 @@
                             <span v-if="dream.isPinned" title="Закреплено"><Pin /></span>
 
                             <AppTag
-                                @click="filterStore.toggleFilter('timeOfDay', dream.timeOfDay)"
+                                v-if="dream.timeOfDay"
+                                @click="filterStore.toggleArrayFilter('timeOfDay', dream.timeOfDay)"
+                                :is-in-filter="filterStore.filters.isActive"
                                 :is-pressed="
                                     filterStore.filters.timeOfDay.includes(dream.timeOfDay)
                                 "
                             >
-                                {{ TIME_OF_DAY_MAP[dream.timeOfDay || ''].label }}
+                                {{ TIME_OF_DAY_MAP[dream.timeOfDay].label }}
                             </AppTag>
                         </div>
                     </div>
@@ -111,7 +119,8 @@
                     >
                         <div v-for="cat in dream.categories" :key="cat">
                             <AppTag
-                                @click="filterStore.toggleFilter('categories', cat)"
+                                @click="filterStore.toggleArrayFilter('categories', cat)"
+                                :is-in-filter="filterStore.filters.isActive"
                                 :is-pressed="filterStore.filters.categories.includes(cat)"
                             >
                                 {{ DREAM_CATEGORY_MAP[cat || ''].label }}
@@ -131,6 +140,7 @@
                             v-if="dream.quality !== undefined && dream.quality > 0"
                             label="Качество"
                             :value="dream.quality"
+                            :is-in-filter="filterStore.filters.isActive"
                             @filter="filterStore.toggleNumberFilter('minQuality', dream.quality)"
                             :isFiltering="filterStore.filters.minQuality === dream.quality"
                         />
@@ -139,6 +149,7 @@
                             v-if="dream.clarity !== undefined && dream.clarity > 0"
                             label="Ясность"
                             :value="dream.clarity"
+                            :is-in-filter="filterStore.filters.isActive"
                             @filter="filterStore.toggleNumberFilter('minClarity', dream.clarity)"
                             :is-filtering="filterStore.filters.minClarity === dream.clarity"
                         />
@@ -147,6 +158,7 @@
                             v-if="dream.moodAfter !== undefined && dream.moodAfter > 0"
                             label="Настроение после"
                             :value="dream.moodAfter"
+                            :is-in-filter="filterStore.filters.isActive"
                             @filter="
                                 filterStore.toggleNumberFilter('minMoodAfter', dream.moodAfter)
                             "
@@ -213,7 +225,13 @@
                     </h2>
 
                     <div class="flex flex-wrap gap-2">
-                        <AppTag v-for="item in dream.phenomena" :key="item">
+                        <AppTag
+                            v-for="item in dream.phenomena"
+                            :key="item"
+                            @click="filterStore.toggleArrayFilter('events', item)"
+                            :is-in-filter="filterStore.filters.isActive"
+                            :is-pressed="filterStore.filters.events.includes(item)"
+                        >
                             {{ DREAM_PHENOMENON_MAP[item || ''].label }}
                         </AppTag>
                     </div>
@@ -226,7 +244,12 @@
                         <!-- Сонный паралич -->
                         <div
                             v-if="dream.phenomenaDetails.paralysis"
-                            class="bg-bg-secondary/30 rounded-lg p-3"
+                            class="rounded-lg p-3 transition-colors"
+                            :class="
+                                filterStore.filters.events.includes('paralysis')
+                                    ? 'bg-bg-primary/60'
+                                    : 'bg-bg-secondary/70'
+                            "
                         >
                             <span class="text-text-primary mb-1 block font-bold"
                                 ><component :is="DREAM_PHENOMENON_MAP['paralysis'].icon" />
@@ -258,7 +281,12 @@
                         <!-- Ложное пробуждение -->
                         <div
                             v-if="dream.phenomenaDetails.nestedDream"
-                            class="bg-bg-secondary/30 rounded-lg p-3"
+                            class="rounded-lg p-3"
+                            :class="
+                                filterStore.filters.events.includes('nested_dream')
+                                    ? 'bg-bg-primary/60'
+                                    : 'bg-bg-secondary/70'
+                            "
                         >
                             <span class="text-text-primary mb-1 block font-bold"
                                 ><component :is="DREAM_PHENOMENON_MAP['nested_dream'].icon" />{{
@@ -274,7 +302,12 @@
                         <!-- Смерть -->
                         <div
                             v-if="dream.phenomenaDetails.death"
-                            class="bg-bg-secondary/30 rounded-lg p-3"
+                            class="rounded-lg p-3"
+                            :class="
+                                filterStore.filters.events.includes('death')
+                                    ? 'bg-bg-primary/60'
+                                    : 'bg-bg-secondary/70'
+                            "
                         >
                             <span class="text-text-primary mb-1 block font-bold"
                                 ><component :is="DREAM_PHENOMENON_MAP['death'].icon" />
@@ -299,7 +332,12 @@
                         <!-- Полёт -->
                         <div
                             v-if="dream.phenomenaDetails.flying"
-                            class="bg-bg-secondary/30 rounded-lg p-3"
+                            class="rounded-lg p-3"
+                            :class="
+                                filterStore.filters.events.includes('flying')
+                                    ? 'bg-bg-primary/60'
+                                    : 'bg-bg-secondary/70'
+                            "
                         >
                             <span class="text-text-primary mb-1 block font-bold"
                                 ><component :is="DREAM_PHENOMENON_MAP['flying'].icon" />
@@ -324,7 +362,12 @@
                         <!-- Падение -->
                         <div
                             v-if="dream.phenomenaDetails.falling"
-                            class="bg-bg-secondary/30 rounded-lg p-3"
+                            class="rounded-lg p-3"
+                            :class="
+                                filterStore.filters.events.includes('falling')
+                                    ? 'bg-bg-primary/60'
+                                    : 'bg-bg-secondary/70'
+                            "
                         >
                             <span class="text-text-primary mb-1 block font-bold"
                                 ><component :is="DREAM_PHENOMENON_MAP['falling'].icon" />
@@ -371,7 +414,8 @@
                             <AppTag
                                 v-for="role in dream.roles"
                                 :key="role"
-                                @click="filterStore.toggleFilter('roles', role)"
+                                :is-in-filter="filterStore.filters.isActive"
+                                @click="filterStore.toggleArrayFilter('roles', role)"
                                 :is-pressed="filterStore.filters.roles.includes(role)"
                             >
                                 {{ PARTICIPANT_ROLE_MAP[role].label }}
@@ -386,7 +430,8 @@
                             <AppTag
                                 v-for="sensation in dream.sensations"
                                 :key="sensation"
-                                @click="filterStore.toggleFilter('sensations', sensation)"
+                                :is-in-filter="filterStore.filters.isActive"
+                                @click="filterStore.toggleArrayFilter('sensations', sensation)"
                                 :is-pressed="filterStore.filters.sensations.includes(sensation)"
                             >
                                 {{ SENSORY_ASPECT_MAP[sensation].label }}
@@ -487,15 +532,7 @@
                 <p class="text-text-mute">Сон не найден</p>
             </div>
 
-            <div class="fixed right-0 bottom-0 mx-4 my-4">
-                <span class="text-text-primary bg-bg-secondary absolute -top-2 -right-2 px-1">{{
-                    filterStore.matchingCount
-                }}</span>
-
-                <AppButton @click="applyFiltersAndNavigate" size="xs" variant="primary">
-                    Применить фильтр
-                </AppButton>
-            </div>
+            <DreamFilterApplyBar />
         </div>
     </main>
 </template>
@@ -514,10 +551,10 @@
     import AppRating from '@/components/ui/AppRating.vue';
     import { useCrud } from '@/composables/crud';
     import AppSmartTime from '@/components/ui/AppSmartTime.vue';
+    import DreamFilterApplyBar from '@/components/sections/DreamFilterApplyBar.vue';
     import { useNavigation } from '@/composables/routing/useNavigation';
     import { useInterpretationSourceStore } from '@/stores/modules/useInterpretationSourceStore';
     import type { DreamElementsObject, AnaliticsIds } from '@/types/Dream';
-    import { useRouter } from 'vue-router';
 
     import {
         TIME_OF_DAY_MAP,
@@ -545,25 +582,9 @@
     const sourceStore = useInterpretationSourceStore();
     const filterStore = useDreamFilterStore();
 
-    const router = useRouter();
-
     // Переключение фильтра по клику на тег
     const toggleAnaliticsFilter = (id: AnaliticsIds, tag: string) => {
-        filterStore.toggleFilter(id, tag);
-    };
-
-    // Переход на страницу результатов с синхронизацией URL
-    const applyFiltersAndNavigate = () => {
-        console.log(filterStore.filteredDreams);
-
-        router.push({
-            name: 'dream-search', // ваш маршрут страницы со списком снов
-            query: {
-                characters: filterStore.filters.characters.join(','),
-                emotions: filterStore.filters.emotions.join(','),
-                minClarity: filterStore.filters.minClarity,
-            },
-        });
+        filterStore.toggleArrayFilter(id, tag);
     };
 
     const { handleDelete, isDeleting } = useCrud();
