@@ -558,7 +558,7 @@
                 <p class="text-text-mute">Сон не найден</p>
             </div>
 
-            <DreamFilterApplyBar />
+            <DreamFilterApplyBar :dream-slug="slug" />
         </div>
     </main>
 </template>

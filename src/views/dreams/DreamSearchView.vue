@@ -94,7 +94,13 @@
                             v-for="dream in filterStore.filteredDreams"
                             :key="dream.id"
                             @click="goToDreamDetail(dream.slug)"
-                            class="bg-bg-secondary/50 border-border/50 hover:border-border cursor-pointer rounded-lg border p-4 transition duration-200"
+                            :class="[
+                                'bg-bg-secondary/50 border-border/50 hover:border-border cursor-pointer rounded-lg border p-4 transition duration-200',
+                                {
+                                    'ring-primary/90 bg-primary/80 border-b ring-2':
+                                        dream.slug === actualDreamSlug,
+                                },
+                            ]"
                             role="article"
                         >
                             <div class="flex items-start justify-between gap-4">
@@ -196,6 +202,11 @@
         nextTick(() => {
             searchInput.value?.focus();
         });
+    });
+
+    const actualDreamSlug = computed(() => {
+        const param = route.query.actualDream;
+        return typeof param === 'string' ? param : null;
     });
 
     // Следим за изменением query в URL, если пользователь меняет их извне

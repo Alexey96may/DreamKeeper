@@ -61,6 +61,10 @@
     const router = useRouter();
     const filterStore = useDreamFilterStore();
 
+    const props = defineProps<{
+        dreamSlug?: string;
+    }>();
+
     // Опционально: показывать панель только тогда, когда есть активные фильтры
     // или когда счетчик изменился (по умолчанию отображаем всегда, если нужно — раскомментируйте)
     const isVisible = computed(() => {
@@ -79,6 +83,7 @@
                     ? filterStore.filters.emotions.join(',')
                     : undefined,
                 minClarity: filterStore.filters.minClarity ?? undefined,
+                actualDream: props.dreamSlug,
             },
         });
     };
