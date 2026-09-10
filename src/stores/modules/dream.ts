@@ -8,7 +8,7 @@ import type { Dream, DreamWrite } from '@/types/Dream';
 
 import { ServiceFactory } from '@/services/factories/ServiceFactory';
 import { DreamRepository } from '@/services/repositories/DreamRepository';
-import { initialDreamsSeed } from '@/services/seeders/dreamSeeder';
+import { generateDreamsSeed } from '@/services/seeders/dreamSeeder';
 
 export const useSleepStore = defineStore('sleep', () => {
     // ===== STATE =====
@@ -124,7 +124,7 @@ export const useSleepStore = defineStore('sleep', () => {
             if (allDreams.length === 0) {
                 // Запускаем все вставки параллельно (или используем bulkAdd, если поддерживается)
                 await Promise.all(
-                    initialDreamsSeed.map((seedData) => repository.value!.create(seedData)),
+                    generateDreamsSeed(300).map((seedData) => repository.value!.create(seedData)),
                 );
 
                 // Запрашиваем итоговый массив
