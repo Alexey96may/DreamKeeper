@@ -67,6 +67,7 @@
                 v-model:is-favorite="form.isFavorite"
                 v-model:is-pinned="form.isPinned"
                 v-model:is-private="form.isPrivate"
+                v-model:is-deleted="form.isDeleted"
             />
 
             <AppErrorMessage :error-message="sleepStore.error" />

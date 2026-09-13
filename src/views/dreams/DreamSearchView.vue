@@ -14,34 +14,11 @@
                 </div>
 
                 <!-- Строка поиска -->
-                <div class="relative">
-                    <label for="dream-search-input" class="sr-only">Поиск по снам</label>
-                    <div class="relative flex items-center">
-                        <SearchIcon
-                            class="text-text-mute pointer-events-none absolute left-3.5 h-4 w-4"
-                            aria-hidden="true"
-                        />
-                        <input
-                            id="dream-search-input"
-                            ref="searchInput"
-                            v-model="filterStore.filters.searchQuery"
-                            type="search"
-                            role="searchbox"
-                            aria-label="Поиск по снам"
-                            placeholder="Введите текст для поиска..."
-                            class="bg-bg-secondary/50 border-border text-text-primary placeholder:text-text-mute focus:ring-primary/50 w-full rounded-xl border py-3 pr-4 pl-10 text-sm transition outline-none focus:ring-2"
-                        />
-                        <button
-                            v-if="filterStore.filters.searchQuery"
-                            @click="clearSearch"
-                            type="button"
-                            aria-label="Очистить поиск"
-                            class="text-text-mute hover:text-text-primary absolute right-3 p-1 transition"
-                        >
-                            <X class="h-4 w-4" />
-                        </button>
-                    </div>
-                </div>
+                <AppTextInput
+                    v-model="filterStore.filters.searchQuery"
+                    type="search"
+                    placeholder="Поиск по названию или описанию сна"
+                />
 
                 <!-- Блок расширенной фильтрации -->
                 <div class="bg-bg-secondary/30 border-border/50 space-y-4 rounded-xl border p-4">
@@ -49,103 +26,248 @@
                         <span class="text-text-primary text-sm font-medium"
                             >Параметры фильтрации</span
                         >
-                        <button
+                        <AppButton
                             v-if="hasActiveFilters"
                             @click="filterStore.resetFilters"
-                            class="text-text-mute hover:text-text-primary text-xs underline transition"
+                            size="xs"
+                            variant="danger"
                         >
                             Сбросить все
-                        </button>
+                        </AppButton>
                     </div>
 
                     <!-- Категории снов -->
 
-                    <div class="space-y-1.5">
-                        <span class="text-text-mute text-xs">Категории</span>
-                        <div class="flex flex-wrap gap-1.5">
-                            <button
-                                v-for="cat in availableCategories"
-                                :key="cat.value"
-                                type="button"
-                                @click="filterStore.toggleArrayFilter('categories', cat.value)"
-                                :class="[
-                                    'rounded-lg border px-2.5 py-1 text-xs transition',
-                                    filterStore.filters.categories.includes(cat.value)
-                                        ? 'bg-primary text-primary-foreground border-primary'
-                                        : 'bg-bg-secondary/50 border-border/50 text-text-soft hover:border-border',
-                                ]"
-                            >
-                                {{ cat.label }}
-                            </button>
-                        </div>
+                    <div class="flex items-center gap-2">
+                        <AppDatePicker
+                            v-model="filterStore.filters.dateFrom"
+                            label="От даты"
+                            hint="Укажите дату, с которой нужно найти сны"
+                        />
+
+                        <AppDatePicker
+                            v-model="filterStore.filters.dateTo"
+                            label="До даты"
+                            hint="Укажите дату, до которой нужно найти сны"
+                        />
                     </div>
 
-                    <!-- Эмоции -->
-                    <div v-if="allEmotions.length > 0" class="space-y-1.5">
-                        <span class="text-text-mute text-xs">Эмоции</span>
-                        <div class="flex max-h-28 flex-wrap gap-1.5 overflow-y-auto">
-                            <button
-                                v-for="emo in allEmotions"
-                                :key="emo"
-                                type="button"
-                                @click="filterStore.toggleArrayFilter('emotions', emo)"
-                                :class="[
-                                    'rounded-lg border px-2.5 py-1 text-xs transition',
-                                    filterStore.filters.emotions.includes(emo)
-                                        ? 'bg-primary text-primary-foreground border-primary'
-                                        : 'bg-bg-secondary/50 border-border/50 text-text-soft hover:border-border',
-                                ]"
-                            >
-                                {{ emo }}
-                            </button>
-                        </div>
+                    <div class="flex items-center gap-2">
+                        <AppMultiSelect
+                            id="form-categories"
+                            v-model="filterStore.filters.categories"
+                            label="Категории"
+                            :options="DREAM_CATEGORY_OPTIONS"
+                            placeholder="Выберите категории"
+                        />
+
+                        <AppMultiSelect
+                            id="form-events"
+                            v-model="filterStore.filters.events"
+                            label="События"
+                            :options="DREAM_PHENOMENON_OPTIONS"
+                            placeholder="Выберите события"
+                        />
+
+                        <AppMultiSelect
+                            id="form-timeOfDay"
+                            v-model="filterStore.filters.timeOfDay"
+                            label="Время суток"
+                            :options="TIME_OF_DAY_OPTIONS"
+                            placeholder="Выберите времена суток"
+                        />
                     </div>
 
-                    <!-- Персонажи -->
-                    <div v-if="allCharacters.length > 0" class="space-y-1.5">
-                        <span class="text-text-mute text-xs">Персонажи</span>
-                        <div class="flex max-h-28 flex-wrap gap-1.5 overflow-y-auto">
-                            <button
-                                v-for="char in allCharacters"
-                                :key="char"
-                                type="button"
-                                @click="filterStore.toggleArrayFilter('characters', char)"
-                                :class="[
-                                    'rounded-lg border px-2.5 py-1 text-xs transition',
-                                    filterStore.filters.characters.includes(char)
-                                        ? 'bg-primary text-primary-foreground border-primary'
-                                        : 'bg-bg-secondary/50 border-border/50 text-text-soft hover:border-border',
-                                ]"
-                            >
-                                {{ char }}
-                            </button>
-                        </div>
+                    <div class="flex items-center gap-2">
+                        <AppMultiSelect
+                            id="form-emotions"
+                            v-model="filterStore.filters.emotions"
+                            label="Эмоции"
+                            :options="allEmotions"
+                            placeholder="Выберите эмоции"
+                        />
+
+                        <AppMultiSelect
+                            v-if="allCharacters.length > 0"
+                            id="form-characters"
+                            v-model="filterStore.filters.characters"
+                            label="Персонажи"
+                            :options="allCharacters"
+                            placeholder="Выберите персонажей"
+                        />
+
+                        <AppMultiSelect
+                            v-if="allLocations.length > 0"
+                            id="form-locations"
+                            v-model="filterStore.filters.locations"
+                            label="Локации"
+                            :options="allLocations"
+                            placeholder="Выберите локации"
+                        />
+
+                        <AppMultiSelect
+                            v-if="allObjects.length > 0"
+                            id="form-objects"
+                            v-model="filterStore.filters.objects"
+                            label="Объекты"
+                            :options="allObjects"
+                            placeholder="Выберите персонажей"
+                        />
                     </div>
 
-                    <!-- Быстрые чекбоксы (Избранное, С закрепом и т.д.) -->
-                    <div class="border-border/40 flex flex-wrap gap-3 border-t pt-2">
-                        <label
-                            class="text-text-soft flex cursor-pointer items-center gap-2 text-xs select-none"
-                        >
-                            <input
-                                type="checkbox"
-                                :checked="filterStore.filters.isFavorite === true"
-                                @change="filterStore.toggleBooleanFilter('isFavorite')"
-                                class="border-border text-primary focus:ring-primary/50 h-3.5 w-3.5 rounded"
-                            />
-                            Избранные
-                        </label>
-                        <label
-                            class="text-text-soft flex cursor-pointer items-center gap-2 text-xs select-none"
-                        >
-                            <input
-                                type="checkbox"
-                                :checked="filterStore.filters.isPinned === true"
-                                @change="filterStore.toggleBooleanFilter('isPinned')"
-                                class="border-border text-primary focus:ring-primary/50 h-3.5 w-3.5 rounded"
-                            />
-                            Закрепленные
-                        </label>
+                    <div class="flex items-center gap-2">
+                        <AppMultiSelect
+                            id="form-sensations"
+                            v-model="filterStore.filters.sensations"
+                            label="Ощущения"
+                            :options="SENSORY_ASPECT_OPTIONS"
+                            placeholder="Выберите ощущения"
+                        />
+
+                        <AppMultiSelect
+                            id="form-roles"
+                            v-model="filterStore.filters.roles"
+                            label="Роли"
+                            :options="PARTICIPANT_ROLE_OPTIONS"
+                            placeholder="Выберите роли"
+                        />
+                    </div>
+
+                    <div class="flex items-center gap-2">
+                        <AppMultiSelect
+                            id="form-visualStyle"
+                            v-model="filterStore.filters.visualStyle"
+                            label="Визуальные стили"
+                            :options="VISUAL_STYLE_OPTIONS"
+                            placeholder="Выберите визуальные стили"
+                        />
+
+                        <AppMultiSelect
+                            id="form-perspective"
+                            v-model="filterStore.filters.perspective"
+                            label="Лица"
+                            :options="perspectiveOptions"
+                            placeholder="Выберите лица"
+                        />
+                    </div>
+
+                    <div class="flex items-center gap-2">
+                        <AppRange
+                            v-show="filterStore.filters.categories.includes('lucid')"
+                            :model-value="filterStore.filters.minLucidControl"
+                            @update:model-value="
+                                (val) => {
+                                    filterStore.toggleNumberFilter('minLucidControl', val);
+                                }
+                            "
+                            label="Уровень контроля ОС"
+                            :min="0"
+                            :max="10"
+                            :step="1"
+                            :value-formatter="computedDreamValueFormatter"
+                            hint="Минимальный уровень контроля осознанного сновидения"
+                        />
+
+                        <AppRange
+                            v-show="filterStore.filters.categories.includes('nightmare')"
+                            :model-value="filterStore.filters.maxNightmareFear"
+                            @update:model-value="
+                                (val) => {
+                                    filterStore.toggleNumberFilter('maxNightmareFear', val);
+                                }
+                            "
+                            label="Максимальный уровень страха"
+                            :min="0"
+                            :max="10"
+                            :step="1"
+                            :value-formatter="computedDreamValueFormatter"
+                        />
+
+                        <AppRange
+                            :model-value="filterStore.filters.minQuality"
+                            @update:model-value="
+                                (val) => {
+                                    filterStore.toggleNumberFilter('minQuality', val);
+                                }
+                            "
+                            label="Минимальное качество сна"
+                            :min="0"
+                            :max="10"
+                            :step="1"
+                            :value-formatter="computedDreamValueFormatter"
+                        />
+
+                        <AppRange
+                            :model-value="filterStore.filters.minClarity"
+                            @update:model-value="
+                                (val) => {
+                                    filterStore.toggleNumberFilter('minClarity', val);
+                                }
+                            "
+                            label="Максимальная ясность сна"
+                            :min="0"
+                            :max="10"
+                            :step="1"
+                            :value-formatter="computedDreamValueFormatter"
+                        />
+
+                        <AppRange
+                            :model-value="filterStore.filters.minMoodAfter"
+                            @update:model-value="
+                                (val) => {
+                                    filterStore.toggleNumberFilter('minMoodAfter', val);
+                                }
+                            "
+                            label="Минимальное настроение после сна"
+                            :min="0"
+                            :max="10"
+                            :step="1"
+                            :value-formatter="computedDreamValueFormatter"
+                        />
+                    </div>
+
+                    <AppCheckbox
+                        :model-value="filterStore.filters.propheticFulfilled"
+                        @update:model-value="filterStore.toggleBooleanFilter('propheticFulfilled')"
+                        label="Сбылся ли сон?"
+                    />
+
+                    <div class="border-border/40 flex flex-wrap justify-start gap-3 border-t pt-2">
+                        <AppCheckbox
+                            :model-value="filterStore.filters.isFavorite"
+                            @update:model-value="filterStore.toggleBooleanFilter('isFavorite')"
+                            label="Избранные"
+                        />
+
+                        <AppCheckbox
+                            :model-value="filterStore.filters.isPinned"
+                            @update:model-value="filterStore.toggleBooleanFilter('isPinned')"
+                            label="Закрепленные"
+                        />
+
+                        <AppCheckbox
+                            :model-value="filterStore.filters.isArchived"
+                            @update:model-value="filterStore.toggleBooleanFilter('isArchived')"
+                            label="В архиве"
+                        />
+
+                        <AppCheckbox
+                            :model-value="filterStore.filters.isDraft"
+                            @update:model-value="filterStore.toggleBooleanFilter('isDraft')"
+                            label="В черновике"
+                        />
+
+                        <AppCheckbox
+                            :model-value="filterStore.filters.isPrivate"
+                            @update:model-value="filterStore.toggleBooleanFilter('isPrivate')"
+                            label="Приватные"
+                        />
+
+                        <AppCheckbox
+                            :model-value="filterStore.filters.isDeleted"
+                            @update:model-value="filterStore.toggleBooleanFilter('isDeleted')"
+                            label="Удаленные"
+                        />
                     </div>
                 </div>
 
@@ -184,39 +306,66 @@
 </template>
 
 <script setup lang="ts">
-    import { ref, computed, onMounted, nextTick, watch } from 'vue';
+    import { ref, computed, onMounted, onUnmounted, nextTick, watch } from 'vue';
     import { useRoute } from 'vue-router';
     import { useSleepStore } from '@/stores/modules/dream';
     import { useDreamFilterStore } from '@/stores/modules/dreamFilter';
     import DreamSearchCard from '@/components/cards/DreamSearchCard.vue';
-    import { MoveLeft, Search as SearchIcon, X } from 'lucide-vue-next';
+    import { MoveLeft } from 'lucide-vue-next';
     import AppButton from '@/components/ui/AppButton.vue';
+    import AppRange from '@/components/ui/AppRange.vue';
     import { useNavigation } from '@/composables/routing/useNavigation';
-    import type { DreamCategory } from '@/types/Dream';
+    import AppMultiSelect from '@/components/ui/AppMultiSelect.vue';
+    import AppDatePicker from '@/components/ui/AppDatePicker.vue';
+    import AppCheckbox from '@/components/ui/AppCheckbox.vue';
+    import AppTextInput from '@/components/ui/AppTextInput.vue';
+    import { dreamValueFormatter } from '@/utils/formatters';
+    import {
+        DREAM_CATEGORY_OPTIONS,
+        DREAM_PHENOMENON_OPTIONS,
+        PERSPECTIVE_OPTIONS,
+        SENSORY_ASPECT_OPTIONS,
+        PARTICIPANT_ROLE_OPTIONS,
+        VISUAL_STYLE_OPTIONS,
+        TIME_OF_DAY_OPTIONS,
+    } from '@/constants/Dream';
 
     const route = useRoute();
     const sleepStore = useSleepStore();
     const filterStore = useDreamFilterStore();
     const { goBack, goToDreamDetail } = useNavigation();
 
-    const searchInput = ref<HTMLInputElement | null>(null);
+    const computedDreamValueFormatter = computed(() => dreamValueFormatter);
 
-    const availableCategories: { label: string; value: DreamCategory }[] = [
-        { label: 'Кошмар', value: 'nightmare' },
-        { label: 'Осознанный', value: 'lucid' },
-        { label: 'Вещий', value: 'prophetic' },
-    ];
+    const searchInput = ref<HTMLInputElement | null>(null);
 
     // Сбор уникальных эмоций и персонажей из всех доступных снов для фильтрации
     const allEmotions = computed(() => {
         const set = new Set<string>();
         sleepStore.sleeps.forEach((d) => d.emotions?.forEach((e) => set.add(e)));
+
         return Array.from(set);
+    });
+
+    const perspectiveOptions = computed(() => {
+        return PERSPECTIVE_OPTIONS.slice(1);
     });
 
     const allCharacters = computed(() => {
         const set = new Set<string>();
         sleepStore.sleeps.forEach((d) => d.characters?.forEach((c) => set.add(c)));
+        return Array.from(set);
+    });
+
+    const allLocations = computed(() => {
+        const set = new Set<string>();
+        sleepStore.sleeps.forEach((d) => d.locations?.forEach((c) => set.add(c)));
+        return Array.from(set);
+    });
+
+    const allObjects = computed(() => {
+        const set = new Set<string>();
+        sleepStore.sleeps.forEach((d) => d.objects?.forEach((c) => set.add(c)));
         return Array.from(set);
     });
 
@@ -250,32 +399,49 @@
 
     const hasActiveFilters = computed(() => {
         return (
+            filterStore.filters.dateFrom ||
+            filterStore.filters.dateTo ||
+            filterStore.filters.propheticFulfilled ||
+            filterStore.filters.minLucidControl ||
+            filterStore.filters.maxNightmareFear ||
+            filterStore.filters.minQuality ||
+            filterStore.filters.minClarity ||
+            filterStore.filters.minMoodAfter ||
             filterStore.filters.characters.length > 0 ||
+            filterStore.filters.locations.length > 0 ||
+            filterStore.filters.objects.length > 0 ||
             filterStore.filters.emotions.length > 0 ||
             filterStore.filters.categories.length > 0 ||
-            Boolean(filterStore.filters.searchQuery) ||
-            filterStore.filters.isFavorite !== undefined ||
-            filterStore.filters.isPinned !== undefined ||
-            (filterStore.filters.minClarity !== undefined &&
-                filterStore.filters.minClarity !== null)
+            filterStore.filters.events.length > 0 ||
+            filterStore.filters.timeOfDay.length > 0 ||
+            filterStore.filters.visualStyle.length > 0 ||
+            filterStore.filters.perspective.length > 0 ||
+            filterStore.filters.roles.length > 0 ||
+            filterStore.filters.sensations.length > 0 ||
+            Boolean(filterStore.filters.searchQuery.trim()) ||
+            filterStore.filters.isFavorite ||
+            filterStore.filters.isPinned ||
+            filterStore.filters.isArchived ||
+            filterStore.filters.isDeleted ||
+            filterStore.filters.isDraft ||
+            filterStore.filters.isPrivate
         );
     });
-
-    const clearSearch = () => {
-        filterStore.filters.searchQuery = '';
-        nextTick(() => {
-            searchInput.value?.focus();
-        });
-    };
 
     onMounted(async () => {
         if (sleepStore.sleeps.length === 0) {
             await sleepStore.init();
         }
+        filterStore.toggleActive(true);
+
         syncFiltersFromRoute();
         nextTick(() => {
             searchInput.value?.focus();
         });
+    });
+
+    onUnmounted(async () => {
+        filterStore.toggleActive(false);
     });
 
     const actualDreamSlug = computed(() => {

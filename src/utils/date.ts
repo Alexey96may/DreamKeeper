@@ -10,6 +10,13 @@ export const formatToLocalDateStr = (date: Date = new Date()): string => {
 };
 
 /**
+ * Sanitize Date
+ */
+export const sanitizeDateString = (date: string): string => {
+    return date.split('T')[0];
+};
+
+/**
  * Checks if a given date is today or in the past (non-future).
  * Normalizes both dates to the start of the day (00:00:00.000) in local time.
  *

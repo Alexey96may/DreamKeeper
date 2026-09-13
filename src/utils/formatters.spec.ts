@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { formatDistance, formatMoney } from './format';
+import { formatDistance, formatMoney } from './formatters';
 
 // нормализация пробелов (NBSP из Intl)
 const normalize = (str: string) => str.replace(/\s/g, ' ');

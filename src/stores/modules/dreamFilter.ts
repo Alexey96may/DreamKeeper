@@ -1,6 +1,8 @@
 import { ref, computed } from 'vue';
 import { defineStore } from 'pinia';
 import { useSleepStore } from '@/stores/modules/dream';
+import { sanitizeDateString } from '@/utils/date';
+
 import type {
     DreamCategory,
     TimeOfDay,
@@ -33,12 +35,12 @@ export interface DreamFilterState {
     locations: string[];
     objects: string[];
     emotions: string[];
-    isFavorite?: boolean;
-    isPinned?: boolean;
-    isArchived?: boolean;
-    isDeleted?: boolean;
-    isDraft?: boolean;
-    isPrivate?: boolean;
+    isFavorite: boolean;
+    isPinned: boolean;
+    isArchived: boolean;
+    isDeleted: boolean;
+    isDraft: boolean;
+    isPrivate: boolean;
 }
 
 type ArrayFilterKey =
@@ -68,31 +70,39 @@ export const useDreamFilterStore = defineStore('dreamFilter', () => {
     const filters = ref<DreamFilterState>({
         isActive: false,
         searchQuery: '',
+
         dateFrom: undefined,
         dateTo: undefined,
-        categories: [],
-        events: [],
+
+        propheticFulfilled: undefined,
+
         minLucidControl: undefined,
         maxNightmareFear: undefined,
-        propheticFulfilled: undefined,
         minQuality: undefined,
         minClarity: undefined,
         minMoodAfter: undefined,
+
+        categories: [],
+        events: [],
+
         timeOfDay: [],
+
         visualStyle: [],
         perspective: [],
         roles: [],
         sensations: [],
+
         characters: [],
         locations: [],
         objects: [],
         emotions: [],
-        isFavorite: undefined,
-        isPinned: undefined,
-        isArchived: undefined,
-        isDeleted: undefined,
-        isDraft: undefined,
-        isPrivate: undefined,
+
+        isFavorite: false,
+        isPinned: false,
+        isArchived: false,
+        isDeleted: false,
+        isDraft: false,
+        isPrivate: false,
     });
 
     const filteredDreams = computed(() => {
@@ -105,12 +115,20 @@ export const useDreamFilterStore = defineStore('dreamFilter', () => {
                 const query = filters.value.searchQuery.trim().toLowerCase();
                 const titleMatch = dream.title?.toLowerCase().includes(query) ?? false;
                 const descMatch = dream.description?.toLowerCase().includes(query) ?? false;
-                const notesMatch = dream.personalNotes?.toLowerCase().includes(query) ?? false;
-                if (!titleMatch && !descMatch && !notesMatch) return false;
+                if (!titleMatch && !descMatch) return false;
             }
 
-            if (filters.value.dateFrom && dream.date < filters.value.dateFrom) return false;
-            if (filters.value.dateTo && dream.date > filters.value.dateTo) return false;
+            if (
+                filters.value.dateFrom &&
+                sanitizeDateString(dream.date) < sanitizeDateString(filters.value.dateFrom)
+            )
+                return false;
+
+            if (
+                filters.value.dateTo &&
+                sanitizeDateString(dream.date) > sanitizeDateString(filters.value.dateTo)
+            )
+                return false;
 
             if (filters.value.categories.length > 0) {
                 const hasCategory = filters.value.categories.every((cat) =>
@@ -161,7 +179,6 @@ export const useDreamFilterStore = defineStore('dreamFilter', () => {
             )
                 return false;
 
-            console.log(filters.value.visualStyle);
             if (
                 filters.value.visualStyle.length > 0 &&
                 (!dream.visualStyle || !filters.value.visualStyle.includes(dream.visualStyle))
@@ -177,6 +194,7 @@ export const useDreamFilterStore = defineStore('dreamFilter', () => {
                 const hasRole = filters.value.roles.every((r) => dream.roles?.includes(r));
                 if (!hasRole) return false;
             }
+
             if (filters.value.sensations.length > 0) {
                 const hasSens = filters.value.sensations.every((s) =>
                     dream.sensations?.includes(s),
@@ -203,29 +221,15 @@ export const useDreamFilterStore = defineStore('dreamFilter', () => {
                 if (!hasEmo) return false;
             }
 
-            if (
-                filters.value.isFavorite !== undefined &&
-                !!dream.isFavorite !== filters.value.isFavorite
-            )
+            if (filters.value.isFavorite && !!dream.isFavorite !== filters.value.isFavorite)
                 return false;
-            if (filters.value.isPinned !== undefined && !!dream.isPinned !== filters.value.isPinned)
+            if (filters.value.isPinned && !!dream.isPinned !== filters.value.isPinned) return false;
+            if (filters.value.isArchived && !!dream.isArchived !== filters.value.isArchived)
                 return false;
-            if (
-                filters.value.isArchived !== undefined &&
-                !!dream.isArchived !== filters.value.isArchived
-            )
+            if (filters.value.isDeleted && !!dream.isDeleted !== filters.value.isDeleted)
                 return false;
-            if (
-                filters.value.isDeleted !== undefined &&
-                !!dream.isDeleted !== filters.value.isDeleted
-            )
-                return false;
-            if (filters.value.isDraft !== undefined && !!dream.isDraft !== filters.value.isDraft)
-                return false;
-            if (
-                filters.value.isPrivate !== undefined &&
-                !!dream.isPrivate !== filters.value.isPrivate
-            )
+            if (filters.value.isDraft && !!dream.isDraft !== filters.value.isDraft) return false;
+            if (filters.value.isPrivate && !!dream.isPrivate !== filters.value.isPrivate)
                 return false;
 
             return true;
@@ -241,7 +245,7 @@ export const useDreamFilterStore = defineStore('dreamFilter', () => {
 
     const resetFilters = () => {
         filters.value = {
-            isActive: false,
+            isActive: true,
             searchQuery: '',
             dateFrom: undefined,
             dateTo: undefined,
@@ -262,12 +266,12 @@ export const useDreamFilterStore = defineStore('dreamFilter', () => {
             locations: [],
             objects: [],
             emotions: [],
-            isFavorite: undefined,
-            isPinned: undefined,
-            isArchived: undefined,
-            isDeleted: undefined,
-            isDraft: undefined,
-            isPrivate: undefined,
+            isFavorite: false,
+            isPinned: false,
+            isArchived: false,
+            isDeleted: false,
+            isDraft: false,
+            isPrivate: false,
         };
     };
 
@@ -288,14 +292,11 @@ export const useDreamFilterStore = defineStore('dreamFilter', () => {
     const toggleBooleanFilter = (id: BooleanFilterKeys) => {
         if (!filters.value.isActive) return;
 
-        filters.value.isActive = true;
         const currentValue = filters.value[id];
-        if (currentValue === undefined) {
-            filters.value[id] = true as any;
-        } else if (currentValue === true) {
-            filters.value[id] = false as any;
+        if (currentValue === undefined || currentValue === false) {
+            filters.value[id] = true;
         } else {
-            filters.value[id] = undefined as any;
+            filters.value[id] = false;
         }
     };
 

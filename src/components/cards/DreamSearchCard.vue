@@ -62,9 +62,9 @@
         role="button"
         :aria-label="ariaLabel"
         :class="[
-            'bg-bg-secondary/50 border-border/50 hover:border-border focus-visible:ring-primary/50 cursor-pointer rounded-lg border p-4 transition duration-200 outline-none focus-visible:ring-2',
+            'dream-card cursor-pointer rounded-lg border p-4 transition duration-200 outline-none focus-visible:ring-2',
             {
-                'ring-primary/95 border-primary bg-primary/10 ring-2': isSelected,
+                ring: isSelected,
             },
         ]"
         @click="handleClick"

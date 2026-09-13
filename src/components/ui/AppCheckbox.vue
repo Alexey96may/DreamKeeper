@@ -116,7 +116,7 @@
 </script>
 
 <template>
-    <div class="w-full">
+    <div>
         <!-- Main Checkbox Container -->
         <label
             :for="checkboxId"

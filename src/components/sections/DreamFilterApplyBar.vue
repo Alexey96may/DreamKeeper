@@ -11,7 +11,6 @@
                 class="text-text-primary bg-bg-secondary border-border/50 absolute -top-2 -right-2 flex items-center gap-1 rounded-full border px-2 py-0.5 text-xs font-medium shadow-sm"
                 role="status"
                 aria-live="polite"
-                title=""
             >
                 <AppTooltip content="Количество найденых снов" />
                 <span>{{ filterStore.matchingCount }}</span>
@@ -76,13 +75,6 @@
         router.push({
             name: 'dream-search',
             query: {
-                characters: filterStore.filters.characters.length
-                    ? filterStore.filters.characters.join(',')
-                    : undefined,
-                emotions: filterStore.filters.emotions.length
-                    ? filterStore.filters.emotions.join(',')
-                    : undefined,
-                minClarity: filterStore.filters.minClarity ?? undefined,
                 actualDream: props.dreamSlug,
             },
         });

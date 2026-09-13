@@ -40,12 +40,29 @@
             >
                 {{ props.isPrivate ? 'Приватный' : 'Публичный' }}
             </AppTag>
+
+            <AppTag
+                :is-pressed="props.isDeleted"
+                :icon="Trash2"
+                @click="onFieldChange('isDeleted', !props.isDeleted)"
+            >
+                {{ props.isDeleted ? 'Удалённый' : 'В удалённые' }}
+            </AppTag>
         </div>
     </div>
 </template>
 
 <script setup lang="ts">
-    import { Pin, Bookmark, Lock, Globe, FileText, CheckCircle2, Archive } from 'lucide-vue-next';
+    import {
+        Pin,
+        Bookmark,
+        Lock,
+        Globe,
+        FileText,
+        CheckCircle2,
+        Archive,
+        Trash2,
+    } from 'lucide-vue-next';
     import AppTag from '@/components/ui/AppTag.vue';
 
     interface Props {
@@ -54,6 +71,7 @@
         isDraft?: boolean;
         isArchived?: boolean;
         isPrivate?: boolean;
+        isDeleted?: boolean;
     }
 
     const props = withDefaults(defineProps<Props>(), {
@@ -61,11 +79,13 @@
         isFavorite: false,
         isDraft: false,
         isArchived: false,
+        isDeleted: false,
 
         isPrivate: true,
     });
 
-    type FieldKey = 'isPinned' | 'isFavorite' | 'isDraft' | 'isArchived' | 'isPrivate';
+    type FieldKey =
+        'isPinned' | 'isFavorite' | 'isDraft' | 'isArchived' | 'isPrivate' | 'isDeleted';
 
     const emit = defineEmits<{
         'update:isPinned': [value: boolean];
@@ -73,6 +93,7 @@
         'update:isDraft': [value: boolean];
         'update:isArchived': [value: boolean];
         'update:isPrivate': [value: boolean];
+        'update:isDeleted': [value: boolean];
     }>();
 
     const onFieldChange = (field: FieldKey, val: boolean) => {
@@ -91,6 +112,9 @@
                 break;
             case 'isPrivate':
                 emit('update:isPrivate', val);
+                break;
+            case 'isDeleted':
+                emit('update:isDeleted', val);
                 break;
         }
     };

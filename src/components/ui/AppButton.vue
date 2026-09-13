@@ -113,11 +113,10 @@
             'bg-accent text-white hover:bg-accent/90 border-transparent shadow-sm active:scale-[0.98]',
         secondary:
             'bg-bg-secondary text-text-primary hover:bg-bg-tertiary border-border active:scale-[0.98]',
-        danger: 'bg-red-500/10 text-red-500 hover:bg-red-500/20 border-red-500/30 active:scale-[0.98]',
+        danger: 'bg-bg-danger text-text-danger hover:bg-bg-danger/50 border-red-500/30 active:scale-[0.98]',
         outline:
             'bg-transparent text-text-primary hover:bg-bg-secondary border-border active:scale-[0.98]',
         ghost: 'bg-transparent text-text-soft hover:text-text-primary hover:bg-bg-secondary border-transparent',
-
         add: 'bg-transparent text-accent text-xs font-medium hover:underline border-none active:scale-[0.98]',
         back: 'text-text-mute hover:text-text-primary focus-visible:outline-accent border-none  flex cursor-pointer items-center gap-2 rounded-md text-sm font-medium transition-colors focus-visible:outline focus-visible:outline-2',
     };

@@ -45,7 +45,7 @@
 
 <script setup lang="ts">
     import { computed, useId } from 'vue';
-    import { Loader2 } from 'lucide-vue-next';
+    import { Search as SearchIcon, Loader2, X } from 'lucide-vue-next';
     import AppTooltip from '@/components/ui/AppTooltip.vue';
     import AppErrorMessage from '@/components/ui/AppErrorMessage.vue';
     import { useFieldFocus } from '@/composables/useFieldFocus';
@@ -135,6 +135,12 @@
 
         <!-- Input Field + Loading Spinner -->
         <div class="relative flex items-center">
+            <SearchIcon
+                v-if="type === 'search'"
+                class="text-text-mute pointer-events-none absolute left-3.5 h-4 w-4"
+                aria-hidden="true"
+            />
+
             <input
                 :id="inputId"
                 ref="targetRef"
@@ -149,17 +155,28 @@
                 :aria-invalid="Boolean(errorMessage)"
                 :aria-describedby="ariaDescribedBy"
                 :aria-required="required"
-                class="border-border bg-bg-secondary text-text-primary focus:border-accent w-full rounded-lg border px-3 py-2 text-sm transition-colors duration-150 focus:outline-none disabled:cursor-not-allowed disabled:opacity-60"
+                class="border-border bg-bg-secondary text-text-primary focus:border-accent w-full rounded-xl border px-5 py-3 text-sm transition-colors duration-150 focus:outline-none disabled:cursor-not-allowed disabled:opacity-60"
                 :class="{
                     'border-status-error focus:border-status-error focus:ring-status-error focus:ring-1':
                         errorMessage,
                     'pr-9': isLoading,
+                    'pl-10': type === 'search',
                 }"
                 @input="handleInput"
                 @blur="emit('blur', $event)"
                 @focus="emit('focus', $event)"
                 @change="emit('change', $event)"
             />
+
+            <button
+                v-if="modelValue"
+                type="button"
+                aria-label="Очистить поиск"
+                class="text-text-mute hover:text-text-primary absolute right-3 cursor-pointer p-1 transition"
+                @click="emit('update:modelValue', '')"
+            >
+                <X class="h-4 w-4" />
+            </button>
 
             <!-- Loading State Spinner -->
             <div
