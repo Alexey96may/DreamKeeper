@@ -25,7 +25,19 @@ export const useUIStore = defineStore('ui', () => {
     };
 
     const toggleTheme = () => {
-        const themes: ThemeMode[] = ['light', 'dark', 'night', 'sepia', 'system'];
+        const themes: ThemeMode[] = [
+            'light',
+            'dark',
+            'night',
+            'sepia',
+            'dracula',
+            'emerald',
+            'forest',
+            'mystic',
+            'neon',
+            'nord',
+            'system',
+        ];
         const currentIndex = themes.indexOf(theme.value);
         const nextIndex = (currentIndex + 1) % themes.length;
         setTheme(themes[nextIndex]);

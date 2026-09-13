@@ -13,9 +13,13 @@
             type: String as () => string,
             default: 'do MMMM yyyy HH:mm',
         },
+        isExactDate: {
+            type: Boolean as () => boolean,
+            default: false,
+        },
     });
 
-    const showExactDate = ref(false);
+    const showExactDate = ref(props.isExactDate);
 
     const toggleDate = () => {
         showExactDate.value = !showExactDate.value;

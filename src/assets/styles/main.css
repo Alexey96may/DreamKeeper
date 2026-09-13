@@ -7,35 +7,81 @@
 
 @theme {
     /* Background */
-    --color-bg-primary: var(--color-background);
-    --color-bg-secondary: var(--color-background-soft);
-    --color-bg-mute: var(--color-background-mute);
-    --color-bg-card: var(--color-background-card);
-    --color-bg-input: var(--color-background-input);
+    --color-bg-primary: var(--bg-primary); /* Основной фон всей страницы/тела приложения */
+    --color-bg-secondary: var(--bg-secondary); /* Фон карточек, сайдбара, второстепенных блоков */
+    --color-bg-tertiary: var(
+        --bg-tertiary
+    ); /* Фон полей ввода, инпутов, ховер-состояний элементов списка */
+    --color-bg-elevated: var(
+        --bg-elevated
+    ); /* Приподнятые поверхности: модальные окна, выпадающие списки (dropdown), тултипы */
+    --color-bg-muted: var(--muted-status-bg); /* Фоновый цвет приглушенных элементов */
 
     /* Text */
-    --color-text-primary: var(--color-text);
-    --color-text-soft: var(--color-text-soft);
-    --color-text-mute: var(--color-text-mute);
-    --color-text-inverse: var(--color-text-inverse);
-    --color-text-link: var(--color-text-link);
-    --color-text-hover: var(--color-text-link-hover);
+    --color-text-primary: var(
+        --text-primary
+    ); /* Заголовки, основной контент, важный читаемый текст */
+    --color-text-secondary: var(
+        --text-secondary
+    ); /* Второстепенные описания, метаданные, подзаголовки */
+    --color-text-muted: var(
+        --color-muted
+    ); /* Плейсхолдеры в инпутах, таймстампы, еле заметные подписи */
+    --color-text-inverse: var(
+        --text-inverse
+    ); /* Текст, который пишется поверх закрашенных кнопок (например, поверх --accent) */
 
-    /* Borders */
-    --color-border-primary: var(--color-border);
-    --color-border-hover: var(--color-border-hover);
-    --color-border-focus: var(--color-border-focus);
+    /* --color-text-link: var(--color-text-link);
+    --color-text-hover: var(--color-text-link-hover); */
 
     /* Accent */
-    --color-accent: var(--color-accent);
-    --color-accent-hover: var(--color-accent-hover);
-    --color-accent-soft: var(--color-accent-soft);
+    --color-accent: var(
+        --accent
+    ); /* Основной фирменный цвет: кнопки действий, активные ссылки, переключатели */
+    --color-accent-hover: var(--accent-hover); /* Цвет акцентного элемента при наведении курсора */
+    --color-accent-active: var(--accent-active); /* Состояние акцента в момент клика/нажатия */
+    --color-accent-subtle: var(
+        --accent-subtle
+    ); /* Слегка подкрашенный фон с акцентным оттенком (для мягкой подсветки, тегов) */
+
+    /* Borders */
+    --color-border-primary: var(
+        --border-color
+    ); /* Стандартные рамки карточек, разделители крупных блоков */
+    --color-border-subtle: var(
+        --border-subtle
+    ); /* Еле заметные тонкие линии для внутренних разделений */
+    --color-border-strong: var(
+        --border-strong
+    ); /* Усиленные контуры (например, активный бордер инпута или выбранная карточка) */
+    --color-border-muted: var(--muted-status-border); /* Рамка для архивных элементов */
+    --color-ring: var(
+        --ring-color
+    ); /* Цвет внешнего контура фокуса (focus-visible) для доступности */
+
+    /* --color-border-hover: var(--color-border-hover);
+    --color-border-focus: var(--color-border-focus); */
 
     /* Status */
-    --color-status-success: var(--color-success);
-    --color-status-warning: var(--color-warning);
-    --color-status-error: var(--color-error);
-    --color-status-info: var(--color-info);
+    --color-text-success: var(--success-text);
+    --color-bg-success: var(--success-bg);
+    --color-border-success: var(--success-border);
+
+    --color-text-danger: var(--danger-text);
+    --color-bg-danger: var(--danger-bg);
+    --color-border-danger: var(--danger-border);
+
+    --color-text-warning: var(--warning-text);
+    --color-bg-warning: var(--warning-bg);
+    --color-border-warning: var(--warning-border);
+
+    --color-text-info: var(--info-text);
+    --color-bg-info: var(--info-bg);
+    --color-border-info: var(--info-border);
+
+    --color-text-mystical: var(--mystical-text);
+    --color-bg-mystical: var(--mystical-bg);
+    --color-border-mystical: var(--mystical-border);
 
     /* Dreams */
     --color-dream-lucid: var(--color-dream-lucid);
@@ -94,10 +140,10 @@
 }
 
 @utility dream-card {
-    background-color: color-mix(in srgb, var(--color-night-800) 50%, transparent);
+    background-color: color-mix(in srgb, var(--color-bg-elevated) 50%, transparent);
 
     border-width: 1px;
-    border-color: color-mix(in srgb, var(--color-night-700) 50%, transparent);
+    border-color: color-mix(in srgb, var(--color-border-subtle) 50%, transparent);
 
     border-radius: var(--radius-xl);
 
@@ -107,7 +153,7 @@
     transition-duration: 300ms;
 
     &:hover {
-        border-color: color-mix(in srgb, var(--color-dream-500) 30%, transparent);
+        border-color: color-mix(in srgb, var(--color-accent-hover) 30%, transparent);
     }
 }
 
@@ -115,7 +161,7 @@
     background-color: color-mix(in srgb, var(--color-night-700) 50%, transparent);
 
     border-width: 1px;
-    border-color: var(--color-night-600);
+    border-color: var(--color-border-subtle);
 
     border-radius: var(--radius-lg);
 

@@ -43,144 +43,470 @@
     --dk-dream-indigo: #4f46e5;
 }
 
-/* ============================================
-   2. СЕМАНТИЧЕСКИЕ ПЕРЕМЕННЫЕ
-   ============================================ */
-
 :root {
-    /* Фоны */
-    --color-background: var(--dk-white);
-    --color-background-soft: var(--dk-white-soft);
-    --color-background-mute: var(--dk-white-mute);
-    --color-background-card: var(--dk-white);
-    --color-background-input: var(--dk-white-soft);
+    /* === ФОНЫ И ПОВЕРХНОСТИ (Surface Layers) === */
+    --bg-primary: #ffffff; /* Основной фон всей страницы/тела приложения */
+    --bg-secondary: #f3f4f6; /* Фон карточек, сайдбара, второстепенных блоков */
+    --bg-tertiary: #e5e7eb; /* Фон полей ввода, инпутов, ховер-состояний элементов списка */
+    --bg-elevated: #ffffff; /* Приподнятые поверхности: модальные окна, выпадающие списки (dropdown), тултипы */
 
-    /* Текст */
-    --color-text: var(--dk-gray-900);
-    --color-text-soft: var(--dk-gray-700);
-    --color-text-mute: var(--dk-gray-500);
-    --color-text-inverse: var(--dk-white);
-    --color-text-link: var(--dk-gold-600);
-    --color-text-link-hover: var(--dk-gold-700);
+    /* === ТЕКСТОВЫЕ УРОВНИ (Typography Colors) === */
+    --text-primary: #111827; /* Заголовки, основной контент, важный читаемый текст */
+    --text-secondary: #4b5563; /* Второстепенные описания, метаданные, подзаголовки */
+    --text-muted: #9ca3af; /* Плейсхолдеры в инпутах, таймстампы, еле заметные подписи */
+    --text-inverse: #ffffff; /* Текст, который пишется поверх закрашенных кнопок (например, поверх --accent) */
 
-    /* Границы */
-    --color-border: var(--dk-gray-200);
-    --color-border-hover: var(--dk-gray-300);
-    --color-border-focus: var(--dk-gold-500);
+    /* === АКЦЕНТЫ И ДЕЙСТВИЯ (Brand & Actions) === */
+    --accent: #2563eb; /* Основной фирменный цвет: кнопки действий, активные ссылки, переключатели */
+    --accent-hover: #1d4ed8; /* Цвет акцентного элемента при наведении курсора */
+    --accent-active: #1e40af; /* Состояние акцента в момент клика/нажатия */
+    --accent-subtle: #eff6ff; /* Слегка подкрашенный фон с акцентным оттенком (для мягкой подсветки, тегов) */
 
-    /* Акценты */
-    --color-accent: var(--dk-gold-500);
-    --color-accent-hover: var(--dk-gold-600);
-    --color-accent-soft: var(--dk-gold-100);
+    /* === ГРАНИЦЫ И КОНТУРЫ (Borders & Focus) === */
+    --border-color: #d1d5db; /* Стандартные рамки карточек, разделители крупных блоков */
+    --border-subtle: #e5e7eb; /* Еле заметные тонкие линии для внутренних разделений */
+    --border-strong: #9ca3af; /* Усиленные контуры (например, активный бордер инпута или выбранная карточка) */
+    --ring-color: rgba(
+        37,
+        99,
+        235,
+        0.5
+    ); /* Цвет внешнего контура фокуса (focus-visible) для доступности */
 
-    /* Тени */
-    --color-shadow: rgba(0, 0, 0, 0.08);
-    --color-shadow-lg: rgba(0, 0, 0, 0.12);
-    --color-shadow-xl: rgba(0, 0, 0, 0.16);
+    /* === СЕМАНТИКА: ОШИБКИ И КОШМАРЫ (Danger) === */
+    --danger-text: #991b1b; /* Цвет текста для критических ошибок и карточек-кошмаров */
+    --danger-bg: #fee2e2; /* Мягкий фон для алертов, плашек ошибок и фонов кошмарных снов */
+    --danger-border: #fca5a5; /* Цвет рамки для критических элементов или тревожных карточек */
 
-    /* Статусы */
-    --color-success: #22c55e;
-    --color-warning: #f59e0b;
-    --color-error: #ef4444;
-    --color-info: var(--dk-dream-blue);
+    /* === СЕМАНТИКА: ПРЕДУПРЕЖДЕНИЯ (Warning) === */
+    --warning-text: #92400e; /* Цвет текста предупреждений */
+    --warning-bg: #fef3c7; /* Фон для блоков предупреждений и важных заметок */
+    --warning-border: #fcd34d; /* Рамка для предупреждающих элементов */
 
-    /* Сны - для маркеров */
-    --color-dream-lucid: var(--dk-dream-purple);
-    --color-dream-nightmare: var(--color-error);
-    --color-dream-prophetic: var(--dk-dream-indigo);
-    --color-dream-normal: var(--dk-dream-cyan);
+    /* === СЕМАНТИКА: УСПЕХ (Success) === */
+    --success-text: #166534; /* Цвет текста успешных операций */
+    --success-bg: #dcfce7; /* Фон подтверждений, выполненных задач */
+    --success-border: #86efac; /* Рамка для успешных состояний */
+
+    /* === СЕМАНТИКА: ИНФОРМАЦИЯ (Info) === */
+    --info-text: #1e40af; /* Текст для информационных уведомлений и подсказок */
+    --info-bg: #dbeafe; /* Фон информационных блоков */
+    --info-border: #93c5fd; /* Рамка информационных элементов */
+
+    /* === СЕМАНТИКА: МИСТИКА / ОСОЗНАННЫЕ СНЫ (Mystical / Lucid) === */
+    --mystical-text: #581c87; /* Текст для выделения осознанных (lucid) снов */
+    --mystical-bg: #f3e8ff; /* Фирменный глубокий/пастельный фон под специфические сны */
+    --mystical-border: #d8b4fe; /* Рамка для мистических или вещих карточек */
+
+    /* === СЕМАНТИКА: АРХИВ / НЕЙТРАЛЬНОЕ (Muted Status) === */
+    --muted-status-text: #374151; /* Текст для скрытых, архивных или второстепенных статусов */
+    --muted-status-bg: #f9fafb; /* Фоновый цвет приглушенных элементов */
+    --muted-status-border: #e5e7eb; /* Рамка для архивных элементов */
 }
 
-/* ============================================
-   3. ТЁМНАЯ ТЕМА
-   ============================================ */
+[data-theme='default'] {
+    --bg-primary: #ffffff;
+    --bg-secondary: #f3f4f6;
+    --bg-tertiary: #e5e7eb;
+    --bg-elevated: #ffffff;
+    --text-primary: #111827;
+    --text-secondary: #4b5563;
+    --text-muted: #9ca3af;
+    --text-inverse: #ffffff;
+    --accent: #2563eb;
+    --accent-hover: #1d4ed8;
+    --accent-active: #1e40af;
+    --accent-subtle: #eff6ff;
+    --border-color: #d1d5db;
+    --border-subtle: #e5e7eb;
+    --border-strong: #9ca3af;
+    --ring-color: rgba(37, 99, 235, 0.5);
+    --danger-text: #991b1b;
+    --danger-bg: #fee2e2;
+    --danger-border: #fca5a5;
+    --warning-text: #92400e;
+    --warning-bg: #fef3c7;
+    --warning-border: #fcd34d;
+    --success-text: #166534;
+    --success-bg: #dcfce7;
+    --success-border: #86efac;
+    --info-text: #1e40af;
+    --info-bg: #dbeafe;
+    --info-border: #93c5fd;
+    --mystical-text: #581c87;
+    --mystical-bg: #f3e8ff;
+    --mystical-border: #d8b4fe;
+    --muted-status-text: #374151;
+    --muted-status-bg: #f9fafb;
+    --muted-status-border: #e5e7eb;
+}
+
+[data-theme='light'] {
+    --bg-primary: #f8fafc;
+    --bg-secondary: #ffffff;
+    --bg-tertiary: #f1f5f9;
+    --bg-elevated: #ffffff;
+    --text-primary: #0f172a;
+    --text-secondary: #475569;
+    --text-muted: #94a3b8;
+    --text-inverse: #ffffff;
+    --accent: #0284c7;
+    --accent-hover: #0369a1;
+    --accent-active: #075985;
+    --accent-subtle: #e0f2fe;
+    --border-color: #cbd5e1;
+    --border-subtle: #e2e8f0;
+    --border-strong: #64748b;
+    --ring-color: rgba(2, 132, 199, 0.4);
+    --danger-text: #b91c1c;
+    --danger-bg: #fee2e2;
+    --danger-border: #fca5a5;
+    --warning-text: #b45309;
+    --warning-bg: #fef3c7;
+    --warning-border: #fcd34d;
+    --success-text: #15803d;
+    --success-bg: #dcfce7;
+    --success-border: #86efac;
+    --info-text: #0369a1;
+    --info-bg: #e0f2fe;
+    --info-border: #7dd3fc;
+    --mystical-text: #6b21a8;
+    --mystical-bg: #f3e8ff;
+    --mystical-border: #d8b4fe;
+    --muted-status-text: #475569;
+    --muted-status-bg: #f8fafc;
+    --muted-status-border: #e2e8f0;
+}
 
 [data-theme='dark'] {
-    /* Фоны */
-    --color-background: var(--dk-black);
-    --color-background-soft: var(--dk-black-soft);
-    --color-background-mute: var(--dk-black-mute);
-    --color-background-card: var(--dk-black-soft);
-    --color-background-input: var(--dk-black-mute);
-
-    /* Текст */
-    --color-text: var(--dk-gray-100);
-    --color-text-soft: var(--dk-gray-300);
-    --color-text-mute: var(--dk-gray-500);
-    --color-text-inverse: var(--dk-white);
-
-    /* Границы */
-    --color-border: var(--dk-gray-700);
-    --color-border-hover: var(--dk-gray-600);
-
-    /* Тени */
-    --color-shadow: rgba(0, 0, 0, 0.3);
-    --color-shadow-lg: rgba(0, 0, 0, 0.4);
-    --color-shadow-xl: rgba(0, 0, 0, 0.5);
+    --bg-primary: #121212;
+    --bg-secondary: #1e1e1e;
+    --bg-tertiary: #2a2a2a;
+    --bg-elevated: #242424;
+    --text-primary: #e0e0e0;
+    --text-secondary: #a0a0a0;
+    --text-muted: #666666;
+    --text-inverse: #121212;
+    --accent: #3b82f6;
+    --accent-hover: #60a5fa;
+    --accent-active: #2563eb;
+    --accent-subtle: #1e3a8a;
+    --border-color: #333333;
+    --border-subtle: #262626;
+    --border-strong: #525252;
+    --ring-color: rgba(59, 130, 246, 0.5);
+    --danger-text: #fca5a5;
+    --danger-bg: #450a0a;
+    --danger-border: #7f1d1d;
+    --warning-text: #fde047;
+    --warning-bg: #422006;
+    --warning-border: #78350f;
+    --success-text: #86efac;
+    --success-bg: #052e16;
+    --success-border: #14532d;
+    --info-text: #93c5fd;
+    --info-bg: #172554;
+    --info-border: #1e40af;
+    --mystical-text: #d8b4fe;
+    --mystical-bg: #3b0764;
+    --mystical-border: #6b21a8;
+    --muted-status-text: #9ca3af;
+    --muted-status-bg: #1a1a1a;
+    --muted-status-border: #2e2e2e;
 }
-
-/* ============================================
-   4. НОЧНАЯ ТЕМА
-   ============================================ */
 
 [data-theme='night'] {
-    /* Фоны */
-    --color-background: #06060e;
-    --color-background-soft: #0e0e1e;
-    --color-background-mute: #16162e;
-    --color-background-card: #0e0e1e;
-    --color-background-input: #16162e;
-
-    /* Текст */
-    --color-text: #dcdcf0;
-    --color-text-soft: #a8a8c8;
-    --color-text-mute: #6a6a8a;
-    --color-text-inverse: var(--dk-white);
-
-    /* Границы */
-    --color-border: #2a2a4a;
-    --color-border-hover: #3a3a5a;
-
-    /* Акценты (более приглушенные) */
-    --color-accent: #c7a020;
-    --color-accent-hover: #d4b030;
-    --color-accent-soft: #2a2a1a;
-
-    /* Тени */
-    --color-shadow: rgba(0, 0, 0, 0.5);
-    --color-shadow-lg: rgba(0, 0, 0, 0.6);
-    --color-shadow-xl: rgba(0, 0, 0, 0.7);
+    --bg-primary: #000000;
+    --bg-secondary: #0a0a0a;
+    --bg-tertiary: #171717;
+    --bg-elevated: #121212;
+    --text-primary: #f5f5f5;
+    --text-secondary: #a3a3a3;
+    --text-muted: #525252;
+    --text-inverse: #000000;
+    --accent: #6366f1;
+    --accent-hover: #818cf8;
+    --accent-active: #4f46e5;
+    --accent-subtle: #1e1b4b;
+    --border-color: #262626;
+    --border-subtle: #171717;
+    --border-strong: #404040;
+    --ring-color: rgba(99, 102, 241, 0.5);
+    --danger-text: #f87171;
+    --danger-bg: #3f1212;
+    --danger-border: #7f1d1d;
+    --warning-text: #fbbf24;
+    --warning-bg: #451a03;
+    --warning-border: #78350f;
+    --success-text: #4ade80;
+    --success-bg: #064e3b;
+    --success-border: #065f46;
+    --info-text: #60a5fa;
+    --info-bg: #1e3a8a;
+    --info-border: #1d4ed8;
+    --mystical-text: #c084fc;
+    --mystical-bg: #2e1065;
+    --mystical-border: #581c87;
+    --muted-status-text: #737373;
+    --muted-status-bg: #050505;
+    --muted-status-border: #1a1a1a;
 }
 
-/* ============================================
-   5. СЕПИЯ ТЕМА
-   ============================================ */
-
 [data-theme='sepia'] {
-    /* Фоны */
-    --color-background: #f5edd6;
-    --color-background-soft: #efe7d0;
-    --color-background-mute: #e9dfc8;
-    --color-background-card: #faf2e0;
-    --color-background-input: #efe7d0;
+    --bg-primary: #f4ecd8;
+    --bg-secondary: #eae0c8;
+    --bg-tertiary: #dfd4b8;
+    --bg-elevated: #fffef8;
+    --text-primary: #433422;
+    --text-secondary: #6b563d;
+    --text-muted: #9c8466;
+    --text-inverse: #f4ecd8;
+    --accent: #a0522d;
+    --accent-hover: #8b4513;
+    --accent-active: #6e360f;
+    --accent-subtle: #f5eedc;
+    --border-color: #d2c2a6;
+    --border-subtle: #e4d6bc;
+    --border-strong: #9c8466;
+    --ring-color: rgba(160, 82, 45, 0.4);
+    --danger-text: #8b0000;
+    --danger-bg: #f9d6d6;
+    --danger-border: #e09f9f;
+    --warning-text: #8b6508;
+    --warning-bg: #faedd0;
+    --warning-border: #e2c277;
+    --success-text: #2e6b34;
+    --success-bg: #d7edd8;
+    --success-border: #9ec9a3;
+    --info-text: #27408b;
+    --info-bg: #d8e2f8;
+    --info-border: #9fb5e0;
+    --mystical-text: #5d367a;
+    --mystical-bg: #eddfee;
+    --mystical-border: #bca0d3;
+    --muted-status-text: #594631;
+    --muted-status-bg: #eee5d0;
+    --muted-status-border: #d2c2a6;
+}
 
-    /* Текст */
-    --color-text: #5c4d3c;
-    --color-text-soft: #7a6a5a;
-    --color-text-mute: #a09080;
-    --color-text-inverse: var(--dk-white);
+[data-theme='neon'] {
+    --bg-primary: #0b091a;
+    --bg-secondary: #16122d;
+    --bg-tertiary: #221a44;
+    --bg-elevated: #1c1539;
+    --text-primary: #f0f6fc;
+    --text-secondary: #a8b3cf;
+    --text-muted: #5e6b94;
+    --text-inverse: #0b091a;
+    --accent: #00f0ff;
+    --accent-hover: #33f3ff;
+    --accent-active: #00c2cc;
+    --accent-subtle: #00373d;
+    --border-color: #2b2354;
+    --border-subtle: #1c163b;
+    --border-strong: #00f0ff;
+    --ring-color: rgba(0, 240, 255, 0.7);
+    --danger-text: #ff0055;
+    --danger-bg: #40001a;
+    --danger-border: #ff0055;
+    --warning-text: #ffea00;
+    --warning-bg: #403b00;
+    --warning-border: #ffea00;
+    --success-text: #00ff66;
+    --success-bg: #004019;
+    --success-border: #00ff66;
+    --info-text: #00bfff;
+    --info-bg: #002d40;
+    --info-border: #00bfff;
+    --mystical-text: #d900ff;
+    --mystical-bg: #3b0040;
+    --mystical-border: #d900ff;
+    --muted-status-text: #8c99bf;
+    --muted-status-bg: #120e26;
+    --muted-status-border: #241c47;
+}
 
-    /* Границы */
-    --color-border: #d4c8b8;
-    --color-border-hover: #c4b8a8;
+[data-theme='nord'] {
+    --bg-primary: #2e3440;
+    --bg-secondary: #3b4252;
+    --bg-tertiary: #434c5e;
+    --bg-elevated: #4c566a;
+    --text-primary: #eceff4;
+    --text-secondary: #d8dee9;
+    --text-muted: #99c0d0;
+    --text-inverse: #2e3440;
+    --accent: #88c0d0;
+    --accent-hover: #8fbcbb;
+    --accent-active: #5e81ac;
+    --accent-subtle: #3b4252;
+    --border-color: #4c566a;
+    --border-subtle: #3b4252;
+    --border-strong: #88c0d0;
+    --ring-color: rgba(136, 192, 208, 0.5);
+    --danger-text: #bf616a;
+    --danger-bg: #4c3236;
+    --danger-border: #bf616a;
+    --warning-text: #ebcb8b;
+    --warning-bg: #4d4533;
+    --warning-border: #ebcb8b;
+    --success-text: #a3be8c;
+    --success-bg: #3b4a3a;
+    --success-border: #a3be8c;
+    --info-text: #81a1c1;
+    --info-bg: #3b4659;
+    --info-border: #81a1c1;
+    --mystical-text: #b48ead;
+    --mystical-bg: #463b48;
+    --mystical-border: #b48ead;
+    --muted-status-text: #9e9e9e;
+    --muted-status-bg: #323945;
+    --muted-status-border: #434c5e;
+}
 
-    /* Акценты (теплые) */
-    --color-accent: #b8860b;
-    --color-accent-hover: #d4a020;
-    --color-accent-soft: #e8ddc8;
+[data-theme='dracula'] {
+    --bg-primary: #282a36;
+    --bg-secondary: #383a59;
+    --bg-tertiary: #44475a;
+    --bg-elevated: #2f3142;
+    --text-primary: #f8f8f2;
+    --text-secondary: #bd93f9;
+    --text-muted: #6272a4;
+    --text-inverse: #282a36;
+    --accent: #ff79c6;
+    --accent-hover: #ff92d0;
+    --accent-active: #ff55b3;
+    --accent-subtle: #44475a;
+    --border-color: #44475a;
+    --border-subtle: #383a59;
+    --border-strong: #bd93f9;
+    --ring-color: rgba(255, 121, 198, 0.5);
+    --danger-text: #ff5555;
+    --danger-bg: #5c2c2c;
+    --danger-border: #ff5555;
+    --warning-text: #f1fa8c;
+    --warning-bg: #54562c;
+    --warning-border: #f1fa8c;
+    --success-text: #50fa7b;
+    --success-bg: #225232;
+    --success-border: #50fa7b;
+    --info-text: #8be9fd;
+    --info-bg: #29545c;
+    --info-border: #8be9fd;
+    --mystical-text: #bd93f9;
+    --mystical-bg: #3a2e5c;
+    --mystical-border: #bd93f9;
+    --muted-status-text: #8590ba;
+    --muted-status-bg: #22242f;
+    --muted-status-border: #383a59;
+}
 
-    /* Тени */
-    --color-shadow: rgba(92, 77, 60, 0.12);
-    --color-shadow-lg: rgba(92, 77, 60, 0.18);
-    --color-shadow-xl: rgba(92, 77, 60, 0.24);
+[data-theme='forest'] {
+    --bg-primary: #f4f6f0;
+    --bg-secondary: #e6ebd9;
+    --bg-tertiary: #d2dac1;
+    --bg-elevated: #ffffff;
+    --text-primary: #273022;
+    --text-secondary: #4a5c43;
+    --text-muted: #7b8f72;
+    --text-inverse: #f4f6f0;
+    --accent: #3b6e32;
+    --accent-hover: #2e5627;
+    --accent-active: #203c1b;
+    --accent-subtle: #e1edd8;
+    --border-color: #b8c7ac;
+    --border-subtle: #d2dac1;
+    --border-strong: #4a5c43;
+    --ring-color: rgba(59, 110, 50, 0.4);
+    --danger-text: #8b3a3a;
+    --danger-bg: #f9dede;
+    --danger-border: #e09f9f;
+    --warning-text: #8b6b23;
+    --warning-bg: #f9eed9;
+    --warning-border: #e5cc9c;
+    --success-text: #236338;
+    --success-bg: #d7edd8;
+    --success-border: #9ec9a3;
+    --info-text: #2e597c;
+    --info-bg: #dbeaf4;
+    --info-border: #a3c4e0;
+    --mystical-text: #503875;
+    --mystical-bg: #eee5f7;
+    --mystical-border: #c4b0e2;
+    --muted-status-text: #55664d;
+    --muted-status-bg: #eaeede;
+    --muted-status-border: #b8c7ac;
+}
+
+[data-theme='emerald'] {
+    --bg-primary: #061a14;
+    --bg-secondary: #0b2920;
+    --bg-tertiary: #133d30;
+    --bg-elevated: #0f3328;
+    --text-primary: #e2f8f0;
+    --text-secondary: #8ae9c1;
+    --text-muted: #4e8c73;
+    --text-inverse: #061a14;
+    --accent: #10b981;
+    --accent-hover: #34d399;
+    --accent-active: #059669;
+    --accent-subtle: #064e3b;
+    --border-color: #1b4d3e;
+    --border-subtle: #133d30;
+    --border-strong: #10b981;
+    --ring-color: rgba(16, 185, 129, 0.5);
+    --danger-text: #fca5a5;
+    --danger-bg: #450a0a;
+    --danger-border: #7f1d1d;
+    --warning-text: #fde047;
+    --warning-bg: #422006;
+    --warning-border: #78350f;
+    --success-text: #6ee7b7;
+    --success-bg: #022c22;
+    --success-border: #047857;
+    --info-text: #7dd3fc;
+    --info-bg: #082f49;
+    --info-border: #0369a1;
+    --mystical-text: #d8b4fe;
+    --mystical-bg: #3b0764;
+    --mystical-border: #6b21a8;
+    --muted-status-text: #74a693;
+    --muted-status-bg: #08221a;
+    --muted-status-border: #133d30;
+}
+
+[data-theme='mystic'] {
+    --bg-primary: #110d1c;
+    --bg-secondary: #1d1630;
+    --bg-tertiary: #2c2146;
+    --bg-elevated: #251b3d;
+    --text-primary: #f3ebff;
+    --text-secondary: #d1bcfc;
+    --text-muted: #8c73c7;
+    --text-inverse: #110d1c;
+    --accent: #a855f7;
+    --accent-hover: #c084fc;
+    --accent-active: #9333ea;
+    --accent-subtle: #3b1b63;
+    --border-color: #3f2f63;
+    --border-subtle: #2c2146;
+    --border-strong: #c084fc;
+    --ring-color: rgba(168, 85, 247, 0.5);
+    --danger-text: #fca5a5;
+    --danger-bg: #450a0a;
+    --danger-border: #7f1d1d;
+    --warning-text: #fde047;
+    --warning-bg: #422006;
+    --warning-border: #78350f;
+    --success-text: #86efac;
+    --success-bg: #052e16;
+    --success-border: #14532d;
+    --info-text: #93c5fd;
+    --info-bg: #172554;
+    --info-border: #1e40af;
+    --mystical-text: #e879f9;
+    --mystical-bg: #4a044e;
+    --mystical-border: #a21caf;
+    --muted-status-text: #a291cc;
+    --muted-status-bg: #171126;
+    --muted-status-border: #2c2146;
 }

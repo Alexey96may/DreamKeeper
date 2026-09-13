@@ -16,6 +16,12 @@
         { id: 'dark', label: 'Тёмная', icon: '🌙' },
         { id: 'night', label: 'Ночная', icon: '🌌' },
         { id: 'sepia', label: 'Сепия', icon: '📜' },
+        { id: 'neon', label: 'Неон', icon: '🌙' },
+        { id: 'dracula', label: 'Дракула', icon: '🌌' },
+        { id: 'emerald', label: 'Изумруд', icon: '📜' },
+        { id: 'forest', label: 'Лес', icon: '💻' },
+        { id: 'mystic', label: 'Мистическая', icon: '💻' },
+        { id: 'nord', label: 'Север', icon: '💻' },
         { id: 'system', label: 'Системная', icon: '💻' },
     ];
 
@@ -47,7 +53,7 @@
 
 <template>
     <header
-        class="bg-bg-card border-border shadow-card transition-theme sticky top-0 z-40 w-full border-b duration-300"
+        class="bg-bg-secondary border-border shadow-card transition-theme sticky top-0 z-40 w-full border-b duration-300"
     >
         <div
             class="container mx-auto flex h-16 max-w-7xl items-center justify-between gap-4 px-4 sm:px-6 lg:px-8"
@@ -89,7 +95,7 @@
                     v-for="link in navLinks"
                     :key="link.to"
                     :to="link.to"
-                    class="text-text-soft hover:text-text-primary hover:bg-bg-secondary rounded-xl px-4 py-2 text-sm font-medium transition-colors"
+                    class="text-text-soft hover:text-text-primary hover:bg-accent-hover rounded-xl px-4 py-2 text-sm font-medium transition-colors"
                     active-class="!text-accent bg-accent-soft/50 font-semibold"
                 >
                     {{ link.label }}
@@ -105,7 +111,7 @@
                         <button
                             @click.stop="uiStore.toggleTheme()"
                             title="Быстрое переключение"
-                            class="hover:bg-bg-card flex items-center justify-center rounded-lg px-2 py-1 text-sm transition-colors"
+                            class="hover:bg-bg-secondary flex items-center justify-center rounded-lg px-2 py-1 text-sm transition-colors"
                         >
                             <span>{{ getCurrentThemeIcon() }}</span>
                         </button>
@@ -143,7 +149,7 @@
                     >
                         <div
                             v-if="isThemeMenuOpen"
-                            class="bg-bg-card border-border shadow-dropdown absolute right-0 z-50 mt-2 w-40 overflow-hidden rounded-xl border py-1.5"
+                            class="bg-bg-secondary border-border shadow-dropdown absolute right-0 z-50 mt-2 w-40 overflow-hidden rounded-xl border py-1.5"
                         >
                             <button
                                 v-for="item in themeOptions"
@@ -152,7 +158,7 @@
                                     uiStore.setTheme(item.id);
                                     isThemeMenuOpen = false;
                                 "
-                                class="hover:bg-bg-secondary flex w-full items-center justify-between px-3 py-2 text-left text-xs font-medium transition-colors"
+                                class="hover:bg-accent-hover flex w-full items-center justify-between px-3 py-2 text-left text-xs font-medium transition-colors"
                                 :class="
                                     uiStore.theme === item.id
                                         ? 'text-accent bg-accent-soft/30'
