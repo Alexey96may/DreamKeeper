@@ -151,7 +151,7 @@
         padding: 0;
         border: none;
         background: transparent;
-        color: var(--color-text-soft, #9ca3af);
+        color: var(--text-muted, #9ca3af);
         cursor: pointer;
         border-radius: 9999px;
         transition:
@@ -163,27 +163,27 @@
     /* Base Hover / Active */
     .app-tooltip-trigger:hover,
     .app-tooltip-trigger.is-active {
-        color: var(--color-accent, #3b82f6);
+        color: var(--accent, #3b82f6);
     }
 
     /* Required Styling Override */
     .app-tooltip-trigger.is-required {
-        color: var(--color-status-error, #ef4444);
+        color: var(--danger-text, #ef4444);
+        transition: all 0.25s;
     }
 
     .app-tooltip-trigger.is-required:hover,
     .app-tooltip-trigger.is-required.is-active {
-        color: var(--color-status-error, #dc2626);
-        filter: brightness(0.9);
+        filter: brightness(0.8);
     }
 
     .app-tooltip-trigger:focus-visible {
-        outline: 2px solid var(--color-accent, #3b82f6);
+        outline: 2px solid var(--accent, #3b82f6);
         outline-offset: 2px;
     }
 
     .app-tooltip-trigger.is-required:focus-visible {
-        outline-color: var(--color-status-error, #ef4444);
+        filter: brightness(0.8);
     }
 
     .app-tooltip-icon {
@@ -200,9 +200,9 @@
         width: max-content;
         max-width: 260px;
         padding: 0.5rem 0.75rem;
-        background-color: var(--color-bg-secondary, #1f2937);
-        color: var(--color-text-primary, #f9fafb);
-        border: 1px solid var(--color-border, #374151);
+        background-color: var(--bg-secondary, #1f2937);
+        color: var(--text-primary, #f9fafb);
+        border: 1px solid var(--border-color, #374151);
         font-size: 0.75rem;
         line-height: 1.25rem;
         font-weight: 400;
@@ -225,7 +225,7 @@
         height: 0;
         border-left: 5px solid transparent;
         border-right: 5px solid transparent;
-        border-top: 5px solid var(--color-bg-secondary, #1f2937);
+        border-top: 5px solid var(--bg-secondary, #1f2937);
     }
 
     /* Vue Animations */

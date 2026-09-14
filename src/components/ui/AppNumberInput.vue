@@ -230,12 +230,12 @@
 </script>
 
 <template>
-    <div class="w-full">
+    <div class="flex w-full flex-col gap-1.5">
         <!-- Input Label Bar -->
         <label
             v-if="label"
             :for="inputId"
-            class="text-text-soft mb-1 flex items-center justify-between text-xs font-medium"
+            class="text-text-soft flex items-center justify-between text-sm font-medium"
         >
             <span class="flex items-center gap-1.5">
                 <AppTooltip v-if="hint" :content="hint" :required="required" />
@@ -271,7 +271,7 @@
                 :aria-invalid="Boolean(errorMessage)"
                 :aria-describedby="ariaDescribedBy"
                 :aria-required="required"
-                class="border-border bg-bg-secondary text-text-primary focus:border-accent focus:ring-accent w-full [appearance:textfield] rounded-lg border py-1.5 pr-8 pl-3 text-xs transition-colors duration-150 focus:ring-1 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50 [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+                class="border-border bg-bg-secondary text-text-primary focus:border-accent focus:ring-accent w-full [appearance:textfield] rounded-lg border py-2.5 pr-8 pl-3 text-xs transition-colors duration-150 focus:ring-1 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50 [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
                 :class="[errorMessage ? '!border-red-500 focus:!ring-red-500' : '']"
                 @input="handleInput"
                 @blur="emit('blur', $event)"

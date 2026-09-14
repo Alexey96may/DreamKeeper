@@ -17,7 +17,7 @@
 
 <template>
     <section
-        class="bg-bg-secondary/30 rounded-lg p-3 text-xs"
+        class="bg-bg-secondary/30 flex flex-col gap-1.5 rounded-lg p-3 text-xs"
         :aria-labelledby="`analytic-title-${element.id}`"
     >
         <h3 :id="`analytic-title-${element.id}`" class="text-text-mute mb-1.5 block font-medium">

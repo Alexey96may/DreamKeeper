@@ -139,8 +139,6 @@
             <span v-if="required" class="text-status-error font-bold" aria-hidden="true">*</span>
         </label>
 
-        <input type="text" />
-
         <!-- Generated Chip List -->
         <div
             :id="groupId"

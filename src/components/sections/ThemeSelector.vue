@@ -83,7 +83,7 @@
                 v-if="isThemeMenuOpen"
                 role="menu"
                 aria-label="Выбор темы оформления"
-                class="bg-bg-secondary border-border shadow-dropdown absolute right-0 z-50 mt-2 max-h-64 w-40 overflow-x-hidden overflow-y-auto rounded-xl border py-1.5 focus:outline-none"
+                class="bg-bg-secondary border-border shadow-dropdown absolute right-0 z-50 mt-2 max-h-64 min-w-45 overflow-x-hidden overflow-y-auto rounded-xl border py-1.5 focus:outline-none"
             >
                 <button
                     v-for="item in THEME_OPTIONS"

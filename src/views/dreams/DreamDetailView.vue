@@ -170,28 +170,30 @@
                 <!-- 3. Контекст перед сном -->
                 <section
                     v-if="preSleepContextText"
-                    class="rounded-r-lg border-l-4 border-amber-500/50 bg-amber-500/5 p-3.5"
+                    class="border-accent bg-accent/5 flex flex-col gap-1.5 rounded-r-lg border-l-4 p-3.5"
                 >
-                    <h2 class="text-xs font-bold tracking-wider text-amber-500 uppercase">
-                        <ArrowBigLeftDash /> Перед сном
+                    <h2
+                        class="text-accent flex items-center gap-1.5 text-xs font-bold tracking-wider uppercase"
+                    >
+                        <ArrowBigLeftDash /><span>Перед сном</span>
                     </h2>
-                    <p class="text-text-primary mt-1 text-sm leading-relaxed italic">
+                    <p class="text-text-primary text-sm leading-relaxed italic">
                         {{ preSleepContextText }}
                     </p>
                 </section>
 
                 <!-- 4. Основное описание сна -->
-                <section v-if="dream.description">
+                <section v-if="dream.description" class="flex flex-col gap-1.5">
                     <h2 class="text-text-soft text-xs font-semibold tracking-wider uppercase">
                         Описание
                     </h2>
-                    <p class="text-text-primary mt-2 text-base leading-relaxed whitespace-pre-line">
+                    <p class="text-text-primary text-base leading-relaxed whitespace-pre-line">
                         {{ dream.description }}
                     </p>
                 </section>
 
                 <!-- 5. Детали категорий (Lucid, Nightmare, Prophetic) -->
-                <section v-if="hasCategoryDetails" class="space-y-3">
+                <section v-if="hasCategoryDetails" class="flex flex-col gap-3">
                     <h2 class="text-text-soft text-xs font-semibold tracking-wider uppercase">
                         Детали категорий
                     </h2>
@@ -219,12 +221,12 @@
                 </section>
 
                 <!-- 6. Особые явления (Phenomena) и их детали -->
-                <section v-if="dream.phenomena?.length" class="space-y-3">
+                <section v-if="dream.phenomena?.length" class="flex flex-col gap-3">
                     <h2 class="text-text-soft text-xs font-semibold tracking-wider uppercase">
                         Феномены и особые события
                     </h2>
 
-                    <div class="flex flex-wrap gap-2">
+                    <div class="flex flex-wrap gap-1.5">
                         <AppTag
                             v-for="item in dream.phenomena"
                             :key="item"
@@ -239,19 +241,115 @@
                     <!-- Детали феноменов -->
                     <div
                         v-if="dream.phenomenaDetails"
-                        class="grid grid-cols-1 gap-2 text-xs sm:grid-cols-2"
+                        class="grid grid-cols-1 gap-3 text-xs sm:grid-cols-2"
                     >
+                        <!-- Смерть -->
+                        <div
+                            v-if="dream.phenomenaDetails.death"
+                            class="rounded-lg p-3"
+                            :class="
+                                filterStore.filters.events.includes('death')
+                                    ? 'bg-accent-active/50'
+                                    : 'bg-bg-secondary'
+                            "
+                        >
+                            <span
+                                class="text-text-primary mb-1.5 flex items-center gap-1.5 font-bold"
+                                ><component :is="DREAM_PHENOMENON_MAP['death'].icon" />
+                                {{ DREAM_PHENOMENON_MAP['death'].label }}</span
+                            >
+                            <p v-if="dream.phenomenaDetails.death.cause" class="text-text-mute">
+                                Причина:
+                                {{ DEATH_CAUSE_MAP[dream.phenomenaDetails.death.cause].label }}
+                            </p>
+                            <p
+                                v-if="dream.phenomenaDetails.death.aftermath"
+                                class="text-text-mute mt-0.5"
+                            >
+                                После смерти:
+                                {{
+                                    DEATH_AFTERMATH_MAP[dream.phenomenaDetails.death.aftermath]
+                                        .label
+                                }}
+                            </p>
+                        </div>
+
+                        <!-- Полёт -->
+                        <div
+                            v-if="dream.phenomenaDetails.flying"
+                            class="rounded-lg p-3"
+                            :class="
+                                filterStore.filters.events.includes('flying')
+                                    ? 'bg-accent-active/50'
+                                    : 'bg-bg-secondary'
+                            "
+                        >
+                            <span
+                                class="text-text-primary mb-1.5 flex items-center gap-1.5 font-bold"
+                                ><component :is="DREAM_PHENOMENON_MAP['flying'].icon" />
+                                {{ DREAM_PHENOMENON_MAP['flying'].label }}</span
+                            >
+                            <p v-if="dream.phenomenaDetails.flying.type" class="text-text-mute">
+                                Стиль:
+                                {{ FLYING_TYPE_MAP[dream.phenomenaDetails.flying.type].label }}
+                            </p>
+                            <p
+                                v-if="dream.phenomenaDetails.flying.altitude"
+                                class="text-text-mute mt-0.5"
+                            >
+                                Высота:
+                                {{
+                                    FLYING_ALTITUDE_MAP[dream.phenomenaDetails.flying.altitude]
+                                        .label
+                                }}
+                            </p>
+                        </div>
+
+                        <!-- Падение -->
+                        <div
+                            v-if="dream.phenomenaDetails.falling"
+                            class="rounded-lg p-3"
+                            :class="
+                                filterStore.filters.events.includes('falling')
+                                    ? 'bg-accent-active/50'
+                                    : 'bg-bg-secondary'
+                            "
+                        >
+                            <span
+                                class="text-text-primary mb-1.5 flex items-center gap-1.5 font-bold"
+                                ><component :is="DREAM_PHENOMENON_MAP['falling'].icon" />
+                                {{ DREAM_PHENOMENON_MAP['falling'].label }}</span
+                            >
+                            <p v-if="dream.phenomenaDetails.falling.origin" class="text-text-mute">
+                                Откуда:
+                                {{
+                                    FALLING_ORIGIN_MAP[dream.phenomenaDetails.falling.origin].label
+                                }}
+                            </p>
+                            <p
+                                v-if="dream.phenomenaDetails.falling.outcome"
+                                class="text-text-mute mt-0.5"
+                            >
+                                Итог:
+                                {{
+                                    FALLING_OUTCOME_MAP[dream.phenomenaDetails.falling.outcome]
+                                        .label
+                                }}
+                            </p>
+                        </div>
+
                         <!-- Сонный паралич -->
                         <div
                             v-if="dream.phenomenaDetails.paralysis"
                             class="rounded-lg p-3 transition-colors"
                             :class="
                                 filterStore.filters.events.includes('paralysis')
-                                    ? 'bg-bg-primary/60'
-                                    : 'bg-bg-secondary/70'
+                                    ? 'bg-accent-active/50'
+                                    : 'bg-bg-secondary'
                             "
                         >
-                            <span class="text-text-primary mb-1 block font-bold"
+                            <span
+                                class="text-text-primary mb-1.5 flex items-center gap-1.5 font-bold"
                                 ><component :is="DREAM_PHENOMENON_MAP['paralysis'].icon" />
                                 {{ DREAM_PHENOMENON_MAP['paralysis'].label }}</span
                             >
@@ -284,11 +382,12 @@
                             class="rounded-lg p-3"
                             :class="
                                 filterStore.filters.events.includes('nested_dream')
-                                    ? 'bg-bg-primary/60'
-                                    : 'bg-bg-secondary/70'
+                                    ? 'bg-accent-active/50'
+                                    : 'bg-bg-secondary'
                             "
                         >
-                            <span class="text-text-primary mb-1 block font-bold"
+                            <span
+                                class="text-text-primary mb-1.5 flex items-center gap-1.5 font-bold"
                                 ><component :is="DREAM_PHENOMENON_MAP['nested_dream'].icon" />{{
                                     DREAM_PHENOMENON_MAP['nested_dream'].label
                                 }}</span
@@ -298,109 +397,17 @@
                                 {{ dream.phenomenaDetails.nestedDream.nestingLevels ?? 1 }}
                             </p>
                         </div>
-
-                        <!-- Смерть -->
-                        <div
-                            v-if="dream.phenomenaDetails.death"
-                            class="rounded-lg p-3"
-                            :class="
-                                filterStore.filters.events.includes('death')
-                                    ? 'bg-bg-primary/60'
-                                    : 'bg-bg-secondary/70'
-                            "
-                        >
-                            <span class="text-text-primary mb-1 block font-bold"
-                                ><component :is="DREAM_PHENOMENON_MAP['death'].icon" />
-                                {{ DREAM_PHENOMENON_MAP['death'].label }}</span
-                            >
-                            <p v-if="dream.phenomenaDetails.death.cause" class="text-text-mute">
-                                Причина:
-                                {{ DEATH_CAUSE_MAP[dream.phenomenaDetails.death.cause].label }}
-                            </p>
-                            <p
-                                v-if="dream.phenomenaDetails.death.aftermath"
-                                class="text-text-mute mt-0.5"
-                            >
-                                После смерти:
-                                {{
-                                    DEATH_AFTERMATH_MAP[dream.phenomenaDetails.death.aftermath]
-                                        .label
-                                }}
-                            </p>
-                        </div>
-
-                        <!-- Полёт -->
-                        <div
-                            v-if="dream.phenomenaDetails.flying"
-                            class="rounded-lg p-3"
-                            :class="
-                                filterStore.filters.events.includes('flying')
-                                    ? 'bg-bg-primary/60'
-                                    : 'bg-bg-secondary/70'
-                            "
-                        >
-                            <span class="text-text-primary mb-1 block font-bold"
-                                ><component :is="DREAM_PHENOMENON_MAP['flying'].icon" />
-                                {{ DREAM_PHENOMENON_MAP['flying'].label }}</span
-                            >
-                            <p v-if="dream.phenomenaDetails.flying.type" class="text-text-mute">
-                                Стиль:
-                                {{ FLYING_TYPE_MAP[dream.phenomenaDetails.flying.type].label }}
-                            </p>
-                            <p
-                                v-if="dream.phenomenaDetails.flying.altitude"
-                                class="text-text-mute mt-0.5"
-                            >
-                                Высота:
-                                {{
-                                    FLYING_ALTITUDE_MAP[dream.phenomenaDetails.flying.altitude]
-                                        .label
-                                }}
-                            </p>
-                        </div>
-
-                        <!-- Падение -->
-                        <div
-                            v-if="dream.phenomenaDetails.falling"
-                            class="rounded-lg p-3"
-                            :class="
-                                filterStore.filters.events.includes('falling')
-                                    ? 'bg-bg-primary/60'
-                                    : 'bg-bg-secondary/70'
-                            "
-                        >
-                            <span class="text-text-primary mb-1 block font-bold"
-                                ><component :is="DREAM_PHENOMENON_MAP['falling'].icon" />
-                                {{ DREAM_PHENOMENON_MAP['falling'].label }}</span
-                            >
-                            <p v-if="dream.phenomenaDetails.falling.origin" class="text-text-mute">
-                                Откуда:
-                                {{
-                                    FALLING_ORIGIN_MAP[dream.phenomenaDetails.falling.origin].label
-                                }}
-                            </p>
-                            <p
-                                v-if="dream.phenomenaDetails.falling.outcome"
-                                class="text-text-mute mt-0.5"
-                            >
-                                Итог:
-                                {{
-                                    FALLING_OUTCOME_MAP[dream.phenomenaDetails.falling.outcome]
-                                        .label
-                                }}
-                            </p>
-                        </div>
                     </div>
                 </section>
 
                 <!-- 7. Восприятие и Стиль (Визуал, Перспектива, Роли, Ощущения) -->
-                <section v-if="hasPerceptionDetails" class="space-y-3">
-                    <h2 class="text-text-soft text-xs font-semibold tracking-wider uppercase">
+                <section v-if="hasPerceptionDetails" class="flex flex-col gap-6">
+                    <h2 class="text-text-soft font-semibold tracking-wider uppercase">
                         Восприятие
                     </h2>
 
-                    <div class="flex flex-col gap-2">
-                        <div class="flex items-center gap-2" v-if="dream.visualStyle">
+                    <div class="flex flex-col gap-3">
+                        <div class="flex items-center gap-3" v-if="dream.visualStyle">
                             <h3>Визуальный стиль:</h3>
 
                             <AppTag
@@ -416,7 +423,7 @@
                             </AppTag>
                         </div>
 
-                        <div class="flex items-center gap-2" v-if="dream.perspective">
+                        <div class="flex items-center gap-3" v-if="dream.perspective">
                             <h3>Лицо:</h3>
 
                             <AppTag
@@ -434,7 +441,7 @@
                     </div>
 
                     <!-- Роли -->
-                    <div v-if="dream.roles?.length" class="space-y-1">
+                    <div v-if="dream.roles?.length" class="flex flex-col gap-1.5">
                         <span class="text-text-mute text-xs">Роль в сюжетe:</span>
                         <div class="flex flex-wrap gap-1.5">
                             <AppTag
@@ -450,7 +457,7 @@
                     </div>
 
                     <!-- Органы чувств -->
-                    <div v-if="dream.sensations?.length" class="space-y-1">
+                    <div v-if="dream.sensations?.length" class="flex flex-col gap-1.5">
                         <span class="text-text-mute text-xs">Сенсорные ощущения:</span>
                         <div class="flex flex-wrap gap-1.5">
                             <AppTag
@@ -471,6 +478,7 @@
                     <h2 class="text-text-soft text-xs font-semibold tracking-wider uppercase">
                         Аналитические элементы
                     </h2>
+
                     <div
                         v-if="analiticElements.length"
                         class="grid grid-cols-1 gap-3 sm:grid-cols-2"
@@ -486,7 +494,7 @@
                 </section>
 
                 <!-- 9. Интерпретация / Сонник -->
-                <section v-if="interpretationsWithSource.length" class="space-y-2">
+                <section v-if="interpretationsWithSource.length" class="flex flex-col gap-3">
                     <h2 class="text-text-soft text-xs font-semibold tracking-wider uppercase">
                         Интерпретации
                     </h2>
@@ -499,7 +507,7 @@
                 </section>
 
                 <!-- 10. Личные заметки -->
-                <section v-if="dream.personalNotes">
+                <section v-if="dream.personalNotes" class="flex flex-col gap-3">
                     <h2 class="text-text-soft text-xs font-semibold tracking-wider uppercase">
                         Личные заметки
                     </h2>
@@ -511,7 +519,7 @@
                 </section>
 
                 <!-- 11. Связанные сны -->
-                <section v-if="dream.relatedDreams?.length" class="space-y-2">
+                <section v-if="dream.relatedDreams?.length" class="flex flex-col gap-3">
                     <h2 class="text-text-soft text-xs font-semibold tracking-wider uppercase">
                         Связанные сны
                     </h2>
@@ -520,7 +528,9 @@
                 </section>
 
                 <!-- Метаданные создания / редактирования -->
-                <footer class="border-border/30 text-text-mute space-y-1 border-t pt-4 text-[11px]">
+                <footer
+                    class="border-border/30 text-text-mute flex flex-col gap-1.5 border-t pt-4 text-[11px]"
+                >
                     <p v-if="dream.createdAt">
                         <span class="font-medium">Создано: </span>
                         <AppSmartTime :date="dream.createdAt" />

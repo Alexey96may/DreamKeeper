@@ -8,15 +8,13 @@
             <div class="mt-6 space-y-6">
                 <div>
                     <h1 class="text-text-primary text-2xl font-bold">Поиск и фильтрация снов</h1>
-                    <p class="text-text-mute text-sm">
-                        Поиск по ключевым словам и расширенным параметрам
-                    </p>
                 </div>
 
                 <div class="flex gap-2">
                     <AppTextInput
                         v-model="filterStore.filters.searchQuery"
                         type="search"
+                        class=""
                         placeholder="Поиск по названию или описанию сна"
                     />
 
@@ -24,10 +22,10 @@
                         @click="isModalOpen = !isModalOpen"
                         size="sm"
                         variant="secondary"
+                        class="shrink-0"
                         title="Параметры календаря"
                         :icon-left="Filter"
                     >
-                        Фильтр
                     </AppButton>
                 </div>
 
@@ -39,7 +37,7 @@
                     }}
                 </div>
 
-                <div class="space-y-3">
+                <div class="flex flex-col gap-4">
                     <h2 class="text-text-soft text-sm font-medium">
                         Результаты ({{ filterStore.matchingCount }})
                     </h2>
@@ -61,7 +59,11 @@
             </div>
         </div>
 
-        <AppModal v-model="isModalOpen" :close-on-overlay="true" title="Параметры Календаря">
+        <AppModal
+            v-model="isModalOpen"
+            :close-on-overlay="true"
+            :title="'Параметры фильтрации (' + filterStore.matchingCount + ')'"
+        >
             <SearchDreamFilter />
         </AppModal>
     </div>

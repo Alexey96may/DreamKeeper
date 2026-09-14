@@ -19,21 +19,21 @@
     const cardClasses = computed(() => {
         switch (props.type) {
             case 'nightmare':
-                return 'space-y-1.5 rounded-lg border border-red-500/20 bg-red-500/5 p-3.5 text-xs';
+                return 'space-y-1.5 rounded-lg border border-danger-border bg-danger-bg p-3.5 text-xs';
             case 'prophetic':
-                return 'space-y-1.5 rounded-lg border border-indigo-500/20 bg-indigo-500/5 p-3.5 text-xs';
+                return 'space-y-1.5 rounded-lg border border-mystical-border bg-mystical-bg p-3.5 text-xs';
             case 'lucid':
             default:
-                return 'bg-bg-secondary/30 border-border/30 space-y-1.5 rounded-lg border p-3.5 text-xs';
+                return 'bg-bg-secondary/30 border-border-subtle/30 space-y-1.5 rounded-lg border p-3.5 text-xs';
         }
     });
 
     const headerClasses = computed(() => {
         switch (props.type) {
             case 'nightmare':
-                return 'font-bold text-red-400 flex items-center gap-1.5';
+                return 'font-bold text-danger-text flex items-center gap-1.5';
             case 'prophetic':
-                return 'font-bold text-indigo-400 flex items-center gap-1.5';
+                return 'font-bold text-mystical-text flex items-center gap-1.5';
             case 'lucid':
             default:
                 return 'text-accent font-bold flex items-center gap-1.5';
@@ -61,13 +61,13 @@
                     (details as LucidDetails).controlLevel! > 0
                 "
             >
-                <span class="text-text-mute">Уровень контроля:</span>
+                <span class="text-text-secondary">Уровень контроля:</span>
                 <span class="text-text-primary ml-1 font-semibold">
                     {{ (details as LucidDetails).controlLevel }}/10
                 </span>
             </div>
             <div v-if="(details as LucidDetails).trigger">
-                <span class="text-text-mute">Триггер осознания:</span>
+                <span class="text-text-secondary">Триггер осознания:</span>
                 <span class="text-text-primary ml-1 font-medium">
                     {{
                         LUCID_TRIGGER_MAP[(details as LucidDetails).trigger!]?.label ||
@@ -85,19 +85,19 @@
                     (details as NightmareDetails).fearLevel! > 0
                 "
             >
-                <span class="text-text-mute">Уровень страха:</span>
+                <span class="text-text-secondary">Уровень страха:</span>
                 <span class="text-text-primary ml-1 font-semibold">
                     {{ (details as NightmareDetails).fearLevel }}/10
                 </span>
             </div>
             <div v-if="(details as NightmareDetails).copingMechanism">
-                <span class="text-text-mute">Как справился:</span>
+                <span class="text-text-secondary">Как справился:</span>
                 <p class="text-text-primary m-0 mt-0.5">
                     {{ (details as NightmareDetails).copingMechanism }}
                 </p>
             </div>
             <div v-if="(details as NightmareDetails).hasPhysicalResponse !== undefined">
-                <span class="text-text-mute">Физическая реакция:</span>
+                <span class="text-text-secondary">Физическая реакция:</span>
                 <span class="text-text-primary ml-1 font-medium">
                     {{ (details as NightmareDetails).hasPhysicalResponse ? 'Да' : 'Нет' }}
                 </span>
@@ -107,12 +107,12 @@
         <!-- 3. prophetic -->
         <template v-if="type === 'prophetic'">
             <div v-if="(details as PropheticDetails).isFulfilled !== undefined">
-                <span class="text-text-mute">Статус:</span>
+                <span class="text-text-secondary">Статус:</span>
                 <span
                     :class="[
                         (details as PropheticDetails).isFulfilled
-                            ? 'text-emerald-400'
-                            : 'text-amber-400',
+                            ? 'text-success-text'
+                            : 'text-warning-text',
                         'ml-1 font-bold',
                     ]"
                 >
@@ -122,7 +122,7 @@
                 </span>
             </div>
             <div v-if="(details as PropheticDetails).expectedByDate">
-                <span class="text-text-mute">{{
+                <span class="text-text-secondary">{{
                     (details as PropheticDetails).isFulfilled ? 'Ожидался:' : 'Ожидается:'
                 }}</span>
                 <span class="text-text-primary ml-1 font-medium">
@@ -130,7 +130,7 @@
                 </span>
             </div>
             <div v-if="(details as PropheticDetails).fulfilledDate">
-                <span class="text-text-mute">{{
+                <span class="text-text-secondary">{{
                     (details as PropheticDetails).isFulfilled ? 'Сбылся:' : 'Сбудется:'
                 }}</span>
                 <span class="text-text-primary ml-1 font-medium">
@@ -138,7 +138,7 @@
                 </span>
             </div>
             <div v-if="(details as PropheticDetails).fulfillmentNotes">
-                <span class="text-text-mute">Что произошло:</span>
+                <span class="text-text-secondary">Что произошло:</span>
                 <p class="text-text-primary m-0 mt-0.5">
                     {{ (details as PropheticDetails).fulfillmentNotes }}
                 </p>

@@ -121,12 +121,12 @@
 </script>
 
 <template>
-    <div class="w-full">
+    <div class="flex w-full flex-col gap-1.5">
         <!-- Label -->
         <label
             v-if="label"
             :for="inputId"
-            class="text-text-soft mb-1 flex items-center gap-1.5 text-xs font-medium"
+            class="text-text-soft flex items-center gap-1.5 text-sm font-medium"
         >
             <AppTooltip v-if="hint" :content="hint" />
             <span>{{ label }}</span>
@@ -155,7 +155,7 @@
                 :aria-invalid="Boolean(errorMessage)"
                 :aria-describedby="ariaDescribedBy"
                 :aria-required="required"
-                class="border-border bg-bg-secondary text-text-primary focus:border-accent w-full rounded-xl border px-5 py-3 text-sm transition-colors duration-150 focus:outline-none disabled:cursor-not-allowed disabled:opacity-60"
+                class="border-border bg-bg-secondary text-text-primary focus:border-accent w-full rounded-lg border px-2.5 py-2.5 text-sm transition-colors duration-150 focus:outline-none disabled:cursor-not-allowed disabled:opacity-60"
                 :class="{
                     'border-status-error focus:border-status-error focus:ring-status-error focus:ring-1':
                         errorMessage,

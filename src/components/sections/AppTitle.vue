@@ -47,16 +47,16 @@
         subtitle?: string;
         showButton?: boolean;
         buttonText?: string;
-        buttonVariant?: 'primary' | 'secondary';
+        buttonVariant?: 'primary' | 'secondary' | 'add';
         buttonDisabled?: boolean;
         buttonAriaLabel?: string;
     }
 
     withDefaults(defineProps<Props>(), {
-        title: '🌙 DreamKeeper',
+        title: 'DreamKeeper',
         subtitle: 'Хранитель твоих снов и состояния',
         showButton: true,
-        buttonText: '✨ Новый сон',
+        buttonText: 'Новый сон',
         buttonVariant: 'primary',
         buttonDisabled: false,
         buttonAriaLabel: undefined,

@@ -64,7 +64,7 @@
         :class="[
             'dream-card cursor-pointer rounded-lg border p-4 transition duration-200 outline-none focus-visible:ring-2',
             {
-                ring: isSelected,
+                'bg-ring': isSelected,
             },
         ]"
         @click="handleClick"
@@ -74,7 +74,7 @@
             <div class="space-y-1">
                 <span
                     v-if="dream.title"
-                    class="text-text-soft bg-bg-primary border-border/50 inline-block rounded-full border px-2.5 py-0.5 text-xs"
+                    class="text-text-soft bg-bg-primary border-border/50 inline-block rounded-lg border px-2.5 py-0.5 text-xs"
                 >
                     {{ dream.title }}
                 </span>

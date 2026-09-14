@@ -1,6 +1,7 @@
 <script setup lang="ts">
     import { RouterLink } from 'vue-router';
     import { useUIStore } from '@/stores/modules/ui';
+    import { Moon } from 'lucide-vue-next';
     import ThemeSelector from '@/components/sections/ThemeSelector.vue';
 
     const uiStore = useUIStore();
@@ -34,11 +35,11 @@
                     </svg>
                 </button>
 
-                <RouterLink to="/" class="group flex items-center gap-2">
+                <RouterLink to="/" class="group flex items-center gap-1">
                     <div
-                        class="bg-accent-soft text-accent flex h-9 w-9 items-center justify-center rounded-xl text-lg font-bold transition-transform group-hover:scale-105"
+                        class="bg-accent-soft text-accent flex items-center justify-center rounded-xl text-lg font-bold transition-transform group-hover:scale-105"
                     >
-                        🌙
+                        <Moon class="h-5 w-5" />
                     </div>
                     <span
                         class="text-text-primary hidden text-lg font-bold tracking-wide sm:inline-block"
@@ -53,16 +54,14 @@
                     v-for="link in navLinks"
                     :key="link.to"
                     :to="link.to"
-                    class="text-text-soft hover:text-text-primary hover:bg-accent-hover rounded-xl px-4 py-2 text-sm font-medium transition-colors"
-                    active-class="!text-accent bg-accent-soft/50 font-semibold"
+                    class="text-text-soft hover:text-text-inverse hover:bg-accent-hover rounded-xl px-4 py-2 text-sm font-medium transition-colors"
+                    active-class="!text-accent hover:!text-text-inverse bg-accent-soft/50 font-semibold"
                 >
                     {{ link.label }}
                 </RouterLink>
             </nav>
 
-            <div class="flex items-center gap-2">
-                <ThemeSelector />
-            </div>
+            <ThemeSelector />
         </div>
     </header>
 </template>

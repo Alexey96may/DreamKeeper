@@ -1,18 +1,5 @@
 <template>
     <div class="bg-bg-secondary/30 border-border/50 space-y-4 rounded-xl border p-4">
-        <div class="flex items-center justify-between gap-2">
-            <span class="text-text-primary text-sm font-medium">Параметры фильтрации</span>
-
-            <AppButton
-                v-if="hasActiveFilters"
-                @click="filterStore.resetFilters"
-                size="xs"
-                variant="danger"
-            >
-                Сбросить все
-            </AppButton>
-        </div>
-
         <!-- Категории снов -->
 
         <div class="flex flex-wrap items-center gap-2">
@@ -245,6 +232,17 @@
                 @update:model-value="filterStore.toggleBooleanFilter('isDeleted')"
                 label="Удаленные"
             />
+        </div>
+
+        <div class="flex justify-end">
+            <AppButton
+                v-if="hasActiveFilters"
+                @click="filterStore.resetFilters"
+                size="xs"
+                variant="danger"
+            >
+                Сбросить все
+            </AppButton>
         </div>
     </div>
 </template>

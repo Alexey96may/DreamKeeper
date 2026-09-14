@@ -2,7 +2,19 @@
 <template>
     <div class="bg-bg-primary text-text-primary transition-theme duration-theme min-h-screen">
         <div class="container mx-auto px-4 py-6">
-            <AppTitle @action="goToNewDream" />
+            <AppTitle @action="goToNewDream">
+                <template #title>
+                    <div class="flex items-center gap-2">
+                        <Moon /><span><span class="text-text-primary">Dreem</span>Keeper</span>
+                    </div>
+                </template>
+
+                <template #button-content>
+                    <div class="flex items-center gap-2">
+                        <MoonStar /> <span class="text-text-inverse">Новый сон</span>
+                    </div>
+                </template>
+            </AppTitle>
 
             <div class="dream-card relative px-14 py-8">
                 <div class="absolute top-2 right-2 flex flex-col items-center justify-end gap-2">
@@ -52,7 +64,7 @@
 <script setup lang="ts">
     import { computed, onMounted, ref } from 'vue';
     import type { ComponentPublicInstance } from 'vue';
-    import { Calendar as CalendarIcon, CalendarCheck } from 'lucide-vue-next';
+    import { Calendar as CalendarIcon, CalendarCheck, Moon, MoonStar } from 'lucide-vue-next';
     import AppModal from '@/components/sections/AppModal.vue';
     import { useRouter } from 'vue-router';
     import { Calendar } from 'v-calendar-3';

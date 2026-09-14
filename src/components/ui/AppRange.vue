@@ -142,11 +142,11 @@
 </script>
 
 <template>
-    <div class="w-full">
+    <div class="flex w-full flex-col gap-1.5">
         <!-- Label Bar: Header Title + Value Badge -->
         <div
             v-if="label"
-            class="text-text-soft mb-1 flex items-center justify-between text-xs font-medium"
+            class="text-text-soft mb-1 flex items-center justify-between text-sm font-medium"
         >
             <label :for="rangeId" class="flex items-center gap-1.5">
                 <AppTooltip v-if="hint" :content="hint" :required="required" />

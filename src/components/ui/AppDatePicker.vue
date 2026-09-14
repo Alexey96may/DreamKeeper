@@ -118,7 +118,7 @@
         <label
             v-if="label"
             :for="inputId"
-            class="flex items-center justify-between text-xs font-medium transition-colors select-none"
+            class="flex items-center justify-between text-sm font-medium transition-colors select-none"
             :class="[
                 hasError ? 'text-status-error' : 'text-text-primary',
                 isDisabled ? 'cursor-not-allowed' : 'cursor-pointer',
@@ -165,7 +165,7 @@
                         :aria-required="required"
                         :aria-describedby="ariaDescribedBy"
                         readonly
-                        class="bg-bg-secondary text-text-primary disabled:bg-bg-tertiary w-full rounded-lg border py-2 pr-4 pl-9 text-sm transition-all duration-150 select-none focus:ring-2 focus:ring-offset-1 focus:outline-none disabled:cursor-not-allowed"
+                        class="bg-bg-secondary text-text-primary disabled:bg-bg-tertiary w-full rounded-lg border py-2.5 pr-4 pl-9 text-sm transition-all duration-150 select-none focus:ring-2 focus:ring-offset-1 focus:outline-none disabled:cursor-not-allowed"
                         :class="[
                             hasError
                                 ? 'border-status-error/50 text-status-error focus:border-status-error focus:ring-status-error/30'

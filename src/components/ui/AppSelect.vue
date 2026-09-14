@@ -199,61 +199,63 @@
 <template>
     <div ref="selectContainer" class="relative w-full">
         <!-- Label -->
-        <label
-            v-if="label"
-            :id="`${id}-label`"
-            :for="id"
-            class="text-text-soft mb-1 flex items-center gap-1.5 text-sm font-medium"
-            @click="toggleOpen"
-        >
-            <AppTooltip v-if="hint" :content="hint" />
-            <span>{{ label }}</span>
-        </label>
+        <div class="flex flex-col gap-1.5">
+            <label
+                v-if="label"
+                :id="`${id}-label`"
+                :for="id"
+                class="text-text-soft flex items-center gap-1.5 text-sm font-medium"
+                @click="toggleOpen"
+            >
+                <AppTooltip v-if="hint" :content="hint" />
+                <span>{{ label }}</span>
+            </label>
 
-        <!-- Кнопка-триггер выпадающего списка -->
-        <button
-            :id="id"
-            type="button"
-            role="combobox"
-            ref="targetRef"
-            :aria-haspopup="'listbox'"
-            :aria-expanded="isOpen"
-            :aria-labelledby="label ? `${id}-label ${id}` : id"
-            :aria-controls="`${id}-listbox`"
-            :aria-invalid="Boolean(errorMessage)"
-            :aria-describedby="errorMessage ? `${id}-error` : undefined"
-            :aria-activedescendant="
-                isOpen && highlightedIndex >= 0 ? `${id}-option-${highlightedIndex}` : undefined
-            "
-            :disabled="isDisabled"
-            class="bg-bg-secondary text-text-primary flex w-full items-center justify-between rounded-lg border p-2.5 text-left text-sm transition-colors focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
-            :class="[
-                errorMessage
-                    ? 'border-red-500 focus-visible:ring-2 focus-visible:ring-red-500/50'
-                    : 'border-border focus-visible:ring-accent focus-visible:ring-2',
-            ]"
-            @click="toggleOpen"
-            @keydown="handleKeyDown"
-        >
-            <span class="flex items-center gap-2 truncate">
-                <!-- Иконка выбранной опции -->
-                <component
-                    :is="selectedOption.icon"
-                    v-if="selectedOption?.icon"
-                    class="text-text-mute h-4 w-4 shrink-0"
+            <!-- Кнопка-триггер выпадающего списка -->
+            <button
+                :id="id"
+                type="button"
+                role="combobox"
+                ref="targetRef"
+                :aria-haspopup="'listbox'"
+                :aria-expanded="isOpen"
+                :aria-labelledby="label ? `${id}-label ${id}` : id"
+                :aria-controls="`${id}-listbox`"
+                :aria-invalid="Boolean(errorMessage)"
+                :aria-describedby="errorMessage ? `${id}-error` : undefined"
+                :aria-activedescendant="
+                    isOpen && highlightedIndex >= 0 ? `${id}-option-${highlightedIndex}` : undefined
+                "
+                :disabled="isDisabled"
+                class="bg-bg-secondary text-text-primary flex w-full items-center justify-between rounded-lg border p-2.5 text-left text-sm transition-colors focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
+                :class="[
+                    errorMessage
+                        ? 'border-red-500 focus-visible:ring-2 focus-visible:ring-red-500/50'
+                        : 'border-border focus-visible:ring-accent focus-visible:ring-2',
+                ]"
+                @click="toggleOpen"
+                @keydown="handleKeyDown"
+            >
+                <span class="flex items-center gap-2 truncate">
+                    <!-- Иконка выбранной опции -->
+                    <component
+                        :is="selectedOption.icon"
+                        v-if="selectedOption?.icon"
+                        class="text-text-mute h-4 w-4 shrink-0"
+                        aria-hidden="true"
+                    />
+                    <span>{{ selectedOption ? selectedOption.label : placeholder }}</span>
+                </span>
+
+                <ChevronDown
+                    class="text-text-mute ml-2 h-4 w-4 shrink-0 transition-transform duration-200"
+                    :class="{ 'rotate-180': isOpen }"
                     aria-hidden="true"
                 />
-                <span>{{ selectedOption ? selectedOption.label : placeholder }}</span>
-            </span>
+            </button>
 
-            <ChevronDown
-                class="text-text-mute ml-2 h-4 w-4 shrink-0 transition-transform duration-200"
-                :class="{ 'rotate-180': isOpen }"
-                aria-hidden="true"
-            />
-        </button>
-
-        <AppErrorMessage :error-message="errorMessage" :error-id="`${id}-error`" />
+            <AppErrorMessage :error-message="errorMessage" :error-id="`${id}-error`" />
+        </div>
 
         <!-- Выпадающее меню с анимацией -->
         <Transition

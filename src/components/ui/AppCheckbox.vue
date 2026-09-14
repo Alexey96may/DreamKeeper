@@ -116,7 +116,7 @@
 </script>
 
 <template>
-    <div>
+    <div class="flex flex-col gap-1.5">
         <!-- Main Checkbox Container -->
         <label
             :for="checkboxId"
