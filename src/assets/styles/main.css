@@ -6,88 +6,56 @@
 @import './base.css';
 
 @theme {
-    /* Background */
-    --color-bg-primary: var(--bg-primary); /* Основной фон всей страницы/тела приложения */
-    --color-bg-secondary: var(--bg-secondary); /* Фон карточек, сайдбара, второстепенных блоков */
-    --color-bg-tertiary: var(
-        --bg-tertiary
-    ); /* Фон полей ввода, инпутов, ховер-состояний элементов списка */
-    --color-bg-elevated: var(
-        --bg-elevated
-    ); /* Приподнятые поверхности: модальные окна, выпадающие списки (dropdown), тултипы */
-    --color-bg-muted: var(--muted-status-bg); /* Фоновый цвет приглушенных элементов */
+    /* Backgrounds */
+    --color-bg-primary: var(--bg-primary);
+    --color-bg-secondary: var(--bg-secondary);
+    --color-bg-tertiary: var(--bg-tertiary);
+    --color-bg-elevated: var(--bg-elevated);
+    --color-bg-muted: var(--muted-status-bg);
 
     /* Text */
-    --color-text-primary: var(
-        --text-primary
-    ); /* Заголовки, основной контент, важный читаемый текст */
-    --color-text-secondary: var(
-        --text-secondary
-    ); /* Второстепенные описания, метаданные, подзаголовки */
-    --color-text-muted: var(
-        --color-muted
-    ); /* Плейсхолдеры в инпутах, таймстампы, еле заметные подписи */
-    --color-text-inverse: var(
-        --text-inverse
-    ); /* Текст, который пишется поверх закрашенных кнопок (например, поверх --accent) */
-
-    /* --color-text-link: var(--color-text-link);
-    --color-text-hover: var(--color-text-link-hover); */
+    --color-text-primary: var(--text-primary);
+    --color-text-secondary: var(--text-secondary);
+    --color-text-muted: var(--text-muted);
+    --color-text-inverse: var(--text-inverse);
 
     /* Accent */
-    --color-accent: var(
-        --accent
-    ); /* Основной фирменный цвет: кнопки действий, активные ссылки, переключатели */
-    --color-accent-hover: var(--accent-hover); /* Цвет акцентного элемента при наведении курсора */
-    --color-accent-active: var(--accent-active); /* Состояние акцента в момент клика/нажатия */
-    --color-accent-subtle: var(
-        --accent-subtle
-    ); /* Слегка подкрашенный фон с акцентным оттенком (для мягкой подсветки, тегов) */
+    --color-accent: var(--accent);
+    --color-accent-hover: var(--accent-hover);
+    --color-accent-active: var(--accent-active);
+    --color-accent-subtle: var(--accent-subtle);
 
     /* Borders */
-    --color-border-primary: var(
-        --border-color
-    ); /* Стандартные рамки карточек, разделители крупных блоков */
-    --color-border-subtle: var(
-        --border-subtle
-    ); /* Еле заметные тонкие линии для внутренних разделений */
-    --color-border-strong: var(
-        --border-strong
-    ); /* Усиленные контуры (например, активный бордер инпута или выбранная карточка) */
-    --color-border-muted: var(--muted-status-border); /* Рамка для архивных элементов */
-    --color-ring: var(
-        --ring-color
-    ); /* Цвет внешнего контура фокуса (focus-visible) для доступности */
+    --color-border-primary: var(--border-color);
+    --color-border-subtle: var(--border-subtle);
+    --color-border-strong: var(--border-strong);
+    --color-border-muted: var(--muted-status-border);
+    --color-ring: var(--ring-color);
 
-    /* --color-border-hover: var(--color-border-hover);
-    --color-border-focus: var(--color-border-focus); */
+    /* Status: Success */
+    --color-success-text: var(--success-text);
+    --color-success-bg: var(--success-bg);
+    --color-success-border: var(--success-border);
 
-    /* Status */
-    --color-text-success: var(--success-text);
-    --color-bg-success: var(--success-bg);
-    --color-border-success: var(--success-border);
+    /* Status: Danger */
+    --color-danger-text: var(--danger-text);
+    --color-danger-bg: var(--danger-bg);
+    --color-danger-border: var(--danger-border);
 
-    --color-text-danger: var(--danger-text);
-    --color-bg-danger: var(--danger-bg);
-    --color-border-danger: var(--danger-border);
+    /* Status: Warning */
+    --color-warning-text: var(--warning-text);
+    --color-warning-bg: var(--warning-bg);
+    --color-warning-border: var(--warning-border);
 
-    --color-text-warning: var(--warning-text);
-    --color-bg-warning: var(--warning-bg);
-    --color-border-warning: var(--warning-border);
+    /* Status: Info */
+    --color-info-text: var(--info-text);
+    --color-info-bg: var(--info-bg);
+    --color-info-border: var(--info-border);
 
-    --color-text-info: var(--info-text);
-    --color-bg-info: var(--info-bg);
-    --color-border-info: var(--info-border);
-
-    --color-text-mystical: var(--mystical-text);
-    --color-bg-mystical: var(--mystical-bg);
-    --color-border-mystical: var(--mystical-border);
-
-    /* Dreams */
-    --color-dream-lucid: var(--color-dream-lucid);
-    --color-dream-nightmare: var(--color-dream-nightmare);
-    --color-dream-prophetic: var(--color-dream-prophetic);
-    --color-dream-normal: var(--color-dream-normal);
+    /* Status: Mystical */
+    --color-mystical-text: var(--mystical-text);
+    --color-mystical-bg: var(--mystical-bg);
+    --color-mystical-border: var(--mystical-border);
 
     /* Night palette */
     --color-night-900: #0f172a;
@@ -112,21 +80,12 @@
     --color-gold-800: var(--dk-gold-800);
     --color-gold-900: var(--dk-gold-900);
 
-    /* Fonts */
+    /* Fonts & Radius */
     --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-
     --font-mono: 'JetBrains Mono', 'Fira Code', 'Courier New', monospace;
-
-    /* Radius */
     --radius-xl: 16px;
     --radius-2xl: 20px;
     --radius-3xl: 24px;
-
-    /* Shadows */
-    --shadow-card: 0 2px 8px var(--color-shadow);
-    --shadow-card-hover: 0 4px 16px var(--color-shadow-lg);
-    --shadow-card-lg: 0 8px 32px var(--color-shadow-xl);
-    --shadow-dropdown: 0 4px 24px var(--color-shadow-lg);
 }
 
 /*

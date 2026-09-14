@@ -1,3 +1,5 @@
+import type { Component } from 'vue';
+
 export type ThemeMode =
     | 'light'
     | 'dark'
@@ -10,3 +12,9 @@ export type ThemeMode =
     | 'emerald'
     | 'mystic'
     | 'system';
+
+export interface ThemeOption {
+    value: ThemeMode;
+    label: string;
+    icon: Component;
+}

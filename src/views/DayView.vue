@@ -44,21 +44,19 @@
                             <div class="flex min-w-1/5 items-center justify-end gap-2">
                                 <AppButton
                                     @click.stop="handleDelete(dream.id, dream.date)"
-                                    size="xs"
+                                    size="sm"
                                     variant="danger"
                                     :disabled="isDeleting(dream.id)"
-                                >
-                                    <X />
-                                </AppButton>
+                                    :icon-left="Trash"
+                                />
 
                                 <AppButton
                                     @click.stop="goToEdit(dream.slug)"
-                                    size="xs"
+                                    size="sm"
                                     variant="primary"
                                     :disabled="isDeleting(dream.id)"
-                                >
-                                    <Edit2Icon />
-                                </AppButton>
+                                    :icon-left="Edit2Icon"
+                                />
 
                                 <AppRating
                                     v-if="dream.quality !== undefined && dream.quality > 0"
@@ -146,7 +144,7 @@
     import { computed, onMounted, ref } from 'vue';
     import { useSleepStore } from '@/stores/modules/dream';
     import { useUserStateStore } from '@/stores/modules/userState';
-    import { MoveLeft, PlusIcon, Edit2Icon, X } from 'lucide-vue-next';
+    import { MoveLeft, PlusIcon, Edit2Icon, Trash } from 'lucide-vue-next';
     import AppRating from '@/components/ui/AppRating.vue';
     import AppButton from '@/components/ui/AppButton.vue';
     import UserStateForm from '@/components/sections/UserStateForm.vue';

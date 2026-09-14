@@ -17,10 +17,10 @@
     const iconComponent = computed(() => icons[type.value] || Info);
 
     const typeStyles = {
-        success: 'border-[#c5d86d]/20 bg-[#161b14]/90 text-[#c5d86d]',
-        error: 'border-red-500/20 bg-red-950/90 text-red-400',
-        warning: 'border-amber-500/20 bg-amber-950/90 text-amber-400',
-        info: 'border-blue-500/20 bg-blue-950/90 text-blue-400',
+        success: 'border-success-border bg-success-bg/90 text-success-text',
+        error: 'border-danger-border bg-danger-bg/90 text-danger-text',
+        warning: 'border-warning-border bg-warning-bg/90 text-warning-text',
+        info: 'border-info-border bg-info-bg/90 text-info-text',
     };
 
     const isServer = ref(true);
@@ -58,7 +58,7 @@
                     <button
                         v-if="isCountingDown"
                         @click="undoRequested = true"
-                        class="ml-2 rounded-lg bg-white/10 px-3 py-1.5 text-[10px] font-black uppercase transition-all outline-none hover:bg-white/20 focus-visible:ring-2 focus-visible:ring-current active:scale-95"
+                        class="ml-2 rounded-lg bg-current/10 px-3 py-1.5 text-[10px] font-black uppercase transition-all outline-none hover:bg-current/20 focus-visible:ring-2 focus-visible:ring-current active:scale-95"
                     >
                         Отмена
                     </button>
@@ -72,9 +72,9 @@
                     </button>
                 </div>
 
-                <div v-if="isCountingDown" class="relative h-1 w-full bg-white/10">
+                <div v-if="isCountingDown" class="relative h-1 w-full bg-current/10">
                     <div
-                        class="absolute inset-y-0 left-0 bg-[#c5d86d] shadow-[0_0_10px_#c5d86d]"
+                        class="absolute inset-y-0 left-0 bg-current shadow-[0_0_10px_currentColor]"
                         :style="{
                             animation: `shrink ${timerDuration}ms linear forwards`,
                         }"

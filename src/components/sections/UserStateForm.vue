@@ -5,7 +5,7 @@
     import AppTextarea from '@/components/ui/AppTextarea.vue';
     import AppErrorMessage from '@/components/ui/AppErrorMessage.vue';
     import { useFlash } from '@/composables/useFlash';
-    import { X } from 'lucide-vue-next';
+    import { Trash } from 'lucide-vue-next';
     import AppButton from '@/components/ui/AppButton.vue';
     import { useUserStateStore } from '@/stores/modules/userState';
     import { dreamValueFormatter } from '@/utils/formatters';
@@ -141,7 +141,6 @@
             />
         </div>
 
-        <!-- Заметки (AppTextarea) -->
         <AppTextarea
             v-model="form.notes"
             label="Заметки о дне"
@@ -153,18 +152,16 @@
 
         <AppErrorMessage :error-message="userStateStore.error" />
 
-        <!-- Кнопки управления -->
         <div class="flex items-center justify-end gap-2 pt-2">
             <AppButton @click="emit('change')" variant="ghost">Отмена</AppButton>
 
             <AppButton
                 v-if="initialData"
                 @click.stop="handleDelete(initialData.id)"
-                size="xs"
+                size="sm"
                 variant="danger"
-            >
-                <X />
-            </AppButton>
+                :icon-left="Trash"
+            />
 
             <AppButton size="xs" type="submit" variant="primary" :disabled="userStateStore.loading">
                 {{ userStateStore.loading ? 'Сохранение...' : isEditing ? 'Сохранить' : 'Создать' }}

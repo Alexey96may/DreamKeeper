@@ -534,4 +534,9 @@
     --vc-gray-900: var(--text-primary);
 
     --vc-rounded-lg: 0.75rem;
+
+    --vc-success-bg: var(--success-bg);
+    --vc-info-bg: var(--info-bg);
+    --vc-warning-bg: var(--warning-bg);
+    --vc-danger-bg: var(--danger-bg);
 }

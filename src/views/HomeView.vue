@@ -4,17 +4,34 @@
         <div class="container mx-auto px-4 py-6">
             <AppTitle @action="goToNewDream" />
 
-            <div class="dream-card p-6">
-                <div class="flex items-center justify-end gap-2">
-                    <AppCheckbox v-model="hasDots" label="Показывать Точки" />
-                    <AppCheckbox v-model="hasHighlight" label="Показывать Настроение" />
+            <div class="dream-card relative px-14 py-8">
+                <div class="absolute top-2 right-2 flex flex-col items-center justify-end gap-2">
+                    <AppButton
+                        @click="isModalOpen = !isModalOpen"
+                        size="sm"
+                        variant="secondary"
+                        title="Параметры календаря"
+                        :icon-left="CalendarIcon"
+                    >
+                    </AppButton>
+
+                    <AppButton
+                        @click="moveToday"
+                        size="sm"
+                        variant="secondary"
+                        title="Вернуться на сегодняшний день"
+                        :icon-left="CalendarCheck"
+                    >
+                    </AppButton>
                 </div>
 
                 <div class="flex justify-center">
                     <Calendar
+                        ref="calendar"
                         :attributes="calendarAttributes"
-                        :trim-weeks="true"
+                        :view="isWeeklyMod ? 'weekly' : 'monthly'"
                         :first-day-of-week="2"
+                        :max-date="new Date()"
                         @dayclick="onDayClick"
                         class="dream-calendar"
                     />
@@ -23,11 +40,20 @@
 
             <StatsGrid :items="statsData" />
         </div>
+
+        <AppModal v-model="isModalOpen" :close-on-overlay="true" title="Параметры Календаря">
+            <AppCheckbox v-model="hasDots" label="Показывать Точки" />
+            <AppCheckbox v-model="hasHighlight" label="Показывать Настроение" />
+            <AppCheckbox v-model="isWeeklyMod" label="Режим по неделям" />
+        </AppModal>
     </div>
 </template>
 
 <script setup lang="ts">
     import { computed, onMounted, ref } from 'vue';
+    import type { ComponentPublicInstance } from 'vue';
+    import { Calendar as CalendarIcon, CalendarCheck } from 'lucide-vue-next';
+    import AppModal from '@/components/sections/AppModal.vue';
     import { useRouter } from 'vue-router';
     import { Calendar } from 'v-calendar-3';
     import 'v-calendar-3/style.css';
@@ -40,7 +66,8 @@
     import type { Dream } from '@/types/Dream';
     import type { UserState } from '@/types/UserState';
     import type { CalendarAttribute } from '@/types/Calendar';
-    import { formatToLocalDateStr } from '@/utils/date';
+    import AppButton from '@/components/ui/AppButton.vue';
+    import { formatToLocalDateStr, isPastOrPresentDay } from '@/utils/date';
 
     const { statsData } = useHomeStats();
 
@@ -50,6 +77,18 @@
 
     const hasHighlight = ref(false);
     const hasDots = ref(true);
+
+    const isModalOpen = ref(false);
+
+    const calendar = ref<
+        (ComponentPublicInstance & { move: (date: Date | string) => void }) | null
+    >(null);
+
+    const isWeeklyMod = ref(false);
+
+    const moveToday = () => {
+        calendar.value?.move(new Date());
+    };
 
     const calendarAttributes = computed(() => {
         const attributes: CalendarAttribute[] = [];
@@ -78,13 +117,26 @@
                     else color = 'red';
 
                     attributes.push({
-                        key: `dream-${dream.id}`,
+                        key: `dream-dot-${dream.id}`,
                         dates: [new Date(dateStr)],
                         dot: color,
-                        popover: {
-                            label: `⭐ ${quality}/10 — ${dream.title || 'Без описания'}`,
-                        },
                     });
+                });
+
+                const allDreamsLabels = limitedDreams
+                    .map((d: Dream) => `⭐ ${d.quality || 0}/10 — ${d.title || 'Без описания'}`)
+                    .join('\n');
+
+                const totalCount = dreams.length;
+                const hiddenCount = totalCount - 3;
+                const hasOverflow = hiddenCount > 0;
+
+                attributes.push({
+                    key: `dreams-popover-${dateStr}`,
+                    dates: [new Date(dateStr)],
+                    popover: {
+                        label: `\nСнов за день — ${totalCount}:\n${allDreamsLabels}${hasOverflow ? `\n... и еще ${hiddenCount}.` : ''}`,
+                    },
                 });
             });
         }
@@ -111,10 +163,28 @@
             });
         }
 
+        const todayStr = formatToLocalDateStr(new Date());
+
+        attributes.push({
+            key: 'today-highlight',
+            dates: [new Date(todayStr)],
+            highlight: {
+                fillMode: 'outline',
+                borderColor: 'var(--accent)',
+                borderWidth: '1px',
+                borderRadius: '50%',
+            },
+            popover: {
+                label: 'Сегодня',
+            },
+        });
+
         return attributes;
     });
 
     const onDayClick = (day: { date: Date | string }): void => {
+        if (!isPastOrPresentDay(day.date)) return;
+
         const dateObj = day.date instanceof Date ? day.date : new Date(day.date);
         const dateStr = formatToLocalDateStr(dateObj);
 
@@ -163,10 +233,6 @@
         color: var(--text-primary) !important;
     }
 
-    :deep(.vc-day):hover {
-        background-color: var(--bg-tertiary);
-    }
-
     :deep(.vc-attr) {
         /* background-color: var(--accent) !important;
         color: var(--text-inverse) !important; */
@@ -190,42 +256,36 @@
             0 4px 6px -4px rgba(0, 0, 0, 0.2) !important;
         font-family: inherit !important;
         font-size: 0.875rem !important;
+        white-space: pre-line;
 
-        /* Фиксируем ширину и включаем перенос */
+        /* Фиксируем ширину и перенос */
         width: 340px !important;
         max-width: 90vw !important;
         box-sizing: border-box !important;
+        overflow-y: hidden;
 
-        /* Кастомный скролл внутри поповера (если текст длинный) */
-        max-height: 200px !important;
-        overflow-y: auto !important;
-        scrollbar-width: thin;
-        scrollbar-color: var(--border-strong) var(--bg-secondary);
+        position: relative;
     }
 
-    /* Кастомный скроллбар (Webkit / Chrome / Safari / Edge) */
-    :deep(.vc-popover-content)::-webkit-scrollbar {
-        width: 5px;
-    }
-
-    :deep(.vc-popover-content)::-webkit-scrollbar-track {
-        background: var(--bg-secondary);
-        border-radius: 9999px;
-    }
-
-    :deep(.vc-popover-content)::-webkit-scrollbar-thumb {
-        background-color: var(--border-strong);
-        border-radius: 9999px;
-    }
-
-    :deep(.vc-popover-content)::-webkit-scrollbar-thumb:hover {
-        background-color: var(--text-muted);
+    :deep(.vc-popover-content):first-line {
+        font-weight: bold;
+        color: var(--text-primary);
     }
 
     /* Стрелочка поповера */
     :deep(.vc-popover-caret) {
         border-top-color: var(--bg-elevated) !important;
         border-bottom-color: var(--bg-elevated) !important;
+    }
+
+    :deep(.vc-highlights) {
+        overflow: visible;
+    }
+
+    :deep(.is-today .vc-highlight) {
+        top: 0;
+        left: 0;
+        animation: pulse-today 2s infinite;
     }
 
     :deep(.vc-day.is-not-in-month) {
@@ -254,6 +314,34 @@
         to {
             opacity: 1;
             transform: translateY(0);
+        }
+    }
+
+    :deep(.vc-highlight.vc-red) {
+        background-color: var(--danger-bg) !important;
+    }
+
+    :deep(.vc-highlight.vc-green) {
+        background-color: var(--success-bg) !important;
+    }
+
+    :deep(.vc-highlight.vc-blue) {
+        background-color: var(--info-bg) !important;
+    }
+
+    :deep(.vc-highlight.vc-yellow) {
+        background-color: var(--warning-bg) !important;
+    }
+
+    @keyframes pulse-today {
+        0% {
+            box-shadow: 0 0 0 0 var(--accent);
+        }
+        70% {
+            box-shadow: 0 0 0 6px rgba(0, 0, 0, 0);
+        }
+        100% {
+            box-shadow: 0 0 0 0 rgba(0, 0, 0, 0);
         }
     }
 </style>

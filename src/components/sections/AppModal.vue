@@ -37,6 +37,9 @@
 
     import { ref, watch, onUnmounted, nextTick } from 'vue';
 
+    import AppButton from '@/components/ui/AppButton.vue';
+    import { X } from 'lucide-vue-next';
+
     const props = withDefaults(
         defineProps<{
             modelValue: boolean;
@@ -147,35 +150,42 @@
         <Transition name="modal-fade">
             <div
                 v-if="modelValue"
-                class="modal-backdrop"
+                class="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-black/50 p-4 backdrop-blur-xs outline-none"
                 @click.self="handleOverlayClick"
                 @keydown.esc="close"
                 tabindex="-1"
             >
                 <div
                     ref="modalRef"
-                    class="modal-container"
+                    class="bg-bg-elevated text-text-primary border-border-primary shadow-dropdown my-auto flex max-h-[90vh] w-full max-w-lg flex-col overflow-hidden rounded-2xl border p-6 outline-none"
                     role="dialog"
                     aria-modal="true"
                     :aria-labelledby="titleId"
                 >
                     <!-- Header Slot / Default Title -->
-                    <header class="modal-header">
+                    <header class="flex shrink-0 items-center justify-between pb-4">
                         <slot name="header">
-                            <h3 :id="titleId" class="modal-title">{{ title }}</h3>
+                            <h3 :id="titleId" class="text-text-primary m-0 text-xl font-semibold">
+                                {{ title }}
+                            </h3>
                         </slot>
-                        <button class="modal-close-btn" aria-label="Close modal" @click="close">
-                            &times;
-                        </button>
+
+                        <AppButton
+                            @click="close"
+                            size="xs"
+                            variant="danger"
+                            aria-label="Закрыть модальное окно"
+                            :icon-left="X"
+                        />
                     </header>
 
-                    <!-- Body Slot -->
-                    <div class="modal-body">
+                    <!-- Body Slot (Scrollable) -->
+                    <div class="text-text-secondary my-2 flex-1 overflow-y-auto pr-1">
                         <slot />
                     </div>
 
                     <!-- Footer Slot -->
-                    <footer v-if="$slots.footer" class="modal-footer">
+                    <footer v-if="$slots.footer" class="flex shrink-0 justify-end gap-2 pt-2">
                         <slot name="footer" />
                     </footer>
                 </div>
@@ -185,61 +195,7 @@
 </template>
 
 <style scoped>
-    .modal-backdrop {
-        position: fixed;
-        inset: 0;
-        background-color: rgba(0, 0, 0, 0.5);
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        z-index: 1000;
-        outline: none;
-    }
-
-    .modal-container {
-        background: white;
-        border-radius: 8px;
-        width: 100%;
-        max-width: 500px;
-        padding: 24px;
-        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
-        display: flex;
-        flex-direction: column;
-        outline: none;
-    }
-
-    .modal-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 16px;
-    }
-
-    .modal-title {
-        margin: 0;
-        font-size: 1.25rem;
-    }
-
-    .modal-close-btn {
-        background: none;
-        border: none;
-        font-size: 1.5rem;
-        cursor: pointer;
-        padding: 0;
-        line-height: 1;
-    }
-
-    .modal-body {
-        margin-bottom: 16px;
-    }
-
-    .modal-footer {
-        display: flex;
-        justify-content: flex-end;
-        gap: 8px;
-    }
-
-    /* Transitions */
+    /* Vue Transitions с использованием Tailwind-совместимых переменных */
     .modal-fade-enter-active,
     .modal-fade-leave-active {
         transition: opacity 0.25s ease;
