@@ -9,6 +9,7 @@ export function useNavigation() {
 
     const goToDreamDetail = (slug: string | undefined) => {
         if (!slug) return;
+
         router.push(`/dream/${slug}`);
     };
 

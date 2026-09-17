@@ -6,9 +6,9 @@ export type ServiceType = 'indexeddb' | 'api' | 'capacitor';
 export interface IDataService {
     init(): Promise<void>;
     getAll<T>(store: StoreName): Promise<T[]>;
-    get<T>(store: StoreName, id: number): Promise<T | undefined>;
-    add<T extends object, R = T & { id: number }>(store: StoreName, data: T): Promise<R>;
-    put<T>(store: StoreName, data: T): Promise<number>;
-    delete(store: StoreName, id: number): Promise<void>;
+    get<T>(store: StoreName, id: string | number): Promise<T | undefined>;
+    add<T extends object, R = T & { id: string | number }>(store: StoreName, data: T): Promise<R>;
+    put<T>(store: StoreName, data: T): Promise<string | number>;
+    delete(store: StoreName, id: string | number): Promise<void>;
     getByIndex<T>(store: StoreName, index: string, value: string | number): Promise<T[]>;
 }

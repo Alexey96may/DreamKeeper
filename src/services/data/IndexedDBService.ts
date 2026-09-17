@@ -39,14 +39,36 @@ export class IndexedDBService implements IDataService {
                     stateStore.createIndex('energy', 'energy');
                 }
 
+                if (!db.objectStoreNames.contains('dream_symbols')) {
+                    const symbolStore = db.createObjectStore('dream_symbols', {
+                        keyPath: 'tag',
+                    });
+                    symbolStore.createIndex('category', 'category');
+                }
+
+                if (!db.objectStoreNames.contains('dream_aspects')) {
+                    const aspectStore = db.createObjectStore('dream_aspects', {
+                        keyPath: 'id',
+                    });
+                    aspectStore.createIndex('symbolTag', 'symbolTag');
+                }
+
                 if (!db.objectStoreNames.contains('interprSources')) {
                     const sourceStore = db.createObjectStore('interprSources', {
                         keyPath: 'id',
-                        autoIncrement: true,
                     });
                     sourceStore.createIndex('type', 'type');
                     sourceStore.createIndex('category', 'category');
                     sourceStore.createIndex('visibility', 'visibility');
+                }
+
+                if (!db.objectStoreNames.contains('dreamInterpretations')) {
+                    const interpStore = db.createObjectStore('dreamInterpretations', {
+                        keyPath: 'id',
+                    });
+                    interpStore.createIndex('symbolTag', 'symbolTag');
+                    interpStore.createIndex('sourceId', 'sourceId');
+                    interpStore.createIndex('aspectId', 'aspectId');
                 }
             },
         });
@@ -66,31 +88,32 @@ export class IndexedDBService implements IDataService {
         return db.getAll(store) as Promise<T[]>;
     }
 
-    async get<T>(store: StoreName, id: number): Promise<T | undefined> {
+    async get<T>(store: StoreName, id: string | number): Promise<T | undefined> {
         const db = await this.getDB();
         return db.get(store, id) as Promise<T | undefined>;
     }
 
-    async add<T extends object, R = T & { id: number }>(store: StoreName, data: T): Promise<R> {
-        const db = await this.getDB();
-
-        const cleanData = JSON.parse(JSON.stringify(toRaw(data)));
-
-        const id = (await db.add(store, cleanData)) as number;
-
-        return {
-            ...cleanData,
-            id,
-        } as unknown as R;
-    }
-
-    async put<T>(store: StoreName, data: T): Promise<number> {
+    async add<T extends object, R = T>(store: StoreName, data: T): Promise<R> {
         const db = await this.getDB();
         const cleanData = JSON.parse(JSON.stringify(toRaw(data)));
-        return db.put(store, cleanData) as Promise<number>;
+
+        const key = await db.add(store, cleanData);
+
+        const result = { ...cleanData };
+        if (!('id' in result) && !('tag' in result)) {
+            result.id = key;
+        }
+
+        return result as R;
     }
 
-    async delete(store: StoreName, id: number): Promise<void> {
+    async put<T>(store: StoreName, data: T): Promise<string | number> {
+        const db = await this.getDB();
+        const cleanData = JSON.parse(JSON.stringify(toRaw(data)));
+        return db.put(store, cleanData) as Promise<string | number>;
+    }
+
+    async delete(store: StoreName, id: string | number): Promise<void> {
         const db = await this.getDB();
         await db.delete(store, id);
     }

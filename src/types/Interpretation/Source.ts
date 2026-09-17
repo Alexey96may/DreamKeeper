@@ -11,7 +11,7 @@ export type SourceCategory =
 export type SourceVisibility = 'private' | 'shared' | 'public';
 
 export interface InterprSource {
-    id: number; // 'custom_user_1', 'miller', 'freud', 'community_metal_symbols'
+    id: string; // 'custom_user_1', 'miller', 'freud', 'community_metal_symbols'
     title: string; // "Мои ассоциации", "Сонник Миллера"
     description: string; // Описание сонника
     rating: number; // 1.0 - 5.0 (Средний рейтинг доверия / полезности)

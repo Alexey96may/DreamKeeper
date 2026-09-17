@@ -1,128 +1,331 @@
-// src/seeds/initialInterpretationsSeed.ts
+import type { InterpretationWrite } from '@/services/schemas/interpretation.schema';
 
-import type { Interpretation } from '@/types/Interpretation/Interpretation';
-
-export const initialInterpretationsSeed: Interpretation[] = [
-    // --- Психоанализ (Юнг) ---
+export const initialInterpretationsSeed: (InterpretationWrite & { id: string })[] = [
+    // ==========================================
+    // ВОДА (voda)
+    // ==========================================
     {
-        id: 1,
-        tag: 'море',
-        title: 'Море / Бескрайние воды',
-        meaning:
-            'Символ коллективного бессознательного, глубин психики и скрытых эмоций. Спокойное море указывает на гармонию с Тенью, бушующее — на эмоциональный конфликт.',
-        sourceId: 'jung',
-        authorId: 'c_g_jung',
-        category: 'location',
-        rating: 4.9,
-        likesCount: 1420,
-        useCount: 38,
-        isCustom: false,
-        isVerified: true,
-        createdAt: '2026-01-01T00:00:00Z',
-    },
-    {
-        id: 2,
-        tag: 'старик',
-        title: 'Мудрый старик / Учитель',
-        meaning:
-            'Архетип Мудреца (Духа). Появление этого персонажа указывает на внутреннюю интуицию, готовность принять важное решение или поиск жизненного ориентира.',
-        sourceId: 'jung',
-        authorId: 'c_g_jung',
-        category: 'character',
-        rating: 4.8,
-        likesCount: 890,
-        useCount: 19,
-        isCustom: false,
-        isVerified: true,
-        createdAt: '2026-01-01T00:00:00Z',
-    },
-
-    // --- Эзотерический сонник (Миллер) ---
-    {
-        id: 3,
-        tag: 'часы',
-        title: 'Часы / Настенные или наручные',
-        meaning:
-            'Видеть во сне часы — предвестье того, что вы рискуете упустить важный шанс из-за спешки или неверного распределения времени. Слышать бой — к неожиданным известиям.',
+        id: 'interp-voda-miller-clean',
+        symbolTag: 'voda',
         sourceId: 'miller',
-        authorId: 'gustavus_miller',
-        category: 'object',
-        rating: 3.5,
-        likesCount: 310,
-        useCount: 14,
+        aspectId: 'voda-chistaya',
+        meanings: [
+            'Чистая и прозрачная вода сулит радость, финансовое благополучие и получение приятных известий.',
+            'Пить чистую воду — к исполнению самых смелых надежд и укреплению здоровья.',
+        ],
         isCustom: false,
         isVerified: true,
-        createdAt: '2026-01-01T00:00:00Z',
     },
     {
-        id: 4,
-        tag: 'полет',
-        title: 'Полет над землей',
-        meaning:
-            'Парить высоко в небе — к успешному преодолению препятствий и исполнению желаний. Если при полете вы падаете вниз — символ временных трудностей в делах.',
+        id: 'interp-voda-miller-dirty',
+        symbolTag: 'voda',
         sourceId: 'miller',
-        authorId: 'gustavus_miller',
-        category: 'action',
-        rating: 3.8,
-        likesCount: 520,
-        useCount: 27,
+        aspectId: 'voda-mutnaya',
+        meanings: [
+            'Грязная или мутная вода предупреждает об опасности, печали и вероятных ошибках в суждениях.',
+            'Упасть в мутную воду — знак того, что вы совершите горькие ошибки, о которых будете сожалеть.',
+        ],
         isCustom: false,
         isVerified: true,
-        createdAt: '2026-01-01T00:00:00Z',
     },
-
-    // --- AI Аналитика (Нейросеть) ---
     {
-        id: 5,
-        tag: 'затмение',
-        title: 'Солнечное / Лунное затмение',
-        meaning:
-            'Контекстуальный символ временной потери ясности, перезагрузки жизненного этапа или сокрытия важного факта от самого себя. Часто снится в моменты смены профессии или переезда.',
-        sourceId: 'ai_assistant',
-        authorId: 'gemini_ai',
-        category: 'nature',
-        rating: 4.6,
-        likesCount: 205,
-        useCount: 8,
+        id: 'interp-voda-freud-general',
+        symbolTag: 'voda',
+        sourceId: 'freud',
+        aspectId: null,
+        meanings: [
+            'Символизирует зачатие, процесс рождения и сексуальное влечение.',
+            'Погружение в воду или купание отражает подсознательное желание иметь детей или вернуться в материнскую утробу.',
+        ],
         isCustom: false,
         isVerified: true,
-        createdAt: '2026-02-15T10:00:00Z',
+    },
+    {
+        id: 'interp-voda-jung-stream',
+        symbolTag: 'voda',
+        sourceId: 'jung',
+        aspectId: 'voda-potok',
+        meanings: [
+            'Бурный поток символизирует вторжение неосознанных психических сил, угрожающих захлестнуть Эго.',
+            'Необходимость пройти через очищающий катарсис и принять свои скрытые эмоции.',
+        ],
+        isCustom: false,
+        isVerified: true,
+    },
+    {
+        id: 'interp-voda-vanga-clean',
+        symbolTag: 'voda',
+        sourceId: 'vanga',
+        aspectId: 'voda-chistaya',
+        meanings: ['Знамение обновления, прощения прошлых грехов и душевного очищения.'],
+        isCustom: false,
+        isVerified: true,
+    },
+    {
+        id: 'interp-voda-veles-dirty',
+        symbolTag: 'voda',
+        sourceId: 'veles',
+        aspectId: 'voda-mutnaya',
+        meanings: ['К болезни, сплетням за спиной или бытовым ссорам с близкими.'],
+        isCustom: false,
+        isVerified: true,
     },
 
-    // --- Пользовательский закрытый источник (Личные заметки) ---
+    // ==========================================
+    // ОГОНЬ (ogon)
+    // ==========================================
     {
-        id: 6,
-        tag: 'калебас',
-        title: 'Калебас / Сосуд для мате',
-        meaning:
-            'Мой персональный символ фокусировки, приватного пространства, погружения в работу и восстановления энергии после долгого дня.',
-        sourceId: 'custom_alexey',
-        authorId: 'usr_alexey_123',
-        category: 'object',
-        rating: 5.0,
-        likesCount: 1,
-        useCount: 5,
-        isCustom: true,
-        isVerified: false,
-        createdAt: '2026-05-10T14:30:00Z',
-        updatedAt: '2026-08-01T11:00:00Z',
+        id: 'interp-ogon-miller-hearth',
+        symbolTag: 'ogon',
+        sourceId: 'miller',
+        aspectId: 'ogon-ochag',
+        meanings: ['Уютный огонь в очаге сулит долгожданный мир в доме, гармонию в семье и тепло.'],
+        isCustom: false,
+        isVerified: true,
+    },
+    {
+        id: 'interp-ogon-freud-general',
+        symbolTag: 'ogon',
+        sourceId: 'freud',
+        aspectId: null,
+        meanings: ['Символ вырывающейся из-под контроля пылкой страсти и полового влечения.'],
+        isCustom: false,
+        isVerified: true,
+    },
+    {
+        id: 'interp-ogon-jung-fire',
+        symbolTag: 'ogon',
+        sourceId: 'jung',
+        aspectId: 'ogon-pozhar',
+        meanings: [
+            'Огонь как сила трансмутации: уничтожение устаревших установок для высвобождения новой психической энергии.',
+        ],
+        isCustom: false,
+        isVerified: true,
+    },
+    {
+        id: 'interp-ogon-vanga-fire',
+        symbolTag: 'ogon',
+        sourceId: 'vanga',
+        aspectId: 'ogon-pozhar',
+        meanings: [
+            'Предупреждение о суровых испытаниях, конфликтах или кардинальных переменах в жизни.',
+        ],
+        isCustom: false,
+        isVerified: true,
     },
 
-    // --- Совместный источник (Семейный сонник) ---
+    // ==========================================
+    // ЗМЕЯ (zmeya)
+    // ==========================================
     {
-        id: 7,
-        tag: 'маяк',
-        title: 'Маяк на утесе',
-        meaning:
-            'Семейная примета: маяк всегда снится к долгожданному письму, завершению сложного ремонта или разрешению затянувшегося вопроса.',
-        sourceId: 'family_symbols',
-        authorId: 'usr_lena_456',
-        category: 'location',
-        rating: 4.7,
-        likesCount: 2,
-        useCount: 3,
-        isCustom: true,
-        isVerified: false,
-        createdAt: '2026-06-20T09:15:00Z',
+        id: 'interp-zmeya-freud-general',
+        symbolTag: 'zmeya',
+        sourceId: 'freud',
+        aspectId: null,
+        meanings: [
+            'Фаллический символ. Олицетворяет сексуальную силу, страх перед интимностью или искушение.',
+        ],
+        isCustom: false,
+        isVerified: true,
+    },
+    {
+        id: 'interp-zmeya-jung-sleeping',
+        symbolTag: 'zmeya',
+        sourceId: 'jung',
+        aspectId: 'zmeya-spashhaja',
+        meanings: [
+            'Архетип глубинной древней мудрости и автономной нервной системы.',
+            'Предупреждение интуиции о процессах, происходящих в бессознательном.',
+        ],
+        isCustom: false,
+        isVerified: true,
+    },
+    {
+        id: 'interp-zmeya-miller-bite',
+        symbolTag: 'zmeya',
+        sourceId: 'miller',
+        aspectId: 'zmeya-ukus',
+        meanings: [
+            'Вы поддадитесь злым проискам, а тайные враги попытаются навредить вашей репутации.',
+        ],
+        isCustom: false,
+        isVerified: true,
+    },
+    {
+        id: 'interp-zmeya-aesop-general',
+        symbolTag: 'zmeya',
+        sourceId: 'aesop',
+        aspectId: null,
+        meanings: [
+            'Символ коварства и неблагодарности («пригреть змею на груди»). Опасайтесь предательства.',
+        ],
+        isCustom: false,
+        isVerified: true,
+    },
+
+    // ==========================================
+    // ДОМ (dom)
+    // ==========================================
+    {
+        id: 'interp-dom-loff-new',
+        symbolTag: 'dom',
+        sourceId: 'loff',
+        aspectId: 'dom-novyj',
+        meanings: [
+            'Отражает перестройку жизненных приоритетов, стремление к безопасности и перемены в самовосприятии.',
+        ],
+        isCustom: false,
+        isVerified: true,
+    },
+    {
+        id: 'interp-dom-freud-secret-room',
+        symbolTag: 'dom',
+        sourceId: 'freud',
+        aspectId: 'dom-tawnaya-komnata',
+        meanings: [
+            'Скрытые сексуальные фантазии или вытесненные воспоминания, к которым начинает открываться доступ.',
+        ],
+        isCustom: false,
+        isVerified: true,
+    },
+    {
+        id: 'interp-dom-jung-old',
+        symbolTag: 'dom',
+        sourceId: 'jung',
+        aspectId: 'dom-staryj',
+        meanings: [
+            'Обращение к архаичным пластам личности, незавершённым детским комплексам и заброшенным частям Эго.',
+        ],
+        isCustom: false,
+        isVerified: true,
+    },
+
+    // ==========================================
+    // ЗЕРКАЛО (zerkalo)
+    // ==========================================
+    {
+        id: 'interp-zerkalo-aesop-broken',
+        symbolTag: 'zerkalo',
+        sourceId: 'aesop',
+        aspectId: 'zerkalo-razbitoe',
+        meanings: [
+            'Крах надежд, период душевного смятения и неприятностей («семь лет несчастий»).',
+        ],
+        isCustom: false,
+        isVerified: true,
+    },
+    {
+        id: 'interp-zerkalo-jung-clean',
+        symbolTag: 'zerkalo',
+        sourceId: 'jung',
+        aspectId: 'zerkalo-chistoe',
+        meanings: [
+            'Встреча со своей Тенью и истинным «Я». Отражение объективной реальности без эго-иллюзий.',
+        ],
+        isCustom: false,
+        isVerified: true,
+    },
+
+    // ==========================================
+    // ПОЛЁТ (polet)
+    // ==========================================
+    {
+        id: 'interp-polet-loff-easy',
+        symbolTag: 'polet',
+        sourceId: 'loff',
+        aspectId: 'polet-legkij',
+        meanings: [
+            'Чувство контроля над своей жизнью, разрешение давних трудностей и высокий эмоциональный ресурс.',
+        ],
+        isCustom: false,
+        isVerified: true,
+    },
+    {
+        id: 'interp-polet-miller-hard',
+        symbolTag: 'polet',
+        sourceId: 'miller',
+        aspectId: 'polet-tjazhelyj',
+        meanings: [
+            'Предвещает трудности в делах, временную неуверенность в своих силах или семейные разногласия.',
+        ],
+        isCustom: false,
+        isVerified: true,
+    },
+
+    // ==========================================
+    // ДОРОГА (doroga)
+    // ==========================================
+    {
+        id: 'interp-doroga-veles-straight',
+        symbolTag: 'doroga',
+        sourceId: 'veles',
+        aspectId: 'doroga-pryamaya',
+        meanings: ['Удача в делах, легкая жизнь и быстрое достижение поставленных целей.'],
+        isCustom: false,
+        isVerified: true,
+    },
+    {
+        id: 'interp-doroga-loff-fork',
+        symbolTag: 'doroga',
+        sourceId: 'loff',
+        aspectId: 'doroga-razvilka',
+        meanings: [
+            'Символ экзистенциального выбора. Необходимость принять важное решение вопреки сомнениям.',
+        ],
+        isCustom: false,
+        isVerified: true,
+    },
+
+    // ==========================================
+    // СМЕРТЬ (smerth)
+    // ==========================================
+    {
+        id: 'interp-smerth-jung-general',
+        symbolTag: 'smerth',
+        sourceId: 'jung',
+        aspectId: null,
+        meanings: [
+            'Символическое умирание старой структуры Эго ради рождения обновленной личности (этап индивидуации).',
+        ],
+        isCustom: false,
+        isVerified: true,
+    },
+    {
+        id: 'interp-smerth-vanga-general',
+        symbolTag: 'smerth',
+        sourceId: 'vanga',
+        aspectId: null,
+        meanings: [
+            'Знамение долгой жизни для того, кто приснился мёртвым, либо знак кардинальной трансформации судьбы.',
+        ],
+        isCustom: false,
+        isVerified: true,
+    },
+
+    // ==========================================
+    // КЛЮЧ (klyuch)
+    // ==========================================
+    {
+        id: 'interp-klyuch-aesop-general',
+        symbolTag: 'klyuch',
+        sourceId: 'aesop',
+        aspectId: null,
+        meanings: [
+            'Нахождение ответа на запутанную задачу («ключ к разгадке») или обретение доверия.',
+        ],
+        isCustom: false,
+        isVerified: true,
+    },
+    {
+        id: 'interp-klyuch-freud-general',
+        symbolTag: 'klyuch',
+        sourceId: 'freud',
+        aspectId: null,
+        meanings: [
+            'Мужской фаллический символ. Поиск ключа к замку отражает желание решить психосексуальный конфликт.',
+        ],
+        isCustom: false,
+        isVerified: true,
     },
 ];

@@ -70,7 +70,7 @@ export class DreamRepository extends BaseRepository<Dream, DreamWrite, Partial<D
             updatedAt: now,
         };
 
-        const dream = await this.dataService.add(this.storeName, payload);
+        const dream = await this.dataService.add<typeof payload, Dream>(this.storeName, payload);
 
         return dream;
     }

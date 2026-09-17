@@ -15,7 +15,7 @@ import {
 } from '@/services/schemas/interpretationSource.schema';
 
 import { ServiceFactory } from '@/services/factories/ServiceFactory';
-import { InterpretationSourceRepository } from '@/services/repositories/InterpretationSourceRepository';
+import { InterprSourceRepository } from '@/services/repositories/InterprSourceRepository';
 import { initialSourcesSeed } from '@/services/seeders/interpretationSourceSeeder';
 
 export const useInterpretationSourceStore = defineStore('interpretationSource', () => {
@@ -23,7 +23,7 @@ export const useInterpretationSourceStore = defineStore('interpretationSource', 
     const sources = ref<InterprSource[]>([]);
     const loading = ref<boolean>(false);
     const error = ref<string | null>(null);
-    const repository = ref<InterpretationSourceRepository | null>(null);
+    const repository = ref<InterprSourceRepository | null>(null);
 
     const validationErrors = ref<Record<string, string>>({});
 
@@ -34,7 +34,7 @@ export const useInterpretationSourceStore = defineStore('interpretationSource', 
 
     const editableSources = computed(() => sources.value.filter((s) => s.isEditable));
 
-    const getSourceById = (id: number): InterprSource | undefined => {
+    const getSourceById = (id: string): InterprSource | undefined => {
         return sources.value.find((source) => source.id === id);
     };
 
@@ -81,11 +81,10 @@ export const useInterpretationSourceStore = defineStore('interpretationSource', 
         try {
             const dataService = ServiceFactory.createService('indexeddb');
             await dataService.init();
-            repository.value = new InterpretationSourceRepository(dataService);
+            repository.value = new InterprSourceRepository(dataService);
 
             let allSources = await repository.value.getAll();
 
-            // СИДЕР: Пакетная вставка при пустой БД
             if (allSources.length === 0) {
                 await Promise.all(
                     initialSourcesSeed.map((seedData) => repository.value!.create(seedData)),
@@ -139,9 +138,13 @@ export const useInterpretationSourceStore = defineStore('interpretationSource', 
         }
 
         try {
-            const savedSource = await repository.value.create(
-                validation.output as InterprSourceWrite,
-            );
+            // Добавляем id (или берем существующий из формы, если передали)
+            const payload = {
+                ...validation.output,
+                id: validation.output.id || crypto.randomUUID(),
+            };
+
+            const savedSource = await repository.value.create(payload);
 
             if (savedSource) {
                 sources.value.push(savedSource);
@@ -155,12 +158,11 @@ export const useInterpretationSourceStore = defineStore('interpretationSource', 
             loading.value = false;
         }
     };
-
     /**
      * Частичное обновление источника интерпретаций
      */
     const updateSource = async (
-        id: number,
+        id: string,
         sourceData: Partial<InterprSourceWrite>,
     ): Promise<InterprSource | null> => {
         if (!repository.value) return null;
@@ -202,7 +204,7 @@ export const useInterpretationSourceStore = defineStore('interpretationSource', 
     /**
      * Удаление источника
      */
-    const deleteSource = async (id: number): Promise<boolean> => {
+    const deleteSource = async (id: string): Promise<boolean> => {
         if (!repository.value) return false;
 
         loading.value = true;
