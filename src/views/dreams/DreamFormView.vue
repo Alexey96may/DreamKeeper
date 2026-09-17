@@ -23,6 +23,7 @@
             <DreamCategorySection
                 v-model:categories="form.categories"
                 v-model:category-details="form.categoryDetails"
+                :dreamDate="form.date"
             />
 
             <DreamEventSection

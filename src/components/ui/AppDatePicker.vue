@@ -27,6 +27,8 @@
             input?: string;
         };
         autoFocusOnError?: boolean;
+        maxDate?: null | Date;
+        minDate?: null | Date;
     }
 
     const props = withDefaults(defineProps<Props>(), {
@@ -41,6 +43,8 @@
             input: 'DD.MM.YYYY',
         }),
         autoFocusOnError: true,
+        maxDate: null,
+        minDate: null,
     });
 
     const emit = defineEmits<{
@@ -140,6 +144,8 @@
             :masks="masks"
             :popover="popoverOpts"
             timezone="UTC"
+            :max-date="maxDate"
+            :min-date="minDate"
         >
             <template #default="{ inputValue, inputEvents }">
                 <div class="group relative flex items-center">

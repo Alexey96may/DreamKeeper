@@ -202,8 +202,6 @@
     onMounted(async () => {
         if (sleepStore.sleeps.length === 0) await sleepStore.init();
         if (userStateStore.states.length === 0) await userStateStore.init();
-
-        console.log(userStateStore.states.length);
     });
 </script>
 

@@ -114,7 +114,7 @@
             :role="role"
             :aria-live="ariaLive"
             aria-atomic="true"
-            class="text-status-error mt-1 font-medium transition-all duration-150 ease-in-out"
+            class="text-danger-text mt-1 font-medium transition-all duration-150 ease-in-out"
             :class="sizeClasses"
         >
             <slot>{{ errorMessage }}</slot>

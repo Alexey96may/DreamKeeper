@@ -245,7 +245,7 @@ export const useDreamFilterStore = defineStore('dreamFilter', () => {
 
     const resetFilters = () => {
         filters.value = {
-            isActive: true,
+            isActive: false,
             searchQuery: '',
             dateFrom: undefined,
             dateTo: undefined,

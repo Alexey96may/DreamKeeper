@@ -5,6 +5,7 @@
                 :model-value="props.date"
                 @update:model-value="onDateChange"
                 label="Дата сна"
+                :max-date="thisDay"
                 hint="Укажите дату, когда вам приснился сон"
                 :error-message="sleepStore.validationErrors.date"
                 @input="sleepStore.clearError('date')"
@@ -47,6 +48,7 @@
 </template>
 
 <script setup lang="ts">
+    import { ref } from 'vue';
     import { useSleepStore } from '@/stores/modules/dream';
     import AppSelect from '@/components/ui/AppSelect.vue';
     import AppDatePicker from '@/components/ui/AppDatePicker.vue';
@@ -70,6 +72,8 @@
         description: '',
         date: '',
     });
+
+    const thisDay = ref(new Date());
 
     const emit = defineEmits<{
         'update:title': [value: Dream['title']];

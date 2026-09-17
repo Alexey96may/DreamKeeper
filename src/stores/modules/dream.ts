@@ -9,6 +9,7 @@ import type { Dream, DreamWrite } from '@/types/Dream';
 import { ServiceFactory } from '@/services/factories/ServiceFactory';
 import { DreamRepository } from '@/services/repositories/DreamRepository';
 import { generateDreamsSeed } from '@/services/seeders/dreamSeeder';
+import { sanitizeDateString } from '@/utils/date';
 
 export const useSleepStore = defineStore('sleep', () => {
     // ===== STATE =====
@@ -29,7 +30,9 @@ export const useSleepStore = defineStore('sleep', () => {
     });
 
     const getDreamsByDate = (date: string): Dream[] => {
-        return sleeps.value.filter((sleep: Dream) => sleep.date === date);
+        return sleeps.value.filter(
+            (sleep: Dream) => sanitizeDateString(sleep.date) === sanitizeDateString(date),
+        );
     };
 
     const getDreamsByMonth = (year: number, month: number): Dream[] => {
@@ -167,6 +170,11 @@ export const useSleepStore = defineStore('sleep', () => {
         error.value = null;
         validationErrors.value = {};
 
+        const prophetic = dreamData.categoryDetails?.prophetic;
+        if (prophetic && !prophetic.isFulfilled && prophetic.fulfilledDate) {
+            prophetic.fulfilledDate = '';
+        }
+
         // 1. Валидация входных данных
         const validation = v.safeParse(DreamWriteSchema, dreamData);
 
@@ -206,6 +214,11 @@ export const useSleepStore = defineStore('sleep', () => {
         loading.value = true;
         error.value = null;
         validationErrors.value = {};
+
+        const prophetic = dreamData.categoryDetails?.prophetic;
+        if (prophetic && !prophetic.isFulfilled && prophetic.fulfilledDate) {
+            prophetic.fulfilledDate = '';
+        }
 
         // 1. Валидируем только переданные частичные данные
         const validation = v.safeParse(DreamUpdateSchema, dreamData);

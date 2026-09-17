@@ -1,5 +1,6 @@
 import * as v from 'valibot';
 import type { Dream } from '@/types/Dream';
+import { isPastOrPresentDay } from '@/utils/date';
 
 // ==========================================
 // 1. Enums / Enums Enums (Литеральные типы)
@@ -112,8 +113,9 @@ export const NightmareDetailsSchema = v.object({
 
 export const PropheticDetailsSchema = v.object({
     expectedByDate: v.optional(v.string('Дата должна быть строкой')),
-    isFulfilled: v.optional(v.boolean('Должно быть булевым значением')),
     fulfilledDate: v.optional(v.string('Дата должна быть строкой')),
+
+    isFulfilled: v.optional(v.boolean('Должно быть булевым значением')),
     fulfillmentNotes: v.optional(v.pipe(v.string(), v.trim())),
 });
 
@@ -311,8 +313,77 @@ const ScoreSchema = v.optional(
     ),
 );
 
-export const DreamWriteSchema = v.object({
-    // Обязательные MVP поля
+type PathObj = {
+    type: 'object';
+    origin: 'value';
+    input: Record<string, unknown>;
+    key: string;
+    value: unknown;
+};
+
+const objPath = (input: unknown, key: string, value: unknown): PathObj => ({
+    type: 'object',
+    origin: 'value',
+    input: input as Record<string, unknown>,
+    key,
+    value,
+});
+
+const applyDateValidation = <T extends v.GenericSchema>(schema: T) =>
+    v.pipe(
+        schema,
+        v.rawCheck<v.InferOutput<T>>(({ dataset, addIssue }) => {
+            if (!dataset.typed) return;
+            const input = dataset.value as Partial<Dream>;
+            const prophetic = input.categoryDetails?.prophetic;
+            if (!prophetic) return;
+
+            const categoryDetails = input.categoryDetails!;
+
+            // 1. Проверка expectedByDate < date
+            if (input.date && prophetic.expectedByDate) {
+                if (new Date(prophetic.expectedByDate).getTime() < new Date(input.date).getTime()) {
+                    addIssue({
+                        message: 'Дата ожидания не может быть раньше даты сна',
+                        path: [
+                            objPath(input, 'categoryDetails', categoryDetails),
+                            objPath(categoryDetails, 'prophetic', prophetic),
+                            objPath(prophetic, 'expectedByDate', prophetic.expectedByDate),
+                        ],
+                    });
+                }
+            }
+
+            // 2. Проверка fulfilledDate < date
+            if (input.date && prophetic.fulfilledDate) {
+                if (new Date(prophetic.fulfilledDate).getTime() < new Date(input.date).getTime()) {
+                    addIssue({
+                        message: 'Дата исполнения не может быть раньше даты сна',
+                        path: [
+                            objPath(input, 'categoryDetails', categoryDetails),
+                            objPath(categoryDetails, 'prophetic', prophetic),
+                            objPath(prophetic, 'fulfilledDate', prophetic.fulfilledDate),
+                        ],
+                    });
+                }
+            }
+
+            // 3. Проверка: fulfilledDate требует isFulfilled: true
+            if (prophetic.fulfilledDate && prophetic.isFulfilled !== true) {
+                addIssue({
+                    message:
+                        'Нельзя указать дату исполнения, если сон не отмечен как исполнившийся',
+                    path: [
+                        objPath(input, 'categoryDetails', categoryDetails),
+                        objPath(categoryDetails, 'prophetic', prophetic),
+                        objPath(prophetic, 'fulfilledDate', prophetic.fulfilledDate),
+                    ],
+                });
+            }
+        }),
+    );
+
+const DreamBaseObject = v.object({
     title: v.pipe(
         v.string('Заголовок должен быть строкой'),
         v.trim(),
@@ -324,10 +395,7 @@ export const DreamWriteSchema = v.object({
         v.nonEmpty('Укажите дату сна'),
         v.isoDateTimeSecond('Дата должна быть в формате YYYY-MM-DDTHH:mm:ss'),
         v.check((dateStr) => {
-            const date = new Date(dateStr);
-            const todayEnd = new Date();
-            todayEnd.setHours(23, 59, 59, 999);
-            return date <= todayEnd;
+            return isPastOrPresentDay(new Date(dateStr));
         }, 'Дата не может быть в будущем'),
     ),
     description: v.pipe(
@@ -343,25 +411,21 @@ export const DreamWriteSchema = v.object({
     phenomena: v.optional(v.array(DreamPhenomenonSchema, 'Феномены должны быть массивом')),
     phenomenaDetails: v.optional(DreamPhenomenaDetailsSchema),
 
-    // Оценки
     quality: ScoreSchema,
     clarity: ScoreSchema,
     moodAfter: ScoreSchema,
 
-    // Свойства сна
     timeOfDay: v.optional(TimeOfDaySchema),
     visualStyle: v.optional(VisualStyleSchema),
     perspective: v.optional(PerspectiveSchema),
     roles: v.optional(v.array(ParticipantRoleSchema, 'Роли должны быть массивом')),
-    sensations: v.optional(v.array(SensoryAspectSchema, 'Ощущения должны быть массивом')),
+    sensory: v.optional(v.array(SensoryAspectSchema, 'Ощущения должны быть массивом')),
 
-    // Аналитика
     characters: v.optional(v.array(v.pipe(v.string('Персонаж должен быть строкой'), v.trim()))),
     locations: v.optional(v.array(v.pipe(v.string('Локация должна быть строкой'), v.trim()))),
     objects: v.optional(v.array(v.pipe(v.string('Предмет должен быть строкой'), v.trim()))),
     emotions: v.optional(v.array(v.pipe(v.string('Эмоция должна быть строкой'), v.trim()))),
 
-    // Интерпретация и связи
     interpretations: v.optional(
         v.array(DreamInterpretationRefSchema, 'Интерпретации должны быть массивом'),
     ),
@@ -369,7 +433,6 @@ export const DreamWriteSchema = v.object({
     relatedDreams: v.optional(v.array(RelatedDreamRefSchema, 'Связанные сны должны быть массивом')),
     preSleepContext: v.optional(v.pipe(v.string('Контекст должен быть строкой'), v.trim())),
 
-    // Флаги
     isFavorite: v.optional(v.boolean('Флаг должен быть булевым значением')),
     isPinned: v.optional(v.boolean('Флаг должен быть булевым значением')),
     isArchived: v.optional(v.boolean('Флаг должен быть булевым значением')),
@@ -378,12 +441,13 @@ export const DreamWriteSchema = v.object({
     isPrivate: v.optional(v.boolean('Флаг должен быть булевым значением')),
 });
 
-// Частичная схема для вызова updateDream в сторе
-export const DreamUpdateSchema = v.partial(DreamWriteSchema);
+export const DreamWriteSchema = applyDateValidation(DreamBaseObject);
+
+export const DreamUpdateSchema = applyDateValidation(v.partial(DreamBaseObject));
 
 // Полная схема сна с id, slug, createdAt, updatedAt
 export const DreamSchema: v.BaseSchema<unknown, Dream, v.BaseIssue<unknown>> = v.object({
-    ...DreamWriteSchema.entries,
+    ...DreamBaseObject.entries,
     id: v.number('ID должен быть числом'),
     slug: v.string('Слаг должен быть строкой'),
     createdAt: v.string('Дата создания должна быть строкой'),

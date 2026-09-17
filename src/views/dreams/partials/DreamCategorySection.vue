@@ -121,7 +121,10 @@
             <h4 class="text-dream-prophetic text-xs font-semibold">
                 Параметры Вещего Сна (Prophetic)
             </h4>
-            <div v-if="categoryDetails?.prophetic" class="grid grid-cols-1 gap-3 sm:grid-cols-3">
+            <div
+                v-if="categoryDetails?.prophetic && dreamDate"
+                class="flex flex-col items-end gap-3"
+            >
                 <AppDatePicker
                     :model-value="props.categoryDetails?.prophetic?.expectedByDate ?? undefined"
                     @update:model-value="
@@ -138,45 +141,51 @@
                     :error-message="
                         sleepStore.validationErrors['categoryDetails.prophetic.expectedByDate']
                     "
+                    :min-date="minDreamDate"
                     @input="sleepStore.clearError('categoryDetails.prophetic.expectedByDate')"
                 />
 
-                <AppDatePicker
-                    :value="props.categoryDetails?.prophetic?.fulfilledDate ?? ''"
-                    @update:model-value="
-                        (val) => {
-                            updateDetailField(
-                                'prophetic',
-                                'fulfilledDate',
-                                val === null ? undefined : val,
-                            );
-                        }
-                    "
-                    label="Дата исполнения"
-                    hint="Укажите дату, к которой сон реализовался"
-                    :error-message="
-                        sleepStore.validationErrors['categoryDetails.prophetic.fulfilledDate']
-                    "
-                    @input="sleepStore.clearError('categoryDetails.prophetic.fulfilledDate')"
-                />
-
-                <AppCheckbox
-                    :model-value="props.categoryDetails?.prophetic?.isFulfilled ?? false"
-                    @update:model-value="
-                        (val) => {
-                            if (typeof val === 'boolean') {
-                                updateDetailField('prophetic', 'isFulfilled', val);
+                <div class="flex w-full justify-between gap-3">
+                    <AppCheckbox
+                        :model-value="props.categoryDetails?.prophetic?.isFulfilled ?? false"
+                        @update:model-value="
+                            (val) => {
+                                if (typeof val === 'boolean') {
+                                    updateDetailField('prophetic', 'isFulfilled', val);
+                                }
                             }
-                        }
-                    "
-                    label="Уже сбылся"
-                    accent-color="bg-dream-prophetic border-dream-prophetic"
-                    hint="Отметьте, если сон уже сбылся."
-                    :error-message="
-                        sleepStore.validationErrors['categoryDetails.prophetic.isFulfilled']
-                    "
-                    @change="sleepStore.clearError('categoryDetails.prophetic.isFulfilled')"
-                />
+                        "
+                        label="Уже сбылся"
+                        accent-color="bg-dream-prophetic border-dream-prophetic"
+                        hint="Отметьте, если сон уже сбылся."
+                        :error-message="
+                            sleepStore.validationErrors['categoryDetails.prophetic.isFulfilled']
+                        "
+                        @change="sleepStore.clearError('categoryDetails.prophetic.isFulfilled')"
+                        class="shrink-0"
+                    />
+
+                    <AppDatePicker
+                        v-show="props.categoryDetails?.prophetic?.isFulfilled"
+                        :model-value="props.categoryDetails?.prophetic?.fulfilledDate ?? ''"
+                        @update:model-value="
+                            (val) => {
+                                updateDetailField(
+                                    'prophetic',
+                                    'fulfilledDate',
+                                    val === null ? undefined : val,
+                                );
+                            }
+                        "
+                        label="Дата исполнения"
+                        hint="Укажите дату, к которой сон реализовался"
+                        :min-date="minDreamDate"
+                        :error-message="
+                            sleepStore.validationErrors['categoryDetails.prophetic.fulfilledDate']
+                        "
+                        @input="sleepStore.clearError('categoryDetails.prophetic.fulfilledDate')"
+                    />
+                </div>
             </div>
 
             <AppTextInput
@@ -219,11 +228,23 @@
     interface Props {
         categories?: DreamCategory[];
         categoryDetails?: DreamCategoryDetails;
+        dreamDate?: null | Date | string;
     }
 
     const props = withDefaults(defineProps<Props>(), {
         categories: () => [],
         categoryDetails: () => ({}),
+        dreamDate: null,
+    });
+
+    const minDreamDate = computed(() => {
+        if (!props.dreamDate) return null;
+
+        const date = new Date(props.dreamDate);
+        const day = date.getDate();
+        date.setDate(day + 1);
+
+        return date;
     });
 
     const emit = defineEmits<{
