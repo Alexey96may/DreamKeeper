@@ -10,7 +10,7 @@ import type { Interpretation } from '@/types/Interpretation/Interpretation';
 import { ServiceFactory } from '@/services/factories/ServiceFactory';
 import { DreamRepository } from '@/services/repositories/DreamRepository';
 import { generateDreamsSeed } from '@/services/seeders/dreamSeeder';
-import { sanitizeDateString } from '@/utils/date';
+import { sanitizeDateString, isPastOrPresentDay } from '@/utils/date';
 
 // 1. Импортируем стор символов
 import { useSymbolStore } from '@/stores/modules/useSymbolStore';
@@ -38,6 +38,14 @@ export const useSleepStore = defineStore('sleep', () => {
         return sleeps.value.filter(
             (sleep: Dream) => sanitizeDateString(sleep.date) === sanitizeDateString(date),
         );
+    };
+
+    const getDreamsExpectedByDate = (): Dream[] => {
+        return sleeps.value.filter((sleep: Dream) => {
+            if (!sleep.categoryDetails?.prophetic?.expectedByDate) return false;
+
+            return isPastOrPresentDay(sleep.categoryDetails.prophetic.expectedByDate);
+        });
     };
 
     const getDreamsByMonth = (year: number, month: number): Dream[] => {
@@ -358,6 +366,7 @@ export const useSleepStore = defineStore('sleep', () => {
         totalDreams,
         averageQuality,
         getDreamsByDate,
+        getDreamsExpectedByDate,
         getDreamsByMonth,
         getDreamById,
         getMonthStats,

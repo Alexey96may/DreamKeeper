@@ -1,7 +1,7 @@
 <!-- src/views/HomeView.vue -->
 <template>
     <div class="bg-bg-primary text-text-primary transition-theme duration-theme min-h-screen">
-        <div class="container mx-auto px-4 py-6">
+        <div class="container mx-auto flex flex-col gap-6 px-4 py-6">
             <AppTitle @action="goToNewDream">
                 <template #title>
                     <div class="flex items-center gap-2">
@@ -51,6 +51,8 @@
             </div>
 
             <StatsGrid :items="statsData" />
+
+            <ExpectedDreamsSection />
         </div>
 
         <AppModal v-model="isModalOpen" :close-on-overlay="true" title="Параметры Календаря">
@@ -75,6 +77,7 @@
     import StatsGrid from '@/components/sections/StatsGrid.vue';
     import AppCheckbox from '@/components/ui/AppCheckbox.vue';
     import AppTitle from '@/components/sections/AppTitle.vue';
+    import ExpectedDreamsSection from '@/components/sections/ExpectedDreamsSection.vue';
     import type { Dream } from '@/types/Dream';
     import type { UserState } from '@/types/UserState';
     import type { CalendarAttribute } from '@/types/Calendar';

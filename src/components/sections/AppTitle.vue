@@ -9,7 +9,7 @@
 
 <template>
     <header
-        class="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between"
+        class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between"
         aria-labelledby="page-main-heading"
     >
         <div>

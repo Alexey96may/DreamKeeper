@@ -1,5 +1,5 @@
 <template>
-    <section class="mt-6" :aria-label="ariaLabel">
+    <section :aria-label="ariaLabel">
         <TransitionGroup
             tag="ul"
             role="list"
