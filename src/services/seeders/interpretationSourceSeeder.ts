@@ -2,6 +2,20 @@ import type { InterprSourceWrite } from '@/services/schemas/interpretationSource
 
 export const initialSourcesSeed: (InterprSourceWrite & { id: string })[] = [
     {
+        id: 'mine',
+        title: 'Мой личный сонник',
+        authorName: 'Собственные записи',
+        description:
+            'Персональный архив толкований, личных ассоциаций и дневниковых наблюдений, не привязанных к внешним источникам.',
+        rating: 5.0,
+        type: 'custom',
+        category: 'personal',
+        visibility: 'private',
+        isEditable: true,
+        usersCount: 1,
+        iconName: 'UserCheck',
+    },
+    {
         id: 'miller',
         title: 'Сонник Миллера',
         authorName: 'Густавус Хайндман Миллер',

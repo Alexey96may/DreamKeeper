@@ -35,7 +35,9 @@ export const useInterpretationSourceStore = defineStore('interpretationSource', 
     const editableSources = computed(() => sources.value.filter((s) => s.isEditable));
 
     const getSourceById = (id: string): InterprSource | undefined => {
-        return sources.value.find((source) => source.id === id);
+        return sources.value.find(
+            (source) => source.id.trim().toLowerCase() === id.trim().toLowerCase(),
+        );
     };
 
     const getSourcesByCategory = (category: SourceCategory): InterprSource[] => {

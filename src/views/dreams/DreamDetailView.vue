@@ -701,7 +701,7 @@
         return dream.value.interpretations
             .map((item) => {
                 const sourceId = item.sourceId;
-                if (!Number.isInteger(sourceId)) return null;
+                if (!sourceId) return null;
 
                 const sourceInStore = sourceStore.getSourceById(sourceId);
                 if (!sourceInStore) return null;

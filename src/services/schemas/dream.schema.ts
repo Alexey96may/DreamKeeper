@@ -270,14 +270,14 @@ export const DreamPhenomenaDetailsSchema = v.object({
 // ==========================================
 
 export const DreamInterpretationRefSchema = v.object({
-    interpretationId: v.optional(v.number('ID интерпретации должен быть числом')),
+    interpretationId: v.optional(v.string('ID интерпретации должен быть строкой')),
     tag: v.pipe(
         v.string('Тег должен быть строкой'),
         v.trim(),
         v.nonEmpty('Тег не может быть пустым'),
     ),
     meaning: v.pipe(v.string('Значение должно быть строкой'), v.trim()),
-    sourceId: v.pipe(v.number('Источник должен быть числом')),
+    sourceId: v.pipe(v.string('Источник должен быть строкой')),
     isAccurate: v.optional(v.nullable(v.boolean('Значение должно быть булевым'))),
 });
 

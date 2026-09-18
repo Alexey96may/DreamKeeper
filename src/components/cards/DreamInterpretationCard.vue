@@ -1,11 +1,22 @@
 <script setup lang="ts">
+    import { computed } from 'vue';
     import { Link, Check, X } from 'lucide-vue-next';
     import { DreamInterpretationRefWithSource } from '@/types/Dream';
     import AppTag from '@/components/ui/AppTag.vue';
+    import { useSymbolStore } from '@/stores/modules/useSymbolStore';
 
-    defineProps<{
+    const props = defineProps<{
         interpretation: DreamInterpretationRefWithSource;
     }>();
+
+    const symbolStore = useSymbolStore();
+
+    const getSymbolTitle = computed(() => {
+        if (!props.interpretation.tag) return '';
+        return (
+            symbolStore.getSymbolByTag(props.interpretation.tag)?.title || props.interpretation.tag
+        );
+    });
 </script>
 
 <template>
@@ -16,7 +27,7 @@
         <header class="flex flex-wrap items-center justify-between gap-2">
             <h3 class="text-text-primary m-0 flex items-center gap-1.5 text-sm font-bold">
                 <Link class="inline h-3.5 w-3.5 shrink-0" aria-hidden="true" />
-                <span>{{ interpretation.tag }}</span>
+                <span>{{ getSymbolTitle }}</span>
             </h3>
 
             <div class="flex items-center gap-2">

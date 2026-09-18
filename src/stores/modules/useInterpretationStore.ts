@@ -100,7 +100,17 @@ export const useInterpretationStore = defineStore('interpretation', () => {
         }
 
         try {
-            const saved = await repository.value.create(validation.output as InterpretationWrite);
+            const now = new Date().toISOString();
+
+            // Формируем полный объект для IndexedDB с новым id
+            const fullInterpretation: Interpretation = {
+                id: crypto.randomUUID(),
+                ...validation.output,
+                createdAt: now,
+                updatedAt: now,
+            } as Interpretation;
+
+            const saved = await repository.value.create(fullInterpretation);
             if (saved) interpretations.value.push(saved);
             return saved || null;
         } catch (err) {
@@ -132,7 +142,12 @@ export const useInterpretationStore = defineStore('interpretation', () => {
         }
 
         try {
-            const updated = await repository.value.update(id, validation.output);
+            const updatePayload = {
+                ...validation.output,
+                updatedAt: new Date().toISOString(),
+            };
+
+            const updated = await repository.value.update(id, updatePayload);
             if (updated) {
                 const index = interpretations.value.findIndex((i) => i.id === id);
                 if (index !== -1) interpretations.value[index] = updated;

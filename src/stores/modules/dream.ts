@@ -1,19 +1,24 @@
 import { computed, ref } from 'vue';
-
 import { defineStore } from 'pinia';
 import * as v from 'valibot';
-import { DreamWriteSchema, DreamUpdateSchema } from '@/services/schemas/dream.schema';
 
-import type { Dream, DreamWrite } from '@/types/Dream';
+import { DreamWriteSchema, DreamUpdateSchema } from '@/services/schemas/dream.schema';
+import type { Dream, DreamWrite, DreamInterpretationRef } from '@/types/Dream';
+import type { DreamSymbol } from '@/types/Interpretation/DreamSymbol';
+import type { Interpretation } from '@/types/Interpretation/Interpretation';
 
 import { ServiceFactory } from '@/services/factories/ServiceFactory';
 import { DreamRepository } from '@/services/repositories/DreamRepository';
 import { generateDreamsSeed } from '@/services/seeders/dreamSeeder';
 import { sanitizeDateString } from '@/utils/date';
 
+// 1. Импортируем стор символов
+import { useSymbolStore } from '@/stores/modules/useSymbolStore';
+import { useInterpretationStore } from '@/stores/modules/useInterpretationStore';
+
 export const useSleepStore = defineStore('sleep', () => {
     // ===== STATE =====
-    const sleeps = ref<Dream[]>([]); //todo dreams
+    const sleeps = ref<Dream[]>([]);
     const loading = ref<boolean>(false);
     const error = ref<string | null>(null);
     const repository = ref<DreamRepository | null>(null);
@@ -44,29 +49,17 @@ export const useSleepStore = defineStore('sleep', () => {
         return sleeps.value.find((sleep: Dream) => sleep.id === id);
     };
 
-    /**
-     * Получение сна по slug.
-     * Сначала ищет в локальном реактивном состоянии,
-     * а при отсутствии — запрашивает через репозиторий.
-     */
     const getDreamBySlug = async (slug: string): Promise<Dream | null> => {
-        // 1. Быстрый поиск в уже загруженном реактивном массиве
         const localDream = sleeps.value.find((s) => s.slug === slug);
-        if (localDream) {
-            return localDream;
-        }
+        if (localDream) return localDream;
 
-        // 2. Если в памяти нет, но репозиторий готов — ищем в IndexedDB
         if (repository.value) {
             loading.value = true;
             try {
                 const fetchedDream = await repository.value.getBySlug(slug);
                 if (fetchedDream) {
-                    // Синхронизируем с локальным состоянием, если его там не было
                     const exists = sleeps.value.some((s) => s.id === fetchedDream.id);
-                    if (!exists) {
-                        sleeps.value.push(fetchedDream);
-                    }
+                    if (!exists) sleeps.value.push(fetchedDream);
                     return fetchedDream;
                 }
             } catch (err) {
@@ -75,7 +68,6 @@ export const useSleepStore = defineStore('sleep', () => {
                 loading.value = false;
             }
         }
-
         return null;
     };
 
@@ -86,7 +78,6 @@ export const useSleepStore = defineStore('sleep', () => {
         const total = monthDreams.length;
         const avgQuality = monthDreams.reduce((acc, s) => acc + (s.quality || 0), 0) / total;
 
-        //TODO
         const types = monthDreams.reduce(
             (acc, s) => {
                 const type = s?.type || 'normal';
@@ -107,6 +98,64 @@ export const useSleepStore = defineStore('sleep', () => {
     const getError = (key: string) => validationErrors.value[key];
     const hasError = (key: string) => Boolean(validationErrors.value[key]);
 
+    // ===== HELPER ACTIONS =====
+
+    /**
+     * Автоматическое сохранение/обновление символа и интерпретации в symbolStore,
+     * если sourceId === 'mine'
+     */
+    const syncPersonalInterpretations = async (refs: DreamInterpretationRef[]) => {
+        if (!Array.isArray(refs) || refs.length === 0) return;
+
+        const symbolStore = useSymbolStore();
+        const interpretationStore = useInterpretationStore();
+
+        for (const ref of refs) {
+            if (ref.sourceId !== 'mine' || !ref.tag) continue;
+
+            // 1. Проверяем наличие символа в реестре
+            let symbol = symbolStore.getSymbolByTag(ref.tag);
+            if (!symbol) {
+                const newSymbol: DreamSymbol = {
+                    tag: ref.tag,
+                    title: ref.tag,
+                    category: 'abstract',
+                    createdAt: new Date().toISOString(),
+                };
+                symbol = (await symbolStore.addSymbol(newSymbol)) ?? undefined;
+            }
+
+            // 2. Ищем толкование по ID или по связке (symbolTag + sourceId)
+            const existingInterp = ref.interpretationId
+                ? interpretationStore.getInterpretationById(ref.interpretationId)
+                : interpretationStore.interpretations.find(
+                      (i: Interpretation) => i.symbolTag === ref.tag && i.sourceId === 'mine',
+                  );
+
+            if (existingInterp) {
+                // Обновляем текст толкования в общей базе
+                await interpretationStore.updateInterpretation(existingInterp.id, {
+                    meanings: [ref.meaning],
+                });
+                ref.interpretationId = existingInterp.id;
+            } else {
+                // Создаем новую запись в IndexedDB и привязываем ID обратно к ссылке сна
+                const createdInterp = await interpretationStore.addInterpretation({
+                    symbolTag: ref.tag,
+                    sourceId: 'mine',
+                    meanings: [ref.meaning],
+                    aspectId: null,
+                    isCustom: true,
+                    isVerified: false,
+                });
+
+                if (createdInterp?.id) {
+                    ref.interpretationId = createdInterp.id;
+                }
+            }
+        }
+    };
+
     // ===== ACTIONS =====
     const init = async () => {
         if (repository.value) return;
@@ -115,22 +164,16 @@ export const useSleepStore = defineStore('sleep', () => {
         error.value = null;
 
         try {
-            // 1. Инициализируем сервис и репозиторий
             const dataService = ServiceFactory.createService('indexeddb');
             await dataService.init();
             repository.value = new DreamRepository(dataService);
 
-            // 2. Достаем имеющиеся сны
             let allDreams = await repository.value.getAll();
 
-            // 3. СИДЕР: Пакетная вставка, если БД пустая
             if (allDreams.length === 0) {
-                // Запускаем все вставки параллельно (или используем bulkAdd, если поддерживается)
                 await Promise.all(
                     generateDreamsSeed(300).map((seedData) => repository.value!.create(seedData)),
                 );
-
-                // Запрашиваем итоговый массив
                 allDreams = await repository.value.getAll();
             }
 
@@ -161,7 +204,7 @@ export const useSleepStore = defineStore('sleep', () => {
     };
 
     /**
-     * Добавление сна с валидацией
+     * Добавление сна с валидацией и автосохранением 'mine' интерпретаций
      */
     const addDream = async (dreamData: DreamWrite): Promise<Dream | null> => {
         if (!repository.value) return null;
@@ -175,7 +218,6 @@ export const useSleepStore = defineStore('sleep', () => {
             prophetic.fulfilledDate = '';
         }
 
-        // 1. Валидация входных данных
         const validation = v.safeParse(DreamWriteSchema, dreamData);
 
         if (!validation.success) {
@@ -186,11 +228,12 @@ export const useSleepStore = defineStore('sleep', () => {
         }
 
         try {
-            // 2. Репозиторий создает запись и возвращает готовый Dream (с id, slug, createdAt, updatedAt)
             const savedDream = await repository.value.create(validation.output);
 
             if (savedDream) {
                 sleeps.value.push(savedDream);
+                // 2. Синхронизируем личные интерпретации
+                await syncPersonalInterpretations(validation.output.interpretations || []);
             }
             return savedDream || null;
         } catch (err) {
@@ -203,7 +246,7 @@ export const useSleepStore = defineStore('sleep', () => {
     };
 
     /**
-     * Частичное обновление сна с валидацией
+     * Частичное обновление сна с автосохранением 'mine' интерпретаций
      */
     const updateDream = async (
         id: number,
@@ -220,7 +263,6 @@ export const useSleepStore = defineStore('sleep', () => {
             prophetic.fulfilledDate = '';
         }
 
-        // 1. Валидируем только переданные частичные данные
         const validation = v.safeParse(DreamUpdateSchema, dreamData);
 
         if (!validation.success) {
@@ -231,15 +273,18 @@ export const useSleepStore = defineStore('sleep', () => {
         }
 
         try {
-            // 2. Репозиторий возвращает полностью обновленный объект Dream (с новым slug и updatedAt)
             const updatedDream = await repository.value.update(id, validation.output);
 
-            // 3. Обновляем локальное состояние стора целиком из базы
             if (updatedDream) {
                 const index = sleeps.value.findIndex((s) => s.id === id);
                 if (index !== -1) {
                     sleeps.value[index] = updatedDream;
                 }
+                // Синхронизируем личные интерпретации при обновлении
+                const res1 = await syncPersonalInterpretations(
+                    validation.output.interpretations || [],
+                );
+                console.log(res1);
                 return updatedDream;
             }
 
@@ -276,26 +321,20 @@ export const useSleepStore = defineStore('sleep', () => {
         return sleeps.value.filter((sleep: Dream) => (sleep.quality || 0) >= minQuality);
     };
 
-    /**
-     * Преобразует массив ошибок Valibot в объект формата { [path]: message }
-     */
     const extractErrors = (issues: v.GenericIssue[]): Record<string, string> => {
         const fieldErrors: Record<string, string> = {};
 
         for (const issue of issues) {
-            // 1. Собираем полный путь ключа через точку (например, "categoryDetails.lucid.controlLevel")
             if (issue.path && issue.path.length > 0) {
                 const pathKey = issue.path
                     .map((item) => item.key)
                     .filter((key) => key !== undefined && key !== null)
                     .join('.');
 
-                // Записываем только первую встреченную ошибку для конкретного поля
                 if (pathKey && !fieldErrors[pathKey]) {
                     fieldErrors[pathKey] = issue.message;
                 }
             } else {
-                // 2. Если ошибка общая (не привязана к конкретному полю объекта)
                 if (!fieldErrors['_global']) {
                     fieldErrors['_global'] = issue.message;
                 }
@@ -312,13 +351,10 @@ export const useSleepStore = defineStore('sleep', () => {
     };
 
     return {
-        // State
         sleeps,
         loading,
         error,
         validationErrors,
-
-        // Getters
         totalDreams,
         averageQuality,
         getDreamsByDate,
@@ -329,8 +365,6 @@ export const useSleepStore = defineStore('sleep', () => {
         getDreamBySlug,
         getError,
         hasError,
-
-        // Actions
         init,
         loadAll,
         addDream,
