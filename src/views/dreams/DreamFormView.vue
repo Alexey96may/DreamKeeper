@@ -13,67 +13,106 @@
         </div>
 
         <form @submit.prevent="handleSubmit" class="space-y-6">
-            <DreamMainSection
-                v-model:title="form.title"
-                v-model:description="form.description"
-                v-model:date="form.date"
-                v-model:time-of-day="form.timeOfDay"
-            />
-
-            <DreamCategorySection
-                v-model:categories="form.categories"
-                v-model:category-details="form.categoryDetails"
-                :dreamDate="form.date"
-            />
-
-            <DreamEventSection
-                v-model:phenomena="form.phenomena"
-                v-model:phenomena-details="form.phenomenaDetails"
-            />
-
-            <DreamVisualSection
-                v-model:visualStyle="form.visualStyle"
-                v-model:perspective="form.perspective"
-                v-model:roles="form.roles"
-                v-model:sensations="form.sensations"
-            />
-
-            <DreamEstimateSection
-                v-model:quality="form.quality"
-                v-model:clarity="form.clarity"
-                v-model:mood-after="form.moodAfter"
-            />
-
-            <DreamAnalyticsSection
-                v-model:characters="form.characters"
-                v-model:locations="form.locations"
-                v-model:objects="form.objects"
-                v-model:emotions="form.emotions"
-            />
-
-            <div class="border-border bg-bg-primary space-y-4 rounded-xl border p-4 sm:p-6">
-                <DreamContextSection
-                    v-model:preSleepContext="form.preSleepContext"
-                    v-model:personalNotes="form.personalNotes"
-                />
-
-                <DreamInterpretationSection v-model:interpretations="form.interpretations" />
-
-                <DreamRelatedSection v-model:related-dreams="form.relatedDreams" :slug="slug" />
+            <!-- Табы (Переключатели) -->
+            <div class="border-border flex border-b">
+                <button
+                    v-for="tab in tabs"
+                    :key="tab.id"
+                    type="button"
+                    @click="activeTab = tab.id"
+                    :class="[
+                        '-mb-px border-b-2 px-4 py-2.5 text-sm font-medium whitespace-nowrap transition-colors',
+                        activeTab === tab.id
+                            ? 'border-primary text-primary font-semibold'
+                            : 'text-text-secondary hover:text-text-primary border-transparent',
+                    ]"
+                >
+                    {{ tab.label }}
+                </button>
             </div>
 
-            <DreamFlagSection
-                v-model:is-archived="form.isArchived"
-                v-model:is-draft="form.isDraft"
-                v-model:is-favorite="form.isFavorite"
-                v-model:is-pinned="form.isPinned"
-                v-model:is-private="form.isPrivate"
-                v-model:is-deleted="form.isDeleted"
-            />
+            <!-- Контент вкладок -->
+            <div class="pt-2">
+                <!-- Вкладка 1: Основное -->
+                <div v-show="activeTab === 'main'" class="space-y-6">
+                    <DreamMainSection
+                        v-model:title="form.title"
+                        v-model:description="form.description"
+                        v-model:date="form.date"
+                        v-model:time-of-day="form.timeOfDay"
+                    />
+
+                    <DreamCategorySection
+                        v-model:categories="form.categories"
+                        v-model:category-details="form.categoryDetails"
+                        :dreamDate="form.date"
+                    />
+
+                    <DreamFlagSection
+                        v-model:is-archived="form.isArchived"
+                        v-model:is-draft="form.isDraft"
+                        v-model:is-favorite="form.isFavorite"
+                        v-model:is-pinned="form.isPinned"
+                        v-model:is-private="form.isPrivate"
+                        v-model:is-deleted="form.isDeleted"
+                    />
+                </div>
+
+                <!-- Вкладка 2: Детали -->
+                <div v-show="activeTab === 'details'" class="space-y-6">
+                    <DreamVisualSection
+                        v-model:visualStyle="form.visualStyle"
+                        v-model:perspective="form.perspective"
+                        v-model:roles="form.roles"
+                        v-model:sensations="form.sensations"
+                    />
+
+                    <DreamEventSection
+                        v-model:phenomena="form.phenomena"
+                        v-model:phenomena-details="form.phenomenaDetails"
+                    />
+
+                    <DreamEstimateSection
+                        v-model:quality="form.quality"
+                        v-model:clarity="form.clarity"
+                        v-model:mood-after="form.moodAfter"
+                    />
+                </div>
+
+                <!-- Вкладка 3: Аналитика -->
+                <div v-show="activeTab === 'analytics'" class="space-y-6">
+                    <DreamAnalyticsSection
+                        v-model:characters="form.characters"
+                        v-model:locations="form.locations"
+                        v-model:objects="form.objects"
+                        v-model:emotions="form.emotions"
+                    />
+                </div>
+
+                <!-- Вкладка 4: Контекст и толкования -->
+                <div v-show="activeTab === 'context'" class="space-y-6">
+                    <div class="border-border bg-bg-primary space-y-6 rounded-xl border p-4 sm:p-6">
+                        <DreamContextSection
+                            v-model:preSleepContext="form.preSleepContext"
+                            v-model:personalNotes="form.personalNotes"
+                        />
+
+                        <DreamInterpretationSection
+                            v-model:interpretations="form.interpretations"
+                        />
+
+                        <DreamRelatedSection
+                            v-model:related-dreams="form.relatedDreams"
+                            :slug="slug"
+                        />
+                    </div>
+                </div>
+            </div>
 
             <AppErrorMessage :error-message="sleepStore.error" />
 
-            <div class="flex items-center justify-end gap-3 pt-4">
+            <!-- Кнопки управления (доступны из любой вкладки) -->
+            <div class="border-border flex items-center justify-end gap-3 border-t pt-4">
                 <AppButton @click="goBack" variant="ghost">Отмена</AppButton>
 
                 <AppButton size="xs" type="submit" variant="primary" :disabled="sleepStore.loading">
@@ -117,6 +156,19 @@
 
     const { goBack } = useNavigation();
 
+    // ===== TABS SYSTEM =====
+    type TabType = 'main' | 'details' | 'analytics' | 'context';
+
+    const activeTab = ref<TabType>('main');
+
+    const tabs: { id: TabType; label: string }[] = [
+        { id: 'main', label: 'Основное' },
+        { id: 'details', label: 'Визуал и детали' },
+        { id: 'analytics', label: 'Аналитика' },
+        { id: 'context', label: 'Толкование и контекст' },
+    ];
+    // =======================
+
     const isEditMode = computed(() => Boolean(props.slug));
 
     const createInitialForm = (): DreamWrite => ({
@@ -159,20 +211,15 @@
     const dreamId = ref<number | null>(null);
 
     onMounted(async () => {
-        //  подгружаем источники интерпретаций
         if (sourceStore.sources.length === 0) {
             sourceStore.init();
         }
 
         if (!isEditMode.value || !props.slug) return;
 
-        // 1. Ждем инициализации стора, если репозиторий еще не подгружен
         if (sleepStore.loading) {
-            // Если инициализация еще идет в App.vue или во внешнем триггере,
-            // даем стору заполниться. Либо вызываем init() напрямую:
             await sleepStore.init();
         } else if (sleepStore.sleeps.length === 0) {
-            // Если стор не загружался совсем
             await sleepStore.init();
         }
 
@@ -218,7 +265,6 @@
                 isPrivate: existingDream.isPrivate ?? true,
             };
         } else {
-            // Только если стор точно инициализирован и запись не найдена
             router.replace('/');
         }
     });
@@ -235,8 +281,6 @@
         };
 
         if (isEditMode.value && props.slug && dreamId.value) {
-            // --- РЕДАКТИРОВАНИЕ ---
-
             const targetId = Number(dreamId.value);
             const updatedDream = await sleepStore.updateDream(targetId, payload);
 
@@ -247,7 +291,6 @@
                 });
             }
         } else {
-            // --- СОЗДАНИЕ ---
             const createdDream = await sleepStore.addDream(payload);
 
             if (createdDream && createdDream.slug) {

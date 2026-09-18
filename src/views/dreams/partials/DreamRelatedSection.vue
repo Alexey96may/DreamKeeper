@@ -1,7 +1,9 @@
 <template>
     <div class="border-border border-t pt-2">
         <div class="mb-3 flex items-center justify-between">
-            <span class="text-text-soft text-xs font-medium">Связанные сны</span>
+            <span class="text-text-muted text-xs font-semibold tracking-wider uppercase">
+                Связанные сны
+            </span>
 
             <AppButton @click="addRelatedDream" variant="add" :icon-left="PlusIcon">
                 Добавить связь
