@@ -393,7 +393,7 @@ const DreamBaseObject = v.object({
     date: v.pipe(
         v.string('Дата должна быть строкой'),
         v.nonEmpty('Укажите дату сна'),
-        v.isoDateTimeSecond('Дата должна быть в формате YYYY-MM-DDTHH:mm:ss'),
+        v.isoDate('Дата должна быть в формате YYYY-MM-DD'),
         v.check((dateStr) => {
             return isPastOrPresentDay(new Date(dateStr));
         }, 'Дата не может быть в будущем'),

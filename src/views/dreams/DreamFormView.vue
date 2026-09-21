@@ -287,11 +287,13 @@
             if (updatedDream) {
                 router.push({
                     name: 'dream-details',
-                    params: { slug: props.slug },
+                    params: { slug: updatedDream.slug },
                 });
             }
         } else {
             const createdDream = await sleepStore.addDream(payload);
+
+            if (sleepStore.error) return;
 
             if (createdDream && createdDream.slug) {
                 router.push({

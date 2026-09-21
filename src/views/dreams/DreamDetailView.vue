@@ -760,5 +760,7 @@
         if (sourceStore.sources.length === 0) {
             sourceStore.init();
         }
+
+        filterStore.resetFilters();
     });
 </script>

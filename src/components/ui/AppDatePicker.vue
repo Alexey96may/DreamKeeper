@@ -18,6 +18,7 @@
         modelValue?: string | null;
         label?: string;
         hint?: string;
+        isTimeDate?: boolean;
         errorMessage?: string;
         isDisabled?: boolean;
         required?: boolean;
@@ -35,6 +36,7 @@
         modelValue: null,
         label: '',
         hint: '',
+        isTimeDate: false,
         errorMessage: '',
         isDisabled: false,
         required: false,
@@ -77,7 +79,8 @@
             const day = String(val.getUTCDate()).padStart(2, '0');
 
             // Результат: "YYYY-MM-DDTHH:mm:ssZ" (например: "2026-08-13T00:00:00Z")
-            const isoLocal = `${year}-${month}-${day}T00:00:00`;
+            const timeString = props.isTimeDate ? 'T00:00:00' : '';
+            const isoLocal = `${year}-${month}-${day}${timeString}`;
 
             emit('update:modelValue', isoLocal);
         },

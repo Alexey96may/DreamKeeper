@@ -1,4 +1,4 @@
-import { ref, computed } from 'vue';
+import { ref, computed, watch } from 'vue';
 import { defineStore } from 'pinia';
 import { useSleepStore } from '@/stores/modules/dream';
 import { sanitizeDateString } from '@/utils/date';
@@ -64,46 +64,66 @@ type NumberFilterKeys = {
     [K in keyof DreamFilterState]-?: NonNullable<DreamFilterState[K]> extends number ? K : never;
 }[keyof DreamFilterState];
 
+const STORAGE_KEY = 'dreamkeeper_filters';
+
+const getDefaultFilters = (): DreamFilterState => ({
+    isActive: false,
+    searchQuery: '',
+    dateFrom: undefined,
+    dateTo: undefined,
+    propheticFulfilled: undefined,
+    minLucidControl: undefined,
+    maxNightmareFear: undefined,
+    minQuality: undefined,
+    minClarity: undefined,
+    minMoodAfter: undefined,
+    categories: [],
+    events: [],
+    timeOfDay: [],
+    visualStyle: [],
+    perspective: [],
+    roles: [],
+    sensations: [],
+    characters: [],
+    locations: [],
+    objects: [],
+    emotions: [],
+    isFavorite: false,
+    isPinned: false,
+    isArchived: false,
+    isDeleted: false,
+    isDraft: false,
+    isPrivate: false,
+});
+
+const loadFiltersFromStorage = (): DreamFilterState => {
+    try {
+        const saved = localStorage.getItem(STORAGE_KEY);
+        if (saved) {
+            return { ...getDefaultFilters(), ...JSON.parse(saved) };
+        }
+    } catch (e) {
+        console.error('Ошибка чтения фильтров из localStorage:', e);
+    }
+    return getDefaultFilters();
+};
+
 export const useDreamFilterStore = defineStore('dreamFilter', () => {
     const sleepStore = useSleepStore();
 
-    const filters = ref<DreamFilterState>({
-        isActive: false,
-        searchQuery: '',
+    const filters = ref<DreamFilterState>(loadFiltersFromStorage());
 
-        dateFrom: undefined,
-        dateTo: undefined,
-
-        propheticFulfilled: undefined,
-
-        minLucidControl: undefined,
-        maxNightmareFear: undefined,
-        minQuality: undefined,
-        minClarity: undefined,
-        minMoodAfter: undefined,
-
-        categories: [],
-        events: [],
-
-        timeOfDay: [],
-
-        visualStyle: [],
-        perspective: [],
-        roles: [],
-        sensations: [],
-
-        characters: [],
-        locations: [],
-        objects: [],
-        emotions: [],
-
-        isFavorite: false,
-        isPinned: false,
-        isArchived: false,
-        isDeleted: false,
-        isDraft: false,
-        isPrivate: false,
-    });
+    watch(
+        filters,
+        (newFilters) => {
+            try {
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(newFilters));
+            } catch (e) {
+                console.error('Ошибка сохранения фильтров в localStorage:', e);
+            }
+        },
+        { deep: true },
+    );
 
     const filteredDreams = computed(() => {
         if (!filters.value.isActive) {
@@ -244,35 +264,8 @@ export const useDreamFilterStore = defineStore('dreamFilter', () => {
     };
 
     const resetFilters = () => {
-        filters.value = {
-            isActive: false,
-            searchQuery: '',
-            dateFrom: undefined,
-            dateTo: undefined,
-            categories: [],
-            events: [],
-            minLucidControl: undefined,
-            maxNightmareFear: undefined,
-            propheticFulfilled: undefined,
-            minQuality: undefined,
-            minClarity: undefined,
-            minMoodAfter: undefined,
-            timeOfDay: [],
-            visualStyle: [],
-            perspective: [],
-            roles: [],
-            sensations: [],
-            characters: [],
-            locations: [],
-            objects: [],
-            emotions: [],
-            isFavorite: false,
-            isPinned: false,
-            isArchived: false,
-            isDeleted: false,
-            isDraft: false,
-            isPrivate: false,
-        };
+        filters.value = getDefaultFilters();
+        localStorage.removeItem(STORAGE_KEY);
     };
 
     // Автоматически включаем фильтр при любом изменении параметров
