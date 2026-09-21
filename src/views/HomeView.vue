@@ -438,7 +438,7 @@
     }
 
     :deep(.vc-highlight.vc-yellow) {
-        background-color: var(--warning-bg) !important.;
+        background-color: var(--warning-bg) !important;
     }
 
     @keyframes pulse-today {
