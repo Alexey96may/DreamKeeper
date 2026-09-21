@@ -4,66 +4,8 @@
         aria-label="Детальный просмотр сна"
     >
         <div class="container mx-auto max-w-3xl px-4 py-6">
-            <!-- Верхняя навигация -->
-            <div class="mb-4 flex items-center justify-between">
-                <AppButton @click="goBack" size="xs" variant="back" :icon-left="MoveLeft">
-                    Назад
-                </AppButton>
-
-                <!-- Статусные бейджи сна -->
-                <div v-if="dream" class="flex items-center gap-2">
-                    <AppTag
-                        @click="filterStore.toggleBooleanFilter('isFavorite')"
-                        :is-pressed="filterStore.filters.isFavorite"
-                        :is-in-filter="filterStore.filters.isActive"
-                        v-if="dream.isFavorite"
-                    >
-                        Любимый сон
-                    </AppTag>
-                    <AppTag
-                        @click="filterStore.toggleBooleanFilter('isPinned')"
-                        :is-pressed="filterStore.filters.isPinned"
-                        :is-in-filter="filterStore.filters.isActive"
-                        v-if="dream.isPinned"
-                    >
-                        Закрепленный сон
-                    </AppTag>
-                    <AppTag
-                        @click="filterStore.toggleBooleanFilter('isDeleted')"
-                        :is-pressed="filterStore.filters.isDeleted"
-                        :is-in-filter="filterStore.filters.isActive"
-                        v-if="dream.isDeleted"
-                    >
-                        Удаленный сон
-                    </AppTag>
-                    <AppTag
-                        @click="filterStore.toggleBooleanFilter('isDraft')"
-                        :is-pressed="filterStore.filters.isDraft"
-                        :is-in-filter="filterStore.filters.isActive"
-                        v-if="dream.isDraft"
-                    >
-                        Черновик
-                    </AppTag>
-                    <AppTag
-                        @click="filterStore.toggleBooleanFilter('isArchived')"
-                        :is-pressed="filterStore.filters.isArchived"
-                        :is-in-filter="filterStore.filters.isActive"
-                        v-if="dream.isArchived"
-                    >
-                        В архиве
-                    </AppTag>
-                    <AppTag
-                        @click="filterStore.toggleBooleanFilter('isPrivate')"
-                        :is-pressed="filterStore.filters.isPrivate"
-                        :is-in-filter="filterStore.filters.isActive"
-                        v-if="dream.isPrivate"
-                    >
-                        <Lock class="inline" /> Приватный
-                    </AppTag>
-                </div>
-            </div>
-
             <!-- Индикатор загрузки -->
+
             <div
                 v-if="sleepStore.loading && !dream"
                 role="status"
@@ -76,11 +18,59 @@
             <!-- Карточка сна -->
             <article
                 v-else-if="dream"
-                class="dream-card space-y-6 p-6 sm:p-8"
+                class="dream-card relative space-y-6 p-6 pt-8 sm:p-8 sm:pt-10"
                 aria-labelledby="dream-title"
             >
                 <!-- 1. Шапка: Заголовок, дата, время суток и флаги (избранное/закреплено) -->
-                <header class="border-border/50 border-b pb-5">
+                <header class="border-border/50 flex flex-col gap-2 border-b pb-5">
+                    <div
+                        v-if="dream"
+                        class="flex w-full translate-y-[-50%] items-center justify-center gap-2 overflow-auto py-2"
+                    >
+                        <AppTag
+                            @click="filterStore.toggleBooleanFilter('isFavorite')"
+                            :is-pressed="filterStore.filters.isFavorite"
+                            :is-in-filter="filterStore.filters.isActive"
+                            :icon="Star"
+                            v-if="dream.isFavorite"
+                        />
+                        <AppTag
+                            @click="filterStore.toggleBooleanFilter('isPinned')"
+                            :is-pressed="filterStore.filters.isPinned"
+                            :is-in-filter="filterStore.filters.isActive"
+                            :icon="Pin"
+                            v-if="dream.isPinned"
+                        />
+                        <AppTag
+                            @click="filterStore.toggleBooleanFilter('isDeleted')"
+                            :is-pressed="filterStore.filters.isDeleted"
+                            :is-in-filter="filterStore.filters.isActive"
+                            :icon="Trash2"
+                            v-if="dream.isDeleted"
+                        />
+                        <AppTag
+                            @click="filterStore.toggleBooleanFilter('isDraft')"
+                            :is-pressed="filterStore.filters.isDraft"
+                            :is-in-filter="filterStore.filters.isActive"
+                            :icon="FileEdit"
+                            v-if="dream.isDraft"
+                        />
+                        <AppTag
+                            @click="filterStore.toggleBooleanFilter('isArchived')"
+                            :is-pressed="filterStore.filters.isArchived"
+                            :is-in-filter="filterStore.filters.isActive"
+                            :icon="Archive"
+                            v-if="dream.isArchived"
+                        />
+                        <AppTag
+                            @click="filterStore.toggleBooleanFilter('isPrivate')"
+                            :is-pressed="filterStore.filters.isPrivate"
+                            :is-in-filter="filterStore.filters.isActive"
+                            :icon="Lock"
+                            v-if="dream.isPrivate"
+                        />
+                    </div>
+
                     <div class="flex items-center justify-between gap-2">
                         <div class="flex items-center justify-between gap-2">
                             <CalendarDays />
@@ -88,9 +78,6 @@
                         </div>
 
                         <div class="flex items-center gap-2 text-lg">
-                            <span v-if="dream.isFavorite" title="В избранном"><Star /></span>
-                            <span v-if="dream.isPinned" title="Закреплено"><Pin /></span>
-
                             <AppTag
                                 v-if="dream.timeOfDay"
                                 @click="filterStore.toggleArrayFilter('timeOfDay', dream.timeOfDay)"
@@ -98,16 +85,13 @@
                                 :is-pressed="
                                     filterStore.filters.timeOfDay.includes(dream.timeOfDay)
                                 "
-                            >
-                                {{ TIME_OF_DAY_MAP[dream.timeOfDay].label }}
-                            </AppTag>
+                                :icon="TIME_OF_DAY_MAP[dream.timeOfDay].icon"
+                                :hint="TIME_OF_DAY_MAP[dream.timeOfDay].label"
+                            />
                         </div>
                     </div>
 
-                    <h1
-                        id="dream-title"
-                        class="text-text-primary mt-3 text-2xl font-bold sm:text-3xl"
-                    >
+                    <h1 id="dream-title" class="text-text-primary mt-3 font-bold">
                         {{ dream.title }}
                     </h1>
 
@@ -122,9 +106,9 @@
                                 @click="filterStore.toggleArrayFilter('categories', cat)"
                                 :is-in-filter="filterStore.filters.isActive"
                                 :is-pressed="filterStore.filters.categories.includes(cat)"
-                            >
-                                {{ DREAM_CATEGORY_MAP[cat || ''].label }}
-                            </AppTag>
+                                :icon="DREAM_CATEGORY_MAP[cat].icon"
+                                :hint="DREAM_CATEGORY_MAP[cat].label"
+                            />
                         </div>
                     </div>
                 </header>
@@ -172,11 +156,11 @@
                     v-if="preSleepContextText"
                     class="border-accent bg-accent/5 flex flex-col gap-1.5 rounded-r-lg border-l-4 p-3.5"
                 >
-                    <h2
-                        class="text-accent flex items-center gap-1.5 text-xs font-bold tracking-wider uppercase"
+                    <span
+                        class="text-accent flex items-center gap-1.5 text-xs font-bold tracking-wider"
                     >
                         <ArrowBigLeftDash /><span>Перед сном</span>
-                    </h2>
+                    </span>
                     <p class="text-text-primary text-sm leading-relaxed italic">
                         {{ preSleepContextText }}
                     </p>
@@ -184,19 +168,15 @@
 
                 <!-- 4. Основное описание сна -->
                 <section v-if="dream.description" class="flex flex-col gap-1.5">
-                    <h2 class="text-text-soft text-xs font-semibold tracking-wider uppercase">
-                        Описание
-                    </h2>
+                    <h2 class="text-text-soft text-xs font-semibold tracking-wider">Описание</h2>
                     <p class="text-text-primary text-base leading-relaxed whitespace-pre-line">
                         {{ dream.description }}
                     </p>
                 </section>
 
-                <!-- 5. Детали категорий (Lucid, Nightmare, Prophetic) -->
+                <!-- 5.(Lucid, Nightmare, Prophetic) -->
                 <section v-if="hasCategoryDetails" class="flex flex-col gap-3">
-                    <h2 class="text-text-soft text-xs font-semibold tracking-wider uppercase">
-                        Детали категорий
-                    </h2>
+                    <h2 class="text-text-soft font-semibold tracking-wider">Детали категорий</h2>
 
                     <DreamCategoryDetailsCard
                         v-if="dream.categoryDetails?.lucid"
@@ -222,7 +202,7 @@
 
                 <!-- 6. Особые явления (Phenomena) и их детали -->
                 <section v-if="dream.phenomena?.length" class="flex flex-col gap-3">
-                    <h2 class="text-text-soft text-xs font-semibold tracking-wider uppercase">
+                    <h2 class="text-text-soft text-xs font-semibold tracking-wider">
                         Феномены и особые события
                     </h2>
 
@@ -233,9 +213,9 @@
                             @click="filterStore.toggleArrayFilter('events', item)"
                             :is-in-filter="filterStore.filters.isActive"
                             :is-pressed="filterStore.filters.events.includes(item)"
-                        >
-                            {{ DREAM_PHENOMENON_MAP[item || ''].label }}
-                        </AppTag>
+                            :icon="DREAM_PHENOMENON_MAP[item].icon"
+                            :hint="DREAM_PHENOMENON_MAP[item || ''].label"
+                        />
                     </div>
 
                     <!-- Детали феноменов -->
@@ -244,15 +224,7 @@
                         class="grid grid-cols-1 gap-3 text-xs sm:grid-cols-2"
                     >
                         <!-- Смерть -->
-                        <div
-                            v-if="dream.phenomenaDetails.death"
-                            class="rounded-lg p-3"
-                            :class="
-                                filterStore.filters.events.includes('death')
-                                    ? 'bg-accent-active/50'
-                                    : 'bg-bg-secondary'
-                            "
-                        >
+                        <div v-if="dream.phenomenaDetails.death" class="dream-card rounded-lg p-3">
                             <span
                                 class="text-text-primary mb-1.5 flex items-center gap-1.5 font-bold"
                                 ><component :is="DREAM_PHENOMENON_MAP['death'].icon" />
@@ -275,15 +247,7 @@
                         </div>
 
                         <!-- Полёт -->
-                        <div
-                            v-if="dream.phenomenaDetails.flying"
-                            class="rounded-lg p-3"
-                            :class="
-                                filterStore.filters.events.includes('flying')
-                                    ? 'bg-accent-active/50'
-                                    : 'bg-bg-secondary'
-                            "
-                        >
+                        <div v-if="dream.phenomenaDetails.flying" class="dream-card rounded-lg p-3">
                             <span
                                 class="text-text-primary mb-1.5 flex items-center gap-1.5 font-bold"
                                 ><component :is="DREAM_PHENOMENON_MAP['flying'].icon" />
@@ -308,12 +272,7 @@
                         <!-- Падение -->
                         <div
                             v-if="dream.phenomenaDetails.falling"
-                            class="rounded-lg p-3"
-                            :class="
-                                filterStore.filters.events.includes('falling')
-                                    ? 'bg-accent-active/50'
-                                    : 'bg-bg-secondary'
-                            "
+                            class="dream-card rounded-lg p-3"
                         >
                             <span
                                 class="text-text-primary mb-1.5 flex items-center gap-1.5 font-bold"
@@ -341,12 +300,7 @@
                         <!-- Сонный паралич -->
                         <div
                             v-if="dream.phenomenaDetails.paralysis"
-                            class="rounded-lg p-3 transition-colors"
-                            :class="
-                                filterStore.filters.events.includes('paralysis')
-                                    ? 'bg-accent-active/50'
-                                    : 'bg-bg-secondary'
-                            "
+                            class="dream-card rounded-lg p-3 transition-colors"
                         >
                             <span
                                 class="text-text-primary mb-1.5 flex items-center gap-1.5 font-bold"
@@ -379,12 +333,7 @@
                         <!-- Ложное пробуждение -->
                         <div
                             v-if="dream.phenomenaDetails.nestedDream"
-                            class="rounded-lg p-3"
-                            :class="
-                                filterStore.filters.events.includes('nested_dream')
-                                    ? 'bg-accent-active/50'
-                                    : 'bg-bg-secondary'
-                            "
+                            class="dream-card rounded-lg p-3"
                         >
                             <span
                                 class="text-text-primary mb-1.5 flex items-center gap-1.5 font-bold"
@@ -402,12 +351,10 @@
 
                 <!-- 7. Восприятие и Стиль (Визуал, Перспектива, Роли, Ощущения) -->
                 <section v-if="hasPerceptionDetails" class="flex flex-col gap-6">
-                    <h2 class="text-text-soft font-semibold tracking-wider uppercase">
-                        Восприятие
-                    </h2>
+                    <h2 class="text-text-soft font-semibold tracking-wider">Восприятие</h2>
 
                     <div class="flex flex-col gap-3">
-                        <div class="flex items-center gap-3" v-if="dream.visualStyle">
+                        <div class="flex flex-wrap items-center gap-2" v-if="dream.visualStyle">
                             <h3>Визуальный стиль:</h3>
 
                             <AppTag
@@ -418,12 +365,12 @@
                                 :is-pressed="
                                     filterStore.filters.visualStyle.includes(dream.visualStyle)
                                 "
-                            >
-                                {{ VISUAL_STYLE_MAP[dream.visualStyle].label }}
+                                :icon="VISUAL_STYLE_MAP[dream.visualStyle].icon"
+                                >{{ VISUAL_STYLE_MAP[dream.visualStyle].label }}
                             </AppTag>
                         </div>
 
-                        <div class="flex items-center gap-3" v-if="dream.perspective">
+                        <div class="flex flex-wrap items-center gap-2" v-if="dream.perspective">
                             <h3>Лицо:</h3>
 
                             <AppTag
@@ -434,8 +381,8 @@
                                 :is-pressed="
                                     filterStore.filters.perspective.includes(dream.perspective)
                                 "
-                            >
-                                {{ PERSPECTIVE_MAP[dream.perspective].label }}
+                                :icon="PERSPECTIVE_MAP[dream.perspective].icon"
+                                >{{ PERSPECTIVE_MAP[dream.perspective].label }}
                             </AppTag>
                         </div>
                     </div>
@@ -443,7 +390,7 @@
                     <!-- Роли -->
                     <div v-if="dream.roles?.length" class="flex flex-col gap-1.5">
                         <span class="text-text-mute text-xs">Роль в сюжетe:</span>
-                        <div class="flex flex-wrap gap-1.5">
+                        <div class="flex w-full gap-1.5 overflow-x-auto py-2">
                             <AppTag
                                 v-for="role in dream.roles"
                                 :key="role"
@@ -474,14 +421,14 @@
                 </section>
 
                 <!-- 8. Аналитика (Персонажи, Локации, Предметы, Эмоции) -->
-                <section v-if="hasAnalytics" class="space-y-3">
-                    <h2 class="text-text-soft text-xs font-semibold tracking-wider uppercase">
+                <section v-if="hasAnalytics" class="flex flex-col gap-3">
+                    <h2 class="text-text-soft text-xs font-semibold tracking-wider">
                         Аналитические элементы
                     </h2>
 
                     <div
                         v-if="analiticElements.length"
-                        class="grid grid-cols-1 gap-3 sm:grid-cols-2"
+                        class="grid grid-cols-1 gap-3 lg:grid-cols-2"
                     >
                         <div v-for="element in analiticElements" :key="element.id">
                             <DreamElementsCard
@@ -495,7 +442,7 @@
 
                 <!-- 9. Интерпретация / Сонник -->
                 <section v-if="interpretationsWithSource.length" class="flex flex-col gap-3">
-                    <h2 class="text-text-soft text-xs font-semibold tracking-wider uppercase">
+                    <h2 class="text-text-soft text-xs font-semibold tracking-wider">
                         Интерпретации
                     </h2>
 
@@ -508,7 +455,7 @@
 
                 <!-- 10. Личные заметки -->
                 <section v-if="dream.personalNotes" class="flex flex-col gap-3">
-                    <h2 class="text-text-soft text-xs font-semibold tracking-wider uppercase">
+                    <h2 class="text-text-soft text-xs font-semibold tracking-wider">
                         Личные заметки
                     </h2>
                     <p
@@ -520,7 +467,7 @@
 
                 <!-- 11. Связанные сны -->
                 <section v-if="dream.relatedDreams?.length" class="flex flex-col gap-3">
-                    <h2 class="text-text-soft text-xs font-semibold tracking-wider uppercase">
+                    <h2 class="text-text-soft text-xs font-semibold tracking-wider">
                         Связанные сны
                     </h2>
 
@@ -532,11 +479,11 @@
                     class="border-border/30 text-text-mute flex flex-col gap-1.5 border-t pt-4 text-[11px]"
                 >
                     <p v-if="dream.createdAt">
-                        <span class="font-medium">Создано: </span>
+                        <span class="text-xs font-medium">Создано: </span>
                         <AppSmartTime :date="dream.createdAt" />
                     </p>
                     <p v-if="dream.updatedAt">
-                        <span class="font-medium">Изменено: </span>
+                        <span class="text-xs font-medium">Изменено: </span>
                         <AppSmartTime :date="dream.updatedAt" />
                     </p>
                 </footer>
@@ -577,7 +524,16 @@
     import { computed, onMounted } from 'vue';
     import { useSleepStore } from '@/stores/modules/dream';
     import { useDreamFilterStore } from '@/stores/modules/dreamFilter';
-    import { CalendarDays, Star, Pin, Lock, MoveLeft, ArrowBigLeftDash } from 'lucide-vue-next';
+    import {
+        CalendarDays,
+        Star,
+        Pin,
+        Lock,
+        ArrowBigLeftDash,
+        Trash2,
+        FileEdit,
+        Archive,
+    } from 'lucide-vue-next';
     import AppButton from '@/components/ui/AppButton.vue';
     import AppTag from '@/components/ui/AppTag.vue';
     import DreamInterpretationCard from '@/components/cards/DreamInterpretationCard.vue';
@@ -625,7 +581,7 @@
 
     const { handleDelete, isDeleting } = useCrud();
 
-    const { goToEdit, goBack } = useNavigation();
+    const { goToEdit } = useNavigation();
 
     // Преобразуем строковый route param в number согласно интерфейсу Dream
     const dream = computed(() => {

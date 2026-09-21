@@ -13,8 +13,7 @@
         </div>
 
         <form @submit.prevent="handleSubmit" class="space-y-6">
-            <!-- Табы (Переключатели) -->
-            <div class="border-border flex border-b">
+            <div class="border-border flex w-full overflow-x-auto overflow-y-hidden">
                 <button
                     v-for="tab in tabs"
                     :key="tab.id"

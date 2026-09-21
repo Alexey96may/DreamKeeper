@@ -8,12 +8,9 @@
 /> -->
 
 <template>
-    <header
-        class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between"
-        aria-labelledby="page-main-heading"
-    >
+    <header class="flex items-center justify-between gap-2" aria-labelledby="page-main-heading">
         <div>
-            <h1 id="page-main-heading" class="text-accent text-3xl font-bold">
+            <h1 id="page-main-heading" class="text-accent text-2xl font-bold">
                 <slot name="title">{{ title }}</slot>
             </h1>
 
@@ -32,7 +29,7 @@
                 @click="$emit('action', $event)"
             >
                 <slot name="button-content">
-                    {{ buttonText }}
+                    <span>{{ buttonText }}</span>
                 </slot>
             </BaseButton>
         </div>
@@ -54,7 +51,7 @@
 
     withDefaults(defineProps<Props>(), {
         title: 'DreamKeeper',
-        subtitle: 'Хранитель твоих снов и состояния',
+        subtitle: 'Хранитель твоих снов',
         showButton: true,
         buttonText: 'Новый сон',
         buttonVariant: 'primary',

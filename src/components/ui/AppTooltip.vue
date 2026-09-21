@@ -126,7 +126,7 @@
                 aria-live="polite"
             >
                 <div class="app-tooltip-arrow" aria-hidden="true"></div>
-                <p class="app-tooltip-content line-clamp-3">{{ content }}</p>
+                <p class="app-tooltip-content line-clamp-3 text-sm">{{ content }}</p>
             </div>
         </Transition>
     </span>

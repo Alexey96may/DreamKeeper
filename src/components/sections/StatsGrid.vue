@@ -4,7 +4,7 @@
             tag="ul"
             role="list"
             name="stat-fade"
-            class="grid grid-cols-2 gap-4 md:grid-cols-4"
+            class="grid grid-cols-1 gap-2 sm:grid-cols-2 md:grid-cols-4 md:gap-4"
         >
             <template v-if="items.length > 0">
                 <li

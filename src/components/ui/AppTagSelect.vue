@@ -147,7 +147,7 @@
             :role="multiple ? 'group' : 'radiogroup'"
             :aria-labelledby="label ? `${groupId}-label` : undefined"
             :aria-describedby="ariaDescribedBy"
-            class="flex flex-wrap gap-2"
+            class="flex gap-2 overflow-x-auto pb-2"
         >
             <AppChip
                 v-for="cat in options"

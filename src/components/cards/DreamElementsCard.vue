@@ -17,14 +17,14 @@
 
 <template>
     <section
-        class="bg-bg-secondary/30 flex flex-col gap-1.5 rounded-lg p-3 text-xs"
+        class="dream-card flex flex-col gap-1.5 rounded-lg p-3 text-xs"
         :aria-labelledby="`analytic-title-${element.id}`"
     >
         <h3 :id="`analytic-title-${element.id}`" class="text-text-mute mb-1.5 block font-medium">
             {{ element.title }}
         </h3>
 
-        <ul class="m-0 flex list-none flex-wrap gap-1.5 p-0" role="list">
+        <ul class="m-0 flex w-full list-none gap-1.5 overflow-x-auto p-0 py-2" role="list">
             <li v-for="(tag, idx) in element.tags" :key="idx">
                 <AppTag
                     :is-pressed="tagsArr?.includes(tag) || element.id === tag"

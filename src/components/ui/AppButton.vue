@@ -1,60 +1,6 @@
 <!--
 ===============================================================================
-  AppButton.vue — Universal Accessible Button UI Component
-===============================================================================
-
-  Features:
-  - Smart Tag Rendering: Renders as <button>, <a> (external link), or <RouterLink>
-    (internal router navigation) based on 'href' / 'to' props.
-  - Accessibility (A11y): Full keyboard navigation, auto aria-disabled, aria-busy
-    during loading, visible focus-ring styles, and screen-reader support.
-  - Variants & Sizes: Configurable visual variants (primary, secondary, danger,
-    outline, ghost) and standard sizes (xs, sm, md, lg).
-  - State Management: Native disabled, loading state with an animated spinner,
-    automatic click suppression while loading/disabled.
-  - Flexible Content: Supports left/right icons via props or dedicated slots.
-
--------------------------------------------------------------------------------
-  USAGE EXAMPLES:
--------------------------------------------------------------------------------
-
-  1. Primary form submit button with loading state:
-     <AppButton
-         type="submit"
-         variant="primary"
-         :is-loading="isSubmitting"
-     >
-         Save Entry
-     </AppButton>
-
-  2. Secondary button with leading icon & small size:
-     <AppButton
-         variant="secondary"
-         size="sm"
-         :icon-left="PlusIcon"
-         @click="addCategory"
-     >
-         Add Category
-     </AppButton>
-
-  3. Router link button:
-     <AppButton
-         to="/journal"
-         variant="ghost"
-         size="xs"
-     >
-         Back to Journal
-     </AppButton>
-
-  4. Danger action button:
-     <AppButton
-         variant="danger"
-         :icon-left="TrashIcon"
-         @click="deleteItem"
-     >
-         Delete
-     </AppButton>
-
+  AppButton.vue — Universal Accessible Responsive Button UI Component
 ===============================================================================
 -->
 
@@ -110,29 +56,31 @@
     // Style mappings
     const variantClasses: Record<ButtonVariant, string> = {
         primary:
-            'bg-accent text-white hover:bg-accent/20 border-transparent shadow-sm active:scale-[0.98] cursor-pointer',
+            'bg-accent text-white hover:bg-accent-hover border-transparent shadow-sm active:scale-[0.98] cursor-pointer',
         secondary:
-            'bg-bg-secondary text-text-primary hover:bg-bg-tertiary border-border active:scale-[0.98] cursor-pointer',
-        danger: 'bg-bg-danger text-text-danger hover:bg-bg-danger/20 border-red-500/30 active:scale-[0.98] cursor-pointer',
+            'bg-bg-secondary text-text-secondary hover:text-text-inverse hover:bg-accent-hover border-border active:scale-[0.98] cursor-pointer',
+        danger: 'text-danger-text hover:bg-danger-bg border-border-danger hover:scale-[0.98] cursor-pointer',
         outline:
-            'bg-transparent text-text-primary hover:bg-bg-secondary border-border active:scale-[0.98] cursor-pointer',
-        ghost: 'bg-transparent text-text-soft hover:text-text-primary hover:bg-bg-secondary border-transparent cursor-pointer',
-        add: 'bg-transparent text-accent text-xs font-medium hover:underline border-none active:scale-[0.98] cursor-pointer',
-        back: 'text-text-mute hover:text-text-primary focus-visible:outline-accent border-none  flex cursor-pointer items-center gap-2 rounded-md text-sm font-medium transition-colors focus-visible:outline focus-visible:outline-2',
+            'bg-transparent text-text-primary hover:bg-accent-hover border-border active:scale-[0.98] cursor-pointer',
+        ghost: 'bg-transparent text-text-muted hover:text-text-primary hover:bg-accent-hover border-transparent cursor-pointer',
+        add: 'bg-transparent text-accent hover:text-accent/80 border-none active:scale-[0.98] cursor-pointer',
+        back: 'text-text-mute hover:text-text-mute/80 focus-visible:outline-accent border-none flex cursor-pointer items-center gap-2 rounded-md font-medium transition-colors focus-visible:outline focus-visible:outline-2',
     };
 
+    /* Адаптивные размеры кнопок (Mobile -> Tablet -> Desktop >= 1024px) */
     const sizeClasses: Record<ButtonSize, string> = {
-        xs: 'p-1.5 text-[11px] rounded-md',
-        sm: 'p-2 text-xs rounded-lg',
-        md: 'p-2.5 text-sm rounded-lg',
-        lg: 'p-3 text-base rounded-xl',
+        xs: 'px-2 py-1 text-[10px] md:px-2.5 md:py-1.5 md:text-[11px] lg:px-3 lg:py-1.5 lg:text-xs rounded-md',
+        sm: 'px-2.5 py-1.5 text-xs md:px-3 md:py-2 md:text-[13px] lg:px-3.5 lg:py-2 lg:text-sm rounded-lg',
+        md: 'px-3 py-1.5 text-xs md:px-3.5 md:py-2 md:text-sm lg:px-4 lg:py-2.5 lg:text-base rounded-lg',
+        lg: 'px-3.5 py-2 text-sm md:px-4 md:py-2.5 md:text-base lg:px-5 lg:py-3 lg:text-lg rounded-xl',
     };
 
+    /* Адаптивные размеры иконок */
     const iconSizeClasses: Record<ButtonSize, string> = {
-        xs: 'h-3.5 w-3.5 flex-none group-hover:text-accent',
-        sm: 'h-4 w-4 flex-none group-hover:text-accent',
-        md: 'h-5 w-5 flex-none group-hover:text-accent',
-        lg: 'h-6 w-6 flex-none group-hover:text-accent',
+        xs: 'h-3 w-3 md:h-3.5 md:w-3.5 lg:h-4 lg:w-4 flex-none',
+        sm: 'h-3.5 w-3.5 md:h-4 md:w-4 lg:h-4.5 lg:w-4.5 flex-none',
+        md: 'h-4 w-4 md:h-4.5 md:w-4.5 lg:h-5 lg:w-5 flex-none',
+        lg: 'h-4.5 w-4.5 md:h-5 md:w-5 lg:h-6 lg:w-6 flex-none',
     };
 
     const handleClick = (event: MouseEvent) => {
@@ -161,37 +109,42 @@
         :class="[variantClasses[variant], sizeClasses[size], fullWidth ? 'w-full' : '']"
         @click="handleClick"
     >
-        <!-- Loading Spinner -->
-        <Loader2
-            v-if="isLoading"
-            class="shrink-0 animate-spin"
-            :class="iconSizeClasses[size]"
-            aria-hidden="true"
-        />
+        <!-- Loading Spinner / Content Container -->
+        <div class="flex items-center gap-1.5 md:gap-2">
+            <Loader2
+                v-if="isLoading"
+                class="shrink-0 animate-spin"
+                :class="iconSizeClasses[size]"
+                aria-hidden="true"
+            />
 
-        <!-- Left Icon -->
-        <component
-            :is="iconLeft"
-            v-else-if="iconLeft"
-            class="shrink-0 transition duration-250 ease-in-out"
-            :class="[iconSizeClasses[size], variant === 'back' ? 'group-hover:-translate-x-1' : '']"
-            aria-hidden="true"
-        />
-        <slot v-else name="icon-left" />
+            <!-- Left Icon -->
+            <component
+                :is="iconLeft"
+                v-else-if="iconLeft"
+                class="shrink-0 transition duration-250 ease-in-out"
+                :class="[
+                    iconSizeClasses[size],
+                    variant === 'back' ? 'group-hover:-translate-x-1' : '',
+                ]"
+                aria-hidden="true"
+            />
+            <slot v-else name="icon-left" />
 
-        <!-- Button Content -->
-        <span v-if="slots.default" class="truncate">
-            <slot />
-        </span>
+            <!-- Button Content -->
+            <div v-if="slots.default" class="truncate">
+                <slot />
+            </div>
 
-        <!-- Right Icon -->
-        <component
-            :is="iconRight"
-            v-if="iconRight && !isLoading"
-            class="shrink-0 transition duration-250"
-            :class="iconSizeClasses[size]"
-            aria-hidden="true"
-        />
-        <slot v-else-if="!isLoading" name="icon-right" />
+            <!-- Right Icon -->
+            <component
+                :is="iconRight"
+                v-if="iconRight && !isLoading"
+                class="shrink-0 transition duration-250"
+                :class="iconSizeClasses[size]"
+                aria-hidden="true"
+            />
+            <slot v-else-if="!isLoading" name="icon-right" />
+        </div>
     </component>
 </template>

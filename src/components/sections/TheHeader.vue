@@ -22,7 +22,7 @@
             <div class="flex items-center gap-3">
                 <button
                     @click="uiStore.toggleSidebar()"
-                    class="text-text-soft hover:text-text-primary hover:bg-bg-secondary rounded-xl p-2 transition-colors"
+                    class="none text-text-soft hover:text-text-primary hover:bg-bg-secondary block rounded-xl p-2 transition-colors sm:hidden"
                     aria-label="Переключить меню"
                 >
                     <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">

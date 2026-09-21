@@ -1,7 +1,9 @@
-export type NotificationType = 'info' | 'success' | 'error' | 'warning';
-
-export interface Notification {
-    id: number;
+export interface Toast {
+    id: string;
     message: string;
-    type: NotificationType;
+    type?: 'info' | 'success' | 'error' | 'warning';
+    duration?: number;
+    showProgress?: boolean;
+    actionLabel?: string;
+    onAction?: () => void;
 }

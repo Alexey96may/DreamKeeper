@@ -24,16 +24,16 @@
 </script>
 
 <template>
-    <div ref="themeMenuRef" class="relative min-w-45">
+    <div ref="themeMenuRef" class="relative sm:min-w-45">
         <!-- Кнопка переключения темы -->
         <div
-            class="bg-bg-secondary border-border flex items-center justify-center rounded-xl border p-1 shadow-sm"
+            class="bg-bg-secondary border-border flex items-center justify-center rounded-sm border p-1 shadow-sm sm:rounded-xl"
         >
             <button
                 @click.stop="uiStore.toggleTheme()"
                 title="Быстрое переключение"
                 aria-label="Быстрое переключение темы"
-                class="hover:bg-bg-secondary border-border/60 flex grow-0 items-center justify-center border-r px-2 py-1 text-sm transition-colors"
+                class="hover:bg-bg-secondary border-border/60 flex grow-0 items-center justify-center px-2 py-1 text-sm transition-colors sm:border-r"
             >
                 <component
                     :is="THEME_OPTIONS_MAP[uiStore.theme].icon"
@@ -47,9 +47,9 @@
                 aria-haspopup="true"
                 :aria-expanded="isThemeMenuOpen"
                 aria-label="Открыть меню выбора темы"
-                class="text-text-soft hover:text-text-primary flex grow items-center justify-center gap-1 self-center px-2 py-1 text-xs font-medium transition-colors"
+                class="text-text-soft hover:text-text-primary hidden grow items-center justify-center gap-1 self-center px-2 py-1 text-xs font-medium transition-colors sm:flex"
             >
-                <span class="hidden capitalize sm:inline">
+                <span class="inline capitalize">
                     {{ THEME_OPTIONS_MAP[uiStore.theme].label }}
                 </span>
                 <svg
@@ -83,7 +83,7 @@
                 v-if="isThemeMenuOpen"
                 role="menu"
                 aria-label="Выбор темы оформления"
-                class="bg-bg-secondary border-border shadow-dropdown absolute right-0 z-50 mt-2 max-h-64 min-w-45 overflow-x-hidden overflow-y-auto rounded-xl border py-1.5 focus:outline-none"
+                class="bg-bg-secondary border-border shadow-dropdown absolute right-0 z-50 mt-2 max-h-64 overflow-x-hidden overflow-y-auto rounded-xl border py-1.5 focus:outline-none sm:min-w-45"
             >
                 <button
                     v-for="item in THEME_OPTIONS"

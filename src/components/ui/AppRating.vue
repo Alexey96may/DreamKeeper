@@ -5,7 +5,7 @@
             value: number | string;
             max?: number;
             isFiltering?: boolean;
-            isInFilter?: boolean; // Добавлено для подсказки режима фильтрации
+            isInFilter?: boolean;
         }>(),
         {
             max: 10,
@@ -25,12 +25,12 @@
 
         <button
             type="button"
-            class="focus-visible:ring-accent/50 inline-flex w-fit cursor-pointer items-baseline rounded-lg border bg-transparent px-2 py-0.5 text-lg font-bold transition-all duration-200 focus-visible:ring-2 focus-visible:outline-none"
+            class="focus-visible:ring-accent/50 inline-flex w-fit cursor-pointer items-baseline rounded-lg border bg-transparent text-lg font-bold transition-all duration-200 focus-visible:ring-2 focus-visible:outline-none"
             :class="[
                 isFiltering
-                    ? 'border-accent bg-accent/20 text-accent shadow-sm'
+                    ? 'border-accent bg-accent/20 text-accent px-2 py-0.5 shadow-sm'
                     : isInFilter
-                      ? 'border-accent/60 bg-bg-secondary text-text-primary hover:border-accent hover:bg-accent/10 animate-pulse shadow-[0_0_8px_rgba(var(--color-accent-rgb),0.15)]'
+                      ? 'border-accent/60 bg-bg-secondary text-text-primary hover:border-accent hover:bg-accent/10 animate-pulse px-2 py-0.5 shadow-[0_0_8px_rgba(var(--color-accent-rgb),0.15)]'
                       : 'text-text-primary hover:text-accent border-transparent',
             ]"
             :aria-label="`Фильтровать по критерию «${label}» со значением ${value} из ${max}`"

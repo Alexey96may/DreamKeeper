@@ -1,10 +1,10 @@
 import { ref } from 'vue';
-import { useFlash } from '@/composables/useFlash';
+import { useUIStore } from '@/stores/modules/ui';
 import { useSleepStore } from '@/stores/modules/dream';
 import { useRouter } from 'vue-router';
 
 export function useCrud() {
-    const { notifyWithUndo, notify } = useFlash();
+    const { addToast } = useUIStore();
     const sleepStore = useSleepStore();
     const router = useRouter();
 
@@ -14,22 +14,38 @@ export function useCrud() {
         const numericId = Number(id);
         if (!numericId) return;
 
-        deletingItems.value.push(numericId);
-        try {
-            const isTimeOut = await notifyWithUndo('Удалить эту запись сна?');
+        let isCancelled = false;
+        const duration = 4000;
 
-            if (isTimeOut) {
-                const targetDate = date;
+        deletingItems.value.push(numericId);
+
+        const timer = setTimeout(async () => {
+            if (isCancelled) return;
+
+            try {
                 const success = await sleepStore.deleteDream(numericId);
                 if (success) {
-                    notify('Сон удалён!');
-
-                    router.push(targetDate ? `/day/${targetDate}` : '/');
+                    router.push(date ? `/day/${date}` : '/');
+                    addToast({ message: 'Сон забыт!', type: 'info', duration: 1000 });
                 }
+            } finally {
+                deletingItems.value = deletingItems.value.filter((item) => item !== numericId);
             }
-        } finally {
-            deletingItems.value = deletingItems.value.filter((item) => item !== numericId);
-        }
+        }, duration);
+
+        addToast({
+            message: 'Забыть этот сон?',
+            type: 'warning',
+            showProgress: true,
+            duration,
+            actionLabel: 'Отменить',
+            onAction: () => {
+                isCancelled = true;
+                clearTimeout(timer);
+                deletingItems.value = deletingItems.value.filter((item) => item !== numericId);
+                addToast({ message: 'Сон восстановлен', type: 'info', duration: 1000 });
+            },
+        });
     };
 
     const isDeleting = (id: number): boolean => {

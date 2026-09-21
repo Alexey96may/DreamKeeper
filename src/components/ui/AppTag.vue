@@ -90,7 +90,7 @@
         :disabled="isDisabled"
         :aria-pressed="role ? undefined : isPressed"
         :aria-checked="ariaChecked"
-        class="focus:ring-accent/50 inline-flex items-center gap-1.5 rounded-lg border px-3 py-1.5 text-xs font-medium transition-all duration-200 focus:ring-2 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50"
+        class="focus:ring-accent/50 relative inline-flex items-center gap-1.5 rounded-lg border px-3 py-1.5 text-xs font-medium text-nowrap transition-all duration-200 focus:ring-2 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50"
         :class="[
             isPressed
                 ? 'border-accent bg-accent/20 text-accent font-semibold shadow-sm'
@@ -103,17 +103,19 @@
         <!-- Spinner when loading -->
         <Loader2
             v-if="isLoading"
-            class="text-text-soft h-3.5 w-3.5 shrink-0 animate-spin"
+            class="text-text-soft h-3.5 w-3.5 shrink-0 animate-spin lg:h-4.5 lg:w-4.5"
             aria-hidden="true"
         />
 
         <!-- Optional Icon -->
-        <component :is="icon" v-else-if="icon" class="h-3.5 w-3.5 shrink-0" aria-hidden="true" />
+        <component
+            :is="icon"
+            v-else-if="icon"
+            class="h-3.5 w-3.5 shrink-0 lg:h-4.5 lg:w-4.5"
+            aria-hidden="true"
+        />
 
-        <!-- Content/Text -->
-        <span>
-            <slot />
-        </span>
+        <span v-if="$slots.default" class="text-sm"><slot /></span>
 
         <AppTooltip v-if="hint" :content="hint" />
     </button>

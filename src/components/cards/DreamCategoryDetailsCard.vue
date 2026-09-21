@@ -19,10 +19,11 @@
     const cardClasses = computed(() => {
         switch (props.type) {
             case 'nightmare':
-                return 'space-y-1.5 rounded-lg border border-danger-border bg-danger-bg p-3.5 text-xs';
+                return 'space-y-1.5 rounded-lg border border-danger-border/30 bg-danger-bg/30 p-3.5 text-xs';
             case 'prophetic':
-                return 'space-y-1.5 rounded-lg border border-mystical-border bg-mystical-bg p-3.5 text-xs';
+                return 'space-y-1.5 rounded-lg border border-mystical-border/30 bg-mystical-bg/30 p-3.5 text-xs';
             case 'lucid':
+                return 'space-y-1.5 rounded-lg border border-success-border/30 bg-success-bg/30 p-3.5 text-xs';
             default:
                 return 'bg-bg-secondary/30 border-border-subtle/30 space-y-1.5 rounded-lg border p-3.5 text-xs';
         }
@@ -35,6 +36,7 @@
             case 'prophetic':
                 return 'font-bold text-mystical-text flex items-center gap-1.5';
             case 'lucid':
+                return 'font-bold text-success-text flex items-center gap-1.5';
             default:
                 return 'text-accent font-bold flex items-center gap-1.5';
         }
@@ -91,10 +93,10 @@
                 </span>
             </div>
             <div v-if="(details as NightmareDetails).copingMechanism">
-                <span class="text-text-secondary">Как справился:</span>
-                <p class="text-text-primary m-0 mt-0.5">
+                <span class="text-text-secondary">Как справился: </span>
+                <span class="text-text-primary m-0 mt-0.5">
                     {{ (details as NightmareDetails).copingMechanism }}
-                </p>
+                </span>
             </div>
             <div v-if="(details as NightmareDetails).hasPhysicalResponse !== undefined">
                 <span class="text-text-secondary">Физическая реакция:</span>
@@ -107,7 +109,7 @@
         <!-- 3. prophetic -->
         <template v-if="type === 'prophetic'">
             <div v-if="(details as PropheticDetails).isFulfilled !== undefined">
-                <span class="text-text-secondary">Статус:</span>
+                <span class="text-text-secondary">Статус: </span>
                 <span
                     :class="[
                         (details as PropheticDetails).isFulfilled
@@ -138,10 +140,10 @@
                 </span>
             </div>
             <div v-if="(details as PropheticDetails).fulfillmentNotes">
-                <span class="text-text-secondary">Что произошло:</span>
-                <p class="text-text-primary m-0 mt-0.5">
+                <span class="text-text-secondary">Что произошло: </span>
+                <span class="text-text-primary m-0 mt-0.5 text-xs">
                     {{ (details as PropheticDetails).fulfillmentNotes }}
-                </p>
+                </span>
             </div>
         </template>
     </article>

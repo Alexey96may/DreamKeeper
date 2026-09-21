@@ -3,7 +3,7 @@ import { ref } from 'vue';
 
 import { defineStore } from 'pinia';
 
-import type { Notification, NotificationType } from '@/types/Notification';
+import type { Toast } from '@/types/Notification';
 import type { ThemeMode } from '@/types/Theme';
 
 export const useUIStore = defineStore('ui', () => {
@@ -13,9 +13,35 @@ export const useUIStore = defineStore('ui', () => {
     );
     const sidebarOpen = ref<boolean>(false);
     const isLoading = ref<boolean>(false);
-    const notifications = ref<Array<Notification>>([]);
 
-    let nextId = 1;
+    const toasts = ref<Toast[]>([]);
+    const MAX_TOASTS = 4;
+
+    const removeToast = (id: string) => {
+        toasts.value = toasts.value.filter((t) => t.id !== id);
+    };
+
+    const addToast = (toast: Omit<Toast, 'id'>) => {
+        const id = crypto.randomUUID();
+        const duration = toast.duration ?? 4000;
+        const showProgress = toast.showProgress ?? false;
+
+        const newToast: Toast = { ...toast, id, duration, showProgress };
+
+        // Если тостов слишком много, удаляем самый старый
+        if (toasts.value.length >= MAX_TOASTS) {
+            toasts.value.shift();
+        }
+
+        toasts.value.push(newToast);
+
+        // Индивидуальный таймер для каждого тоста
+        if (duration > 0) {
+            setTimeout(() => {
+                removeToast(id);
+            }, duration);
+        }
+    };
 
     // ===== ACTIONS =====
     const setTheme = (newTheme: ThemeMode) => {
@@ -71,34 +97,21 @@ export const useUIStore = defineStore('ui', () => {
         isLoading.value = status;
     };
 
-    const addNotification = (message: string, type: NotificationType = 'info') => {
-        const id = nextId++;
-        notifications.value.push({ id, message, type });
-
-        setTimeout(() => {
-            removeNotification(id);
-        }, 5000);
-    };
-
-    const removeNotification = (id: number) => {
-        notifications.value = notifications.value.filter((n) => n.id !== id);
-    };
-
     return {
         // State
         theme,
         sidebarOpen,
         isLoading,
-        notifications,
+        toasts,
 
         // Actions
         setTheme,
+        addToast,
+        removeToast,
         toggleTheme,
         applyTheme,
         initTheme,
         toggleSidebar,
         setLoading,
-        addNotification,
-        removeNotification,
     };
 });

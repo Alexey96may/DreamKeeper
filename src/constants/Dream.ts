@@ -51,6 +51,7 @@ import {
     Wind,
     MicOff,
     EyeOff,
+    SwitchCamera,
 } from 'lucide-vue-next';
 
 import { optionsToMap } from './index';
@@ -344,10 +345,26 @@ export const VISUAL_STYLE_OPTIONS: DreamOption<VisualStyle>[] = [
 ];
 
 export const PERSPECTIVE_OPTIONS: DreamOption<Perspective>[] = [
-    { value: 'irrelevant', label: 'Не важно' },
-    { value: 'first_person', label: 'От 1-го лица (своими глазами)' },
-    { value: 'third_person', label: 'От 3-го лица (со стороны)' },
-    { value: 'shifting', label: 'Менялась в процессе' },
+    {
+        value: 'irrelevant',
+        label: 'Не важно',
+        icon: Sparkles,
+    },
+    {
+        value: 'first_person',
+        label: 'От 1-го лица (своими глазами)',
+        icon: Eye,
+    },
+    {
+        value: 'third_person',
+        label: 'От 3-го лица (со стороны)',
+        icon: Video,
+    },
+    {
+        value: 'shifting',
+        label: 'Менялась в процессе',
+        icon: SwitchCamera,
+    },
 ];
 
 export const PARTICIPANT_ROLE_OPTIONS: DreamOption<ParticipantRole>[] = [

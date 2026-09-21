@@ -288,8 +288,6 @@
     };
 
     const selectInterpr = (index: number, interprValue: string, sourceId: string) => {
-        alert(sourceId);
-
         updateInterpretation(index, {
             sourceId,
             meaning: interprValue,

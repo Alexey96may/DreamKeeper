@@ -2,7 +2,7 @@
     import { onMounted } from 'vue';
     import { RouterView } from 'vue-router';
     import TheHeader from '@/components/sections/TheHeader.vue';
-    import AppToast from '@/components/ui/AppToast.vue';
+    import AppToastContainer from '@/components/ui/AppToastContainer.vue';
     import { useUIStore } from '@/stores/modules/ui';
     import { useSleepStore } from '@/stores/modules/dream';
     import { useUserStateStore } from '@/stores/modules/userState';
@@ -38,6 +38,6 @@
             <RouterView />
         </main>
 
-        <AppToast />
+        <AppToastContainer />
     </div>
 </template>
