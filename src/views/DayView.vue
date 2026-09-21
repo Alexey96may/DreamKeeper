@@ -1,132 +1,150 @@
 <template>
     <div class="bg-bg-primary text-text-primary transition-theme duration-theme min-h-screen">
         <div class="container mx-auto max-w-2xl px-4 py-6">
-            <AppButton @click="goBack" size="xs" variant="back" :icon-left="MoveLeft">
+            <AppButton @click="goBack" size="xs" class="mb-3" variant="back" :icon-left="MoveLeft">
                 Назад к календарю
             </AppButton>
 
             <div class="dream-card fade-in p-6">
-                <div class="flex items-start justify-between">
-                    <div>
-                        <h3 class="text-text-primary text-xl font-semibold">
-                            {{ formattedDate }}
-                        </h3>
-                        <p class="text-text-mute text-sm capitalize">
-                            {{ weekday }}
-                        </p>
-                    </div>
+                <div>
+                    <h3 class="text-text-primary text-xl font-semibold">
+                        {{ formattedDate }}
+                    </h3>
+                    <p class="text-text-mute text-sm capitalize">
+                        {{ weekday }}
+                    </p>
                 </div>
 
                 <!-- Сны за день -->
                 <div v-if="dayDreams.length > 0" class="mt-4">
-                    <h4 class="text-text-soft mb-3 text-sm font-medium">Сны</h4>
-                    <div
-                        v-for="dream in dayDreams"
-                        :key="dream.id"
-                        @click="goToDreamDetail(dream.slug)"
-                        class="bg-bg-secondary/50 border-border/50 mb-2 cursor-pointer rounded-lg border p-3 transition duration-200"
-                        :class="{ 'opacity-50': isDeleting(dream.id) }"
-                    >
-                        <div class="flex items-center justify-between gap-4">
-                            <div>
-                                <h4
-                                    v-if="dream.title"
-                                    class="text-text-soft inline-block rounded-full py-0.5 text-xs"
-                                >
-                                    {{ dream.title }}
-                                </h4>
+                    <div class="mb-4! flex items-center justify-between">
+                        <h4 class="text-text-soft text-sm font-medium">Сны</h4>
 
-                                <p class="text-text-primary">
-                                    {{ dream.description || 'Без описания' }}
-                                </p>
-                            </div>
+                        <AppButton
+                            v-if="isAllowedDay"
+                            @click="goToAddDream(date)"
+                            size="xs"
+                            variant="add"
+                            :icon-left="PlusIcon"
+                        >
+                            <span>Добавить</span>
+                        </AppButton>
+                    </div>
 
-                            <div class="flex min-w-1/5 items-center justify-end gap-2">
-                                <AppButton
-                                    @click.stop="handleDelete(dream.id, dream.date)"
-                                    size="sm"
-                                    variant="danger"
-                                    :disabled="isDeleting(dream.id)"
-                                    :icon-left="Trash"
-                                />
-
-                                <AppButton
-                                    @click.stop="goToEdit(dream.slug)"
-                                    size="sm"
-                                    variant="primary"
-                                    :disabled="isDeleting(dream.id)"
-                                    :icon-left="Edit2Icon"
-                                />
-
+                    <div class="flex flex-col gap-4">
+                        <div
+                            v-for="dream in dayDreams"
+                            :key="dream.id"
+                            @click="goToDreamDetail(dream.slug)"
+                            class="bg-bg-secondary/50 border-border/50 cursor-pointer rounded-lg border p-3 transition duration-200"
+                            :class="{ 'opacity-50': isDeleting(dream.id) }"
+                        >
+                            <div
+                                class="relative flex flex-col items-center justify-between gap-6 sm:flex-row sm:gap-4"
+                            >
                                 <AppRating
+                                    class="bg-accent/40 rounded-md p-1.5"
                                     v-if="dream.quality !== undefined && dream.quality > 0"
                                     :value="dream.quality"
                                 />
+
+                                <div class="flex flex-col items-center gap-2 sm:items-stretch">
+                                    <h4
+                                        v-if="dream.title"
+                                        class="text-text-soft inline-block rounded-full py-0.5 text-xs"
+                                    >
+                                        {{ dream.title }}
+                                    </h4>
+
+                                    <p class="text-text-primary">
+                                        {{ dream.description || 'Без описания' }}
+                                    </p>
+                                </div>
+
+                                <div
+                                    class="flex min-w-1/5 flex-row-reverse items-center justify-end gap-2 sm:flex-row"
+                                >
+                                    <AppButton
+                                        @click.stop="handleDelete(dream.id, dream.date)"
+                                        size="sm"
+                                        variant="danger"
+                                        :disabled="isDeleting(dream.id)"
+                                        :icon-left="Trash"
+                                    />
+
+                                    <AppButton
+                                        @click.stop="goToEdit(dream.slug)"
+                                        size="sm"
+                                        variant="primary"
+                                        :disabled="isDeleting(dream.id)"
+                                        :icon-left="Edit2Icon"
+                                    />
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
+
                 <p v-else class="text-text-mute mt-4 text-sm">Нет снов за этот день</p>
 
-                <AppButton
-                    v-if="isAllowedDay"
-                    @click="goToAddDream(date)"
-                    size="xs"
-                    variant="add"
-                    :icon-left="PlusIcon"
-                >
-                    Добавить сон
-                </AppButton>
-
                 <!-- Состояние за день -->
-                <div v-if="dayState" class="border-border mt-4 border-t pt-4">
-                    <h4 class="text-text-soft mb-2 text-sm font-medium">Состояние</h4>
+                <div class="border-border mt-6 border-t pt-4">
+                    <div class="mb-4! flex items-center justify-between">
+                        <h4 class="text-text-soft text-sm font-medium">Состояние за день</h4>
 
-                    <div class="flex flex-wrap gap-4">
-                        <AppRating
-                            v-if="dayState.mood !== undefined && dayState.mood > 0"
-                            label="Настроение"
-                            :value="dayState.mood"
-                        />
-
-                        <AppRating
-                            v-if="dayState.energy !== undefined && dayState.energy > 0"
-                            label="Энергия"
-                            :value="dayState.energy"
-                        />
-
-                        <AppRating
-                            v-if="dayState.focus !== undefined && dayState.focus > 0"
-                            label="Фокус"
-                            :value="dayState.focus"
-                        />
-
-                        <AppRating
-                            v-if="dayState.productivity !== undefined && dayState.productivity > 0"
-                            label="Продуктивность"
-                            :value="dayState.productivity"
-                        />
-
-                        <AppRating
-                            v-if="dayState.stress !== undefined && dayState.stress > 0"
-                            label="Стресс"
-                            :value="dayState.stress"
-                        />
+                        <AppButton
+                            v-if="isAllowedDay"
+                            @click="isModalOpen = true"
+                            size="xs"
+                            variant="add"
+                            :icon-left="dayState ? Edit2Icon : PlusIcon"
+                        >
+                            <span>{{ dayState ? 'Редактировать' : 'Добавить' }}</span>
+                        </AppButton>
                     </div>
 
-                    <p v-if="dayState.notes">{{ dayState.notes }}</p>
-                </div>
-                <p v-else class="text-text-mute mt-4 text-sm">Нет состояния за этот день</p>
+                    <div v-if="dayState" class="flex flex-col gap-4">
+                        <div class="flex items-center justify-evenly gap-4 overflow-auto">
+                            <AppRating
+                                v-if="dayState.mood !== undefined && dayState.mood > 0"
+                                label="Настроение"
+                                :value="dayState.mood"
+                            />
 
-                <AppButton
-                    v-if="isAllowedDay"
-                    @click="isModalOpen = true"
-                    size="xs"
-                    variant="add"
-                    :icon-left="dayState ? Edit2Icon : PlusIcon"
-                >
-                    {{ dayState ? 'Редактировать состояние' : 'Добавить состояние' }}
-                </AppButton>
+                            <AppRating
+                                v-if="dayState.energy !== undefined && dayState.energy > 0"
+                                label="Энергия"
+                                :value="dayState.energy"
+                            />
+
+                            <AppRating
+                                v-if="dayState.focus !== undefined && dayState.focus > 0"
+                                label="Фокус"
+                                :value="dayState.focus"
+                            />
+
+                            <AppRating
+                                v-if="
+                                    dayState.productivity !== undefined && dayState.productivity > 0
+                                "
+                                label="Продуктивность"
+                                :value="dayState.productivity"
+                            />
+
+                            <AppRating
+                                v-if="dayState.stress !== undefined && dayState.stress > 0"
+                                label="Стресс"
+                                :value="dayState.stress"
+                            />
+                        </div>
+
+                        <p v-if="dayState.notes">
+                            <span class="text-text-secondary">Заметка: </span>{{ dayState.notes }}
+                        </p>
+                    </div>
+
+                    <p v-else class="text-text-mute mt-4! text-sm">Нет состояния за этот день</p>
+                </div>
             </div>
         </div>
 

@@ -1,6 +1,6 @@
 <template>
     <div
-        class="pointer-events-none fixed right-5 bottom-5 z-50 flex w-full max-w-95 flex-col-reverse gap-2.5 px-4 sm:px-0"
+        class="pointer-events-none fixed right-5 bottom-5 z-55 flex w-full max-w-95 flex-col-reverse gap-2.5 px-4 sm:px-0"
     >
         <TransitionGroup
             enter-active-class="transition duration-300 ease-out"

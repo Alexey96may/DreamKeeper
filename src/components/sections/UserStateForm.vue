@@ -4,11 +4,11 @@
     import AppRange from '@/components/ui/AppRange.vue';
     import AppTextarea from '@/components/ui/AppTextarea.vue';
     import AppErrorMessage from '@/components/ui/AppErrorMessage.vue';
-    import { useFlash } from '@/composables/useFlash';
     import { Trash } from 'lucide-vue-next';
     import AppButton from '@/components/ui/AppButton.vue';
-    import { useUserStateStore } from '@/stores/modules/userState';
+    import { useCrud } from '@/composables/crud/index';
     import { dreamValueFormatter } from '@/utils/formatters';
+    import { useUserStateStore } from '@/stores/modules/userState';
 
     const props = defineProps<{
         date: string;
@@ -24,7 +24,7 @@
     const computedDreamValueFormatter = computed(() => dreamValueFormatter);
 
     const userStateStore = useUserStateStore();
-    const { notifyWithUndo, notify } = useFlash();
+    const { handleDeleteState } = useCrud();
 
     const form = reactive({
         mood: props.initialData?.mood ?? 1,
@@ -61,19 +61,9 @@
     };
 
     const handleDelete = async (id: number | string) => {
-        const numericId = Number(id);
-        if (!numericId) return;
-
-        const isTimeOut = await notifyWithUndo('Удалить состояние?', 3000);
-
-        if (isTimeOut) {
-            const success = await userStateStore.deleteState(numericId);
-
-            if (success) {
-                emit('change');
-                notify('Состояние удалено!');
-            }
-        }
+        handleDeleteState(id, () => {
+            emit('change');
+        });
     };
 </script>
 

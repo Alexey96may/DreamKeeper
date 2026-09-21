@@ -110,7 +110,7 @@
         @click="handleClick"
     >
         <!-- Loading Spinner / Content Container -->
-        <div class="flex items-center gap-1.5 md:gap-2">
+        <div class="flex items-center gap-1">
             <Loader2
                 v-if="isLoading"
                 class="shrink-0 animate-spin"
