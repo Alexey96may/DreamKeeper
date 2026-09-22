@@ -49,7 +49,7 @@
 </script>
 
 <template>
-    <div class="text-text-primary transition-theme min-h-lvh duration-300">
+    <div class="text-text-primary transition-theme min-h-screen duration-300">
         <component :is="currentBgComponent" />
 
         <TheHeader />

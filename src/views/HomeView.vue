@@ -1,6 +1,6 @@
 <!-- src/views/HomeView.vue -->
 <template>
-    <div class="text-text-primary transition-theme duration-theme min-h-screen">
+    <div class="text-text-primary transition-theme duration-theme">
         <div class="container mx-auto flex flex-col gap-8 px-4 py-6">
             <AppTitle @action="goToNewDream">
                 <template #title>

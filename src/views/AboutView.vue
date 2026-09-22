@@ -49,7 +49,7 @@
 </script>
 
 <template>
-    <main class="min-h-screen px-4 py-12 sm:px-6 lg:px-8">
+    <div class="px-4 py-12 sm:px-6 lg:px-8">
         <!-- Главный контейнер через flex flex-col gap-16 -->
         <div class="container mx-auto flex flex-col gap-16">
             <!-- Hero Section -->
@@ -158,5 +158,5 @@
                 </div>
             </section>
         </div>
-    </main>
+    </div>
 </template>

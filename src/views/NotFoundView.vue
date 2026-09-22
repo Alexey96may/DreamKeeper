@@ -3,7 +3,7 @@
 </script>
 
 <template>
-    <main
+    <div
         class="flex min-h-[70vh] flex-col items-center justify-center px-4 text-center"
         role="main"
         aria-labelledby="error-title"
@@ -37,5 +37,5 @@
                 <span>На главную</span>
             </router-link>
         </div>
-    </main>
+    </div>
 </template>
