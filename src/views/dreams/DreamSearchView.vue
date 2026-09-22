@@ -2,7 +2,7 @@
     <div class="bg-bg-primary text-text-primary transition-theme duration-theme min-h-screen">
         <div class="container mx-auto max-w-2xl px-4 py-6">
             <AppButton @click="goBack" size="xs" variant="back" :icon-left="MoveLeft">
-                Назад
+                <span>Назад</span>
             </AppButton>
 
             <div class="mt-6 space-y-6">
@@ -25,8 +25,7 @@
                         class="shrink-0"
                         title="Параметры календаря"
                         :icon-left="Filter"
-                    >
-                    </AppButton>
+                    />
                 </div>
 
                 <div aria-live="polite" class="sr-only">

@@ -1,5 +1,5 @@
 <template>
-    <div class="border-border border-t pt-4">
+    <div class="border-border-muted border-t pt-4">
         <div class="mb-3 flex items-center justify-between gap-2">
             <span class="text-text-muted text-xs font-semibold tracking-wider uppercase">
                 Толкования и символы
@@ -22,7 +22,7 @@
             <div
                 v-for="(interp, idx) in list"
                 :key="idx"
-                class="border-border/60 bg-bg-secondary/50 relative flex flex-col gap-3 rounded-lg border p-3 sm:flex-row sm:items-start"
+                class="border-border-muted/60 bg-bg-secondary/50 relative flex flex-col gap-3 rounded-lg border p-3 sm:flex-row sm:items-start"
             >
                 <div class="relative grid flex-1 grid-cols-1 gap-3">
                     <!-- Обертка с relative для позиционирования подсказок -->

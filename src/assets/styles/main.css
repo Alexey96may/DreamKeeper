@@ -1,9 +1,8 @@
-@import 'tailwindcss';
-
 @import './fonts.css';
 @import './themes.css';
 @import './reset.css';
 @import './base.css';
+@import 'tailwindcss';
 
 @theme {
     /* Backgrounds */
@@ -99,10 +98,10 @@
 }
 
 @utility dream-card {
-    background-color: color-mix(in srgb, var(--color-bg-elevated) 50%, transparent);
+    background-color: color-mix(in srgb, var(--color-bg-elevated) 30%, transparent);
 
     border-width: 1px;
-    border-color: color-mix(in srgb, var(--color-border-subtle) 50%, transparent);
+    border-color: color-mix(in srgb, var(--color-border-subtle) 30%, transparent);
 
     border-radius: var(--radius-xl);
 

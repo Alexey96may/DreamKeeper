@@ -1,7 +1,7 @@
 <template>
-    <div class="bg-bg-primary text-text-primary transition-theme duration-theme min-h-screen">
+    <div class="text-text-primary transition-theme duration-theme min-h-screen">
         <div class="container mx-auto max-w-2xl px-4 py-6">
-            <AppButton @click="goBack" size="xs" class="mb-3" variant="back" :icon-left="MoveLeft">
+            <AppButton @click="goBack" size="xs" class="mb-8" variant="back" :icon-left="MoveLeft">
                 Назад к календарю
             </AppButton>
 

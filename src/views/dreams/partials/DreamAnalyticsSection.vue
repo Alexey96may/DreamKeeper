@@ -1,5 +1,5 @@
 <template>
-    <div class="border-border bg-bg-primary space-y-4 rounded-xl border p-4 sm:p-6">
+    <div class="border-border-muted bg-bg-primary space-y-4 rounded-xl border p-4 sm:p-6">
         <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <AppTextInput
                 :model-value="rawArrays.characters"

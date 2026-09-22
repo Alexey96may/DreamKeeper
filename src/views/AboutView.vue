@@ -63,7 +63,7 @@
                     <h1
                         class="text-text-primary text-4xl font-extrabold tracking-tight sm:text-5xl"
                     >
-                        О проекте <span class="text-accent">DreamKeeper</span>
+                        О проекте Dream<span class="text-accent text-4xl!">Keeper</span>
                     </h1>
                     <p class="text-text-soft mx-auto max-w-2xl text-lg leading-relaxed sm:text-xl">
                         Ваш личный проводник в бессознательное. Пространство для бережного

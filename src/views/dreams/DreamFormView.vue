@@ -1,19 +1,19 @@
 <template>
     <div class="mx-auto max-w-4xl p-4 sm:p-6">
-        <div class="mb-6 flex items-center justify-between">
-            <div class="flex items-center gap-3">
-                <AppButton @click="goBack" size="xs" variant="back" :icon-left="MoveLeft">
-                    Назад
-                </AppButton>
-
-                <h1 class="text-text-primary text-xl font-bold sm:text-2xl">
-                    {{ isEditMode ? 'Редактировать сон' : 'Записать сон' }}
-                </h1>
-            </div>
+        <div class="mb-8 flex items-center justify-between">
+            <AppButton @click="goBack" size="xs" variant="back" :icon-left="MoveLeft">
+                <span>Назад</span>
+            </AppButton>
         </div>
 
+        <h1
+            class="border-border-muted text-text-primary mb-4! border-t py-4 text-xl font-bold sm:text-2xl"
+        >
+            {{ isEditMode ? 'Редактировать сон' : 'Записать сон' }}
+        </h1>
+
         <form @submit.prevent="handleSubmit" class="space-y-6">
-            <div class="border-border flex w-full overflow-x-auto overflow-y-hidden">
+            <div class="border-border-muted flex w-full overflow-x-auto overflow-y-hidden">
                 <button
                     v-for="tab in tabs"
                     :key="tab.id"
@@ -90,7 +90,9 @@
 
                 <!-- Вкладка 4: Контекст и толкования -->
                 <div v-show="activeTab === 'context'" class="space-y-6">
-                    <div class="border-border bg-bg-primary space-y-6 rounded-xl border p-4 sm:p-6">
+                    <div
+                        class="border-border-muted bg-bg-primary/80 space-y-6 rounded-xl border p-4 sm:p-6"
+                    >
                         <DreamContextSection
                             v-model:preSleepContext="form.preSleepContext"
                             v-model:personalNotes="form.personalNotes"
@@ -111,13 +113,13 @@
             <AppErrorMessage :error-message="sleepStore.error" />
 
             <!-- Кнопки управления (доступны из любой вкладки) -->
-            <div class="border-border flex items-center justify-end gap-3 border-t pt-4">
-                <AppButton @click="goBack" variant="ghost">Отмена</AppButton>
+            <div class="border-border-muted flex items-center justify-end gap-3 border-t pt-4">
+                <AppButton @click="goBack" variant="ghost"><span>Отмена</span></AppButton>
 
                 <AppButton size="xs" type="submit" variant="primary" :disabled="sleepStore.loading">
-                    {{
+                    <span>{{
                         sleepStore.loading ? 'Сохранение...' : isEditMode ? 'Сохранить' : 'Создать'
-                    }}
+                    }}</span>
                 </AppButton>
             </div>
         </form>

@@ -1,17 +1,17 @@
 <template>
-    <div class="border-border border-t pt-2">
+    <div class="border-border-muted border-t pt-2">
         <div class="mb-3 flex items-center justify-between">
             <span class="text-text-muted text-xs font-semibold tracking-wider uppercase">
                 Связанные сны
             </span>
 
             <AppButton @click="addRelatedDream" variant="add" :icon-left="PlusIcon">
-                Добавить связь
+                <span>Добавить связь</span>
             </AppButton>
         </div>
 
         <div v-for="(rel, idx) in list" :key="idx">
-            <div class="mb-2 flex items-center gap-2">
+            <div class="mb-2 flex items-center gap-2 overflow-auto p-2">
                 <AppSelect
                     :model-value="rel.dreamId"
                     @update:model-value="updateField(idx, 'dreamId', $event ?? undefined)"

@@ -1,7 +1,7 @@
 <!-- src/views/HomeView.vue -->
 <template>
     <div class="text-text-primary transition-theme duration-theme min-h-screen">
-        <div class="container mx-auto flex flex-col gap-6 px-4 py-6">
+        <div class="container mx-auto flex flex-col gap-8 px-4 py-6">
             <AppTitle @action="goToNewDream">
                 <template #title>
                     <div class="flex items-center gap-2">

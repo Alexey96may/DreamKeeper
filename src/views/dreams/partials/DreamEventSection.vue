@@ -1,5 +1,5 @@
 <template>
-    <div class="border-border bg-bg-primary space-y-4 rounded-xl border p-4 sm:p-6">
+    <div class="border-border-muted bg-bg-primary space-y-4 rounded-xl border p-4 sm:p-6">
         <AppTagSelect
             :model-value="props.phenomena"
             @update:model-value="handleUpdatePhenomenas"
@@ -13,7 +13,7 @@
         <!-- Детали: ПОЛЁТ -->
         <div
             v-if="props.phenomena?.includes('flying')"
-            class="border-border/60 bg-bg-secondary/50 space-y-3 rounded-lg border p-3"
+            class="border-border-muted/60 bg-bg-secondary/50 space-y-3 rounded-lg border p-3"
         >
             <h4 class="text-text-muted text-xs font-semibold tracking-wider uppercase">
                 Детали полёта
@@ -53,7 +53,7 @@
         <!-- Детали: ПАДЕНИЕ -->
         <div
             v-if="props.phenomena?.includes('falling')"
-            class="border-border/60 bg-bg-secondary/50 space-y-3 rounded-lg border p-3"
+            class="border-border-muted/60 bg-bg-secondary/50 space-y-3 rounded-lg border p-3"
         >
             <h4 class="text-text-muted text-xs font-semibold tracking-wider uppercase">
                 Детали падения
@@ -95,7 +95,7 @@
         <!-- Детали: СМЕРТЬ -->
         <div
             v-if="props.phenomena?.includes('death')"
-            class="border-border/60 bg-bg-secondary/50 space-y-3 rounded-lg border p-3"
+            class="border-border-muted/60 bg-bg-secondary/50 space-y-3 rounded-lg border p-3"
         >
             <h4 class="text-text-muted text-xs font-semibold tracking-wider uppercase">
                 Детали смерти во сне
@@ -139,7 +139,7 @@
         <!-- Детали: СОННЫЙ ПАРАЛИЧ -->
         <div
             v-if="props.phenomena?.includes('paralysis')"
-            class="border-border/60 bg-bg-secondary/50 space-y-3 rounded-lg border p-3"
+            class="border-border-muted/60 bg-bg-secondary/50 space-y-3 rounded-lg border p-3"
         >
             <h4 class="text-text-muted text-xs font-semibold tracking-wider uppercase">
                 Детали сонного паралича
@@ -182,7 +182,7 @@
         <!-- Детали: ЛОЖНОЕ ПРОБУЖДЕНИЕ -->
         <div
             v-if="props.phenomena?.includes('nested_dream')"
-            class="border-border/60 bg-bg-secondary/50 space-y-3 rounded-lg border p-3"
+            class="border-border-muted/60 bg-bg-secondary/50 space-y-3 rounded-lg border p-3"
         >
             <h4 class="text-text-muted text-xs font-semibold tracking-wider uppercase">
                 Детали ложного пробуждения

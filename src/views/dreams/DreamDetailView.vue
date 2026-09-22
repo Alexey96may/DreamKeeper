@@ -1,6 +1,6 @@
 <template>
     <main
-        class="bg-bg-primary text-text-primary transition-theme duration-theme min-h-screen pb-12"
+        class="text-text-primary transition-theme duration-theme min-h-screen pb-12"
         aria-label="Детальный просмотр сна"
     >
         <div class="container mx-auto max-w-3xl px-4 py-6">
@@ -22,10 +22,12 @@
                 aria-labelledby="dream-title"
             >
                 <!-- 1. Шапка: Заголовок, дата, время суток и флаги (избранное/закреплено) -->
-                <header class="border-border/50 flex flex-col gap-2 border-b pb-5">
+                <header
+                    class="border-border/50 border-border-muted flex flex-col gap-2 border-b pb-5"
+                >
                     <div
                         v-if="dream"
-                        class="flex w-full translate-y-[-50%] items-center justify-center gap-2 overflow-auto py-2"
+                        class="border-border-muted flex w-full translate-y-[-50%] items-center justify-end gap-2 overflow-auto border-b pb-4"
                     >
                         <AppTag
                             @click="filterStore.toggleBooleanFilter('isFavorite')"
@@ -496,7 +498,7 @@
                         variant="danger"
                         :disabled="isDeleting(dream.id)"
                     >
-                        Удалить
+                        <span>Удалить</span>
                     </AppButton>
 
                     <AppButton
@@ -505,7 +507,7 @@
                         variant="primary"
                         :disabled="isDeleting(dream.id)"
                     >
-                        Редактировать
+                        <span>Редактировать</span>
                     </AppButton>
                 </div>
             </article>

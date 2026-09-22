@@ -53,7 +53,7 @@
         <component :is="currentBgComponent" />
 
         <TheHeader />
-        <main class="py-6">
+        <main>
             <RouterView />
         </main>
 

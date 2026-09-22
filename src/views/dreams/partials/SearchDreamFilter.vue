@@ -1,5 +1,5 @@
 <template>
-    <div class="bg-bg-secondary/30 border-border/50 space-y-4 rounded-xl border p-4">
+    <div class="bg-bg-secondary/30 border-border-muted/50 space-y-4 rounded-xl border p-4">
         <!-- Категории снов -->
 
         <div class="flex flex-wrap items-center gap-2">
@@ -196,7 +196,7 @@
             label="Сбылся ли сон?"
         />
 
-        <div class="border-border/40 flex flex-wrap justify-start gap-3 border-t pt-2">
+        <div class="border-border-muted/40 flex flex-wrap justify-start gap-3 border-t pt-2">
             <AppCheckbox
                 :model-value="filterStore.filters.isFavorite"
                 @update:model-value="filterStore.toggleBooleanFilter('isFavorite')"
