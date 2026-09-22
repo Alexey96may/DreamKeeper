@@ -1,6 +1,6 @@
 <template>
     <div class="pointer-events-none fixed inset-0 -z-10 overflow-hidden bg-[var(--bg-primary)]">
-        <!-- 1. Рассеянный солнечный свет (Без фильтра blur, через быстрый radial-gradient) -->
+        <!-- 1. Рассеянный солнечный свет -->
         <div
             class="sun-glade absolute -top-32 left-1/3 h-[700px] w-[700px] bg-[radial-gradient(ellipse_at_top,var(--accent)_0%,transparent_70%)] opacity-25"
         ></div>
@@ -121,7 +121,7 @@
             "
         ></div>
 
-        <!-- 5. Лесная пыльца и споры (Аппаратно ускоренные через transform) -->
+        <!-- 5. Лесная пыльца и споры (Анимация возвращена везде, но с легким щадящим таймингом) -->
         <div
             class="spore-field absolute -top-[300px] -left-[300px] h-[calc(100%+600px)] w-[calc(100%+600px)]"
         >
@@ -131,30 +131,27 @@
 </template>
 
 <style scoped>
-    /* Пульсация солнечного луча */
     .sun-glade {
         animation: sunPulse 10s ease-in-out infinite alternate;
         will-change: opacity;
+        transform: translateZ(0);
     }
 
-    /* Паттерн точек пыльцы */
     .spore-pattern {
         background-image:
             radial-gradient(1.5px 1.5px at 50px 60px, var(--accent), transparent),
             radial-gradient(2px 2px at 210px 280px, var(--text-muted), transparent),
             radial-gradient(1.5px 1.5px at 380px 120px, var(--border-color), transparent),
-            radial-gradient(2px 2px at 520px 400px, var(--accent), transparent),
-            radial-gradient(1.5px 1.5px at 700px 200px, var(--text-muted), transparent),
-            radial-gradient(2px 2px at 850px 520px, var(--border-color), transparent);
+            radial-gradient(2px 2px at 520px 400px, var(--accent), transparent);
         background-size: 600px 500px;
         background-repeat: repeat;
-        opacity: 0.45;
+        opacity: 0.4;
     }
 
-    /* Анимация через transform (0% перерисовки кадров / 0% Repaint) */
     .spore-field {
-        animation: driftSporesSmooth 40s linear infinite;
+        animation: driftSporesSmooth 80s linear infinite;
         will-change: transform;
+        transform: translateZ(0);
     }
 
     @keyframes sunPulse {

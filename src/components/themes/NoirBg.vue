@@ -1,11 +1,11 @@
 <template>
     <div class="pointer-events-none fixed inset-0 -z-10 overflow-hidden bg-[var(--bg-primary)]">
-        <!-- 1. Свет уличного фонаря (Заменен blur-[110px] на быстрый radial-gradient) -->
+        <!-- 1. Свет уличного фонаря -->
         <div
             class="lamp-glow absolute -top-20 -left-20 h-[900px] w-[700px] bg-[radial-gradient(ellipse_at_top_left,var(--accent)_0%,transparent_70%)] opacity-[0.12]"
         ></div>
 
-        <!-- Виньетирование (Уже на градиенте — работает отлично) -->
+        <!-- Виньетирование -->
         <div
             class="absolute inset-0 bg-[radial-gradient(circle_at_60%_50%,transparent_25%,var(--bg-tertiary)_90%)] opacity-85"
         ></div>
@@ -123,23 +123,23 @@
             EVIDENCE AREA — DO NOT CROSS —
         </div>
 
-        <!-- 4. Клубы ночного тумана (Аппаратный Compositing-слой) -->
-        <div class="detective-smoke-container absolute inset-0">
+        <!-- 4. Клубы ночного тумана (Скрыты на мобилках для стабильного FPS) -->
+        <div class="detective-smoke-container absolute inset-0 hidden sm:block">
             <div class="detective-smoke-scroller"></div>
         </div>
     </div>
 </template>
 
 <style scoped>
-    /* Дыхание света фонаря */
     .lamp-glow {
         animation: lampFlicker 9s ease-in-out infinite alternate;
         will-change: opacity;
+        transform: translateZ(0);
     }
 
-    /* Контейнер тумана */
     .detective-smoke-container {
         opacity: 0.1;
+        transform: translateZ(0);
     }
 
     .detective-smoke-scroller {
@@ -168,7 +168,6 @@
         }
     }
 
-    /* Движение тумана через hardware-accelerated transform */
     @keyframes driftSmokeOptimized {
         0% {
             transform: translate(0, 0);
