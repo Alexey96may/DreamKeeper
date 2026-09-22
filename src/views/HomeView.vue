@@ -1,6 +1,6 @@
 <!-- src/views/HomeView.vue -->
 <template>
-    <div class="bg-bg-primary text-text-primary transition-theme duration-theme min-h-screen">
+    <div class="text-text-primary transition-theme duration-theme min-h-screen">
         <div class="container mx-auto flex flex-col gap-6 px-4 py-6">
             <AppTitle @action="goToNewDream">
                 <template #title>
@@ -75,7 +75,7 @@
                 <!-- Заголовок даты -->
                 <div
                     @click="onDayClick({ date: activePopover.dateStr })"
-                    class="border-border text-text-primary hover:text-accent flex cursor-pointer items-center justify-between border-b pb-1.5 text-sm font-bold transition-colors"
+                    class="border-border text-text-primary hover:text-accent flex cursor-pointer items-baseline justify-between border-b pb-1.5 text-sm font-bold transition-colors"
                 >
                     <span>
                         {{
@@ -117,6 +117,12 @@
                     >
                         <span>Настроение:</span>
                         <span class="font-bold">{{ activePopover.mood }}/10</span>
+                    </div>
+
+                    <div
+                        v-if="activePopover.dreams.length === 0 && activePopover.mood === undefined"
+                    >
+                        <span class="text-text-primary">Нет данных за день!</span>
                     </div>
                 </div>
             </div>
@@ -280,7 +286,13 @@
         const dreams = sleepsByDateMap.value.get(dateStr) || [];
         const state = userStatesByDateMap.value.get(dateStr);
 
-        if (dreams.length === 0 && !state && !day.isToday) {
+        if ((day.inPrevMonth || day.inNextMonth) && !day.isDisabled) {
+            activePopover.value = null;
+            calendar.value?.move(day.date);
+            return;
+        }
+
+        if (day.isDisabled) {
             activePopover.value = null;
             return;
         }
@@ -397,7 +409,6 @@
 
     :deep(.vc-nav-container) {
         background-color: var(--bg-elevated);
-        border-color: var(--border-color);
         color: var(--text-primary);
     }
 

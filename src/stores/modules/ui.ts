@@ -1,21 +1,33 @@
 // src/store/modules/ui.ts
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 
 import { defineStore } from 'pinia';
 
 import type { Toast } from '@/types/Notification';
 import type { ThemeMode } from '@/types/Theme';
 
+export type ActiveThemeMode = Exclude<ThemeMode, 'system'>;
+
 export const useUIStore = defineStore('ui', () => {
     // ===== STATE =====
     const theme = ref<ThemeMode>(
         (localStorage.getItem('dreamkeeper-theme') as ThemeMode) || 'system',
     );
+
+    const isSystemDark = ref<boolean>(window.matchMedia('(prefers-color-scheme: dark)').matches);
+
     const sidebarOpen = ref<boolean>(false);
     const isLoading = ref<boolean>(false);
 
     const toasts = ref<Toast[]>([]);
     const MAX_TOASTS = 4;
+
+    const resolvedTheme = computed<ActiveThemeMode>(() => {
+        if (theme.value === 'system') {
+            return isSystemDark.value ? 'astronomy' : 'light';
+        }
+        return theme.value as ActiveThemeMode;
+    });
 
     const removeToast = (id: string) => {
         toasts.value = toasts.value.filter((t) => t.id !== id);
@@ -74,8 +86,7 @@ export const useUIStore = defineStore('ui', () => {
     const applyTheme = (themeMode: ThemeMode) => {
         let actualTheme = themeMode;
         if (themeMode === 'system') {
-            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-            actualTheme = prefersDark ? 'astronomy' : 'light';
+            actualTheme = isSystemDark.value ? 'astronomy' : 'light';
         }
         document.documentElement.setAttribute('data-theme', actualTheme);
     };
@@ -84,7 +95,9 @@ export const useUIStore = defineStore('ui', () => {
         applyTheme(theme.value);
 
         const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-        mediaQuery.addEventListener('change', () => {
+        mediaQuery.addEventListener('change', (e) => {
+            isSystemDark.value = e.matches;
+
             if (theme.value === 'system') {
                 applyTheme('system');
             }
@@ -102,6 +115,7 @@ export const useUIStore = defineStore('ui', () => {
     return {
         // State
         theme,
+        resolvedTheme,
         sidebarOpen,
         isLoading,
         toasts,

@@ -23,9 +23,6 @@ export function useCrud() {
 
     const deletingItems = ref<number[]>([]);
 
-    /**
-     * Базовая универсальная функция удаления с возможностью отмены (Undo)
-     */
     const deleteWithUndo = async (config: DeleteConfig) => {
         const numericId = Number(config.id);
         if (!numericId) return;

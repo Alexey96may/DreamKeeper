@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="700" viewBox="0 0 800 700">
+    <defs>
+        <radialGradient id="grad_accent" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" stop-color="var(--accent, #38bdf8)" stop-opacity="1" />
+            <stop offset="100%" stop-color="var(--accent, #38bdf8)" stop-opacity="0" />
+        </radialGradient>
+        <radialGradient id="grad_muted" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" stop-color="var(--text-muted, #94a3b8)" stop-opacity="1" />
+            <stop offset="100%" stop-color="var(--text-muted, #94a3b8)" stop-opacity="0" />
+        </radialGradient>
+        <radialGradient id="grad_hover" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" stop-color="var(--accent-hover, #0284c7)" stop-opacity="1" />
+            <stop offset="100%" stop-color="var(--accent-hover, #0284c7)" stop-opacity="0" />
+        </radialGradient>
+        <radialGradient id="grad_strong" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" stop-color="var(--border-strong, #475569)" stop-opacity="1" />
+            <stop offset="100%" stop-color="var(--border-strong, #475569)" stop-opacity="0" />
+        </radialGradient>
+    </defs>
+
+    <!-- Частицы инея -->
+    <circle cx="60" cy="90" r="1.5" fill="url(#grad_accent)" opacity="0.9" />
+    <circle cx="200" cy="350" r="2" fill="url(#grad_muted)" opacity="0.7" />
+    <circle cx="450" cy="120" r="1.5" fill="url(#grad_hover)" opacity="0.8" />
+    <circle cx="620" cy="480" r="2" fill="url(#grad_strong)" opacity="0.6" />
+    <circle cx="780" cy="220" r="1.5" fill="url(#grad_accent)" opacity="0.85" />
+</svg>

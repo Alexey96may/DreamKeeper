@@ -165,6 +165,6 @@
 */
 
 body {
-    background-color: var(--color-night-900);
+    /* background-color: var(--color-night-900); */
     color: white;
 }

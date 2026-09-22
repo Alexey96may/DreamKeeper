@@ -16,7 +16,7 @@
                 </div>
 
                 <!-- Сны за день -->
-                <div v-if="dayDreams.length > 0" class="mt-4">
+                <div class="mt-4">
                     <div class="mb-4! flex items-center justify-between">
                         <h4 class="text-text-soft text-sm font-medium">Сны</h4>
 
@@ -31,7 +31,7 @@
                         </AppButton>
                     </div>
 
-                    <div class="flex flex-col gap-4">
+                    <div v-if="dayDreams.length > 0" class="flex flex-col gap-4">
                         <div
                             v-for="dream in dayDreams"
                             :key="dream.id"
@@ -83,9 +83,9 @@
                             </div>
                         </div>
                     </div>
-                </div>
 
-                <p v-else class="text-text-mute mt-4 text-sm">Нет снов за этот день</p>
+                    <p v-else class="text-text-mute mt-4 text-sm">Нет снов за этот день</p>
+                </div>
 
                 <!-- Состояние за день -->
                 <div class="border-border mt-6 border-t pt-4">

@@ -14,7 +14,7 @@
 
 <template>
     <header
-        class="bg-bg-secondary border-border shadow-card transition-theme sticky top-0 z-40 w-full border-b duration-300"
+        class="header bg-bg-secondary/80 border-border shadow-card transition-theme sticky top-0 z-40 w-full border-b duration-300"
     >
         <div
             class="container mx-auto flex h-16 max-w-7xl items-center justify-between gap-4 px-4 sm:px-6 lg:px-8"
