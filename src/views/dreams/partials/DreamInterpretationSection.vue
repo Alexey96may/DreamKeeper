@@ -44,14 +44,13 @@
                             @input="sleepStore.clearError(`interpretations.${idx}.tag`)"
                         />
 
-                        <!-- Выпадающий список (используем @mousedown.prevent вместо @click) -->
                         <ul
                             v-if="
                                 activeRowIndex === idx &&
                                 activeField === 'tag' &&
                                 suggestedSymbols.length > 0
                             "
-                            class="border-accent bg-bg-muted absolute top-full right-0 left-0 z-50 mt-1 max-h-60 overflow-y-auto rounded-md border shadow-lg"
+                            class="border-accent bg-bg-muted absolute top-full right-0 left-0 z-50 mt-1 max-h-60 overflow-x-visible overflow-y-auto rounded-md border shadow-lg"
                         >
                             <li
                                 v-for="symbol in suggestedSymbols"
@@ -91,7 +90,7 @@
                                 activeField === 'meaning' &&
                                 suggestedInterpretations.length > 0
                             "
-                            class="border-accent bg-bg-muted divide-border/40 absolute top-full right-0 left-0 z-50 mt-1 max-h-60 divide-y overflow-y-auto rounded-md border shadow-lg"
+                            class="border-accent bg-bg-muted divide-border/40 absolute top-full right-0 left-0 z-50 mt-1 max-h-60 divide-y overflow-x-visible overflow-y-auto rounded-md border shadow-lg"
                         >
                             <li
                                 v-for="interpr in suggestedInterpretations"

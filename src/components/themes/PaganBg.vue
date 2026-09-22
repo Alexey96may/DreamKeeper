@@ -1,5 +1,7 @@
 <template>
-    <div class="pointer-events-none fixed inset-0 -z-10 overflow-hidden bg-[var(--bg-primary)]">
+    <div
+        class="pointer-events-none fixed inset-0 -z-10 min-h-screen overflow-hidden bg-[var(--bg-primary)]"
+    >
         <!-- 1. Свечение северного сияния -->
         <div
             class="aurora-glow absolute -top-32 left-1/3 h-[500px] w-[700px] bg-[radial-gradient(ellipse_at_center,var(--accent)_0%,transparent_70%)] opacity-[0.12]"

@@ -1,5 +1,7 @@
 <template>
-    <div class="pointer-events-none fixed inset-0 -z-10 overflow-hidden bg-[var(--bg-primary)]">
+    <div
+        class="pointer-events-none fixed inset-0 -z-10 min-h-screen overflow-hidden bg-[var(--bg-primary)]"
+    >
         <!-- 1. Фоновое фосфорное свечение (Без тяжелого blur) -->
         <div
             class="dagon-glow absolute -top-32 left-1/4 h-[700px] w-[700px] bg-[radial-gradient(circle,var(--accent)_0%,transparent_70%)] opacity-20"

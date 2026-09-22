@@ -1,5 +1,7 @@
 <template>
-    <div class="pointer-events-none fixed inset-0 -z-10 overflow-hidden bg-[var(--bg-primary)]">
+    <div
+        class="pointer-events-none fixed inset-0 -z-10 min-h-screen overflow-hidden bg-[var(--bg-primary)]"
+    >
         <!-- 1. Тёплый отблеск пламени (Без тяжелого blur) -->
         <div
             class="lamp-pulse absolute -top-40 left-1/2 h-[700px] w-[700px] -translate-x-1/2 rounded-full bg-[radial-gradient(circle,var(--accent)_0%,transparent_70%)] opacity-10"

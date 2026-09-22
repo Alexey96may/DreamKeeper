@@ -145,7 +145,7 @@
                     @input="sleepStore.clearError('categoryDetails.prophetic.expectedByDate')"
                 />
 
-                <div class="flex w-full justify-between gap-3">
+                <div class="flex w-full flex-col justify-between gap-3">
                     <AppCheckbox
                         :model-value="props.categoryDetails?.prophetic?.isFulfilled ?? false"
                         @update:model-value="

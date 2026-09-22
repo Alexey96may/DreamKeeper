@@ -1,5 +1,7 @@
 <template>
-    <div class="pointer-events-none fixed inset-0 -z-10 overflow-hidden bg-[var(--bg-primary)]">
+    <div
+        class="pointer-events-none fixed inset-0 -z-10 min-h-screen overflow-hidden bg-[var(--bg-primary)]"
+    >
         <!-- 1. Неоновое свечение несущей частоты (Без тяжелого blur) -->
         <div
             class="hifi-signal-glow absolute top-1/2 left-1/2 h-[750px] w-[950px] -translate-x-1/2 -translate-y-1/2 bg-[radial-gradient(ellipse_at_center,var(--accent)_0%,var(--accent-subtle)_40%,transparent_70%)] opacity-20"

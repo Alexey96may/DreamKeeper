@@ -1,5 +1,7 @@
 <template>
-    <div class="pointer-events-none fixed inset-0 -z-10 overflow-hidden bg-[var(--bg-primary)]">
+    <div
+        class="pointer-events-none fixed inset-0 -z-10 min-h-screen overflow-hidden bg-[var(--bg-primary)]"
+    >
         <!-- 1. Свет уличного фонаря -->
         <div
             class="lamp-glow absolute -top-20 -left-20 h-[900px] w-[700px] bg-[radial-gradient(ellipse_at_top_left,var(--accent)_0%,transparent_70%)] opacity-[0.12]"

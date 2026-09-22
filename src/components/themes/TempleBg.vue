@@ -1,5 +1,7 @@
 <template>
-    <div class="pointer-events-none fixed inset-0 -z-10 overflow-hidden bg-[var(--bg-primary)]">
+    <div
+        class="min pointer-events-none fixed inset-0 -z-10 min-h-screen overflow-hidden bg-[var(--bg-primary)]"
+    >
         <!-- 1. Купольный луч света (Оптимизировано: убран тяжелый blur, заменен на чистый градиент) -->
         <div
             class="temple-light-beam absolute -top-20 left-1/2 h-[600px] w-[800px] -translate-x-1/2 bg-[radial-gradient(ellipse_at_top,var(--accent)_0%,var(--accent-subtle)_40%,transparent_70%)] opacity-[0.12]"

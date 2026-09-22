@@ -1,5 +1,5 @@
 <template>
-    <div class="pointer-events-none fixed inset-0 -z-10 overflow-hidden bg-[#0b0f19]">
+    <div class="pointer-events-none fixed inset-0 -z-10 min-h-screen overflow-hidden bg-[#0b0f19]">
         <!-- 1. Фоновые сияния (Без тяжелого blur, чистые радиальные градиенты) -->
         <div
             class="absolute -top-40 -left-40 h-full w-full bg-[radial-gradient(circle_at_top_left,rgba(79,70,229,0.08)_0%,transparent_60%)]"

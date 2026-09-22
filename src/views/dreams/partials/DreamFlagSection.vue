@@ -1,6 +1,6 @@
 <template>
     <div class="border-border-muted bg-bg-primary rounded-xl border p-4 sm:p-6">
-        <div class="flex gap-2 overflow-auto p-2">
+        <div class="flex gap-2 overflow-x-auto overflow-y-visible p-2">
             <AppTag
                 :is-pressed="props.isPinned"
                 :icon="Pin"

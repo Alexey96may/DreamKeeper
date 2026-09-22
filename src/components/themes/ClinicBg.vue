@@ -1,5 +1,7 @@
 <template>
-    <div class="pointer-events-none fixed inset-0 -z-10 overflow-hidden bg-[var(--bg-primary)]">
+    <div
+        class="pointer-events-none fixed inset-0 -z-10 min-h-screen overflow-hidden bg-[var(--bg-primary)]"
+    >
         <!-- 1. Терапевтическая аура инсайта (Без тяжелого blur) -->
         <div
             class="clinic-aura absolute -top-32 left-1/2 h-[700px] w-[900px] bg-[radial-gradient(ellipse_at_center,var(--accent)_0%,var(--accent-subtle)_50%,transparent_70%)] opacity-15"

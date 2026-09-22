@@ -1,5 +1,7 @@
 <template>
-    <div class="pointer-events-none fixed inset-0 -z-10 overflow-hidden bg-[var(--bg-primary)]">
+    <div
+        class="pointer-events-none fixed inset-0 -z-10 min-h-screen overflow-hidden bg-[var(--bg-primary)]"
+    >
         <!-- 1. Янтарный луч кинопроектора (Без тяжелого blur) -->
         <div
             class="projector-flicker absolute -top-20 -right-20 h-[850px] w-[850px] bg-[radial-gradient(circle_at_top_right,var(--accent)_0%,var(--accent-subtle)_40%,transparent_70%)] opacity-15"

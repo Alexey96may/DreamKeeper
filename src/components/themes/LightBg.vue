@@ -1,5 +1,7 @@
 <template>
-    <div class="pointer-events-none fixed inset-0 -z-10 overflow-hidden bg-[var(--bg-primary)]">
+    <div
+        class="pointer-events-none fixed inset-0 -z-10 min-h-screen overflow-hidden bg-[var(--bg-primary)]"
+    >
         <!-- 1. Мягкие рассеянные засветки (Без blur, через быстрый radial-gradient) -->
         <div
             class="light-glow-1 absolute -top-32 -right-32 h-[700px] w-[700px] bg-[radial-gradient(circle_at_center,var(--accent-subtle)_0%,transparent_70%)] opacity-30"

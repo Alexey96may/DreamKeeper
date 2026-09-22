@@ -11,7 +11,14 @@
         </div>
 
         <div v-for="(rel, idx) in list" :key="idx">
-            <div class="mb-2 flex items-center gap-2 overflow-auto p-2">
+            <div class="mb-2 flex flex-wrap items-center gap-2 p-2">
+                <AppButton
+                    size="xs"
+                    @click="removeRelatedDream(idx)"
+                    variant="danger"
+                    class="ml-auto"
+                    :icon-left="X"
+                />
                 <AppSelect
                     :model-value="rel.dreamId"
                     @update:model-value="updateField(idx, 'dreamId', $event ?? undefined)"
@@ -30,13 +37,6 @@
                         sleepStore.validationErrors[`relatedDreams.${idx}.relationType`]
                     "
                     @clear-error="sleepStore.clearError(`relatedDreams.${idx}.relationType`)"
-                />
-
-                <AppButton
-                    size="xs"
-                    @click="removeRelatedDream(idx)"
-                    variant="danger"
-                    :icon-left="X"
                 />
             </div>
 
