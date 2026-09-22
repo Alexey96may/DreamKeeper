@@ -461,7 +461,7 @@
                         Личные заметки
                     </h2>
                     <p
-                        class="text-text-primary bg-bg-secondary/30 border-border/30 mt-1.5 rounded-lg border p-3.5 text-xs leading-relaxed italic"
+                        class="text-text-primary bg-bg-secondary/30 border-border/30 mt-1.5 overflow-auto rounded-lg border p-3.5 text-xs leading-relaxed italic"
                     >
                         {{ dream.personalNotes }}
                     </p>

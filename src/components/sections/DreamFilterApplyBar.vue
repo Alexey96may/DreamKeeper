@@ -2,11 +2,9 @@
     <aside
         v-if="isVisible"
         aria-label="Панель применения фильтров"
-        class="bg-bg-mute fixed right-0 bottom-0 z-40 mx-4 my-4 rounded-lg p-2"
+        class="fixed right-0 bottom-0 z-40 mx-4 my-4 flex flex-col items-center gap-2 rounded-lg"
     >
-        <!-- Бейдж с количеством результатов -->
-
-        <div v-if="filterStore.filters.isActive">
+        <div v-show="filterStore.filters.isActive">
             <div
                 class="text-text-primary bg-bg-secondary border-border/50 absolute -top-2 -right-2 flex items-center gap-1 rounded-full border px-2 py-0.5 text-xs font-medium shadow-sm"
                 role="status"
@@ -23,7 +21,7 @@
                     variant="primary"
                     aria-label="Применить выбранные фильтры и перейти к результатам"
                 >
-                    Сбросить фильтр
+                    <span>Сбросить</span>
                 </AppButton>
 
                 <AppButton
@@ -32,19 +30,19 @@
                     variant="primary"
                     aria-label="Применить выбранные фильтры и перейти к результатам"
                 >
-                    Применить фильтр
+                    <span>Применить</span>
                 </AppButton>
             </div>
         </div>
 
-        <div v-else>
+        <div v-show="!filterStore.filters.isActive">
             <AppButton
                 @click="filterStore.toggleActive(true)"
                 size="xs"
                 variant="primary"
                 aria-label="Применить выбранные фильтры и перейти к результатам"
             >
-                Активировать фильтр
+                <span>Фильтр</span>
             </AppButton>
         </div>
     </aside>

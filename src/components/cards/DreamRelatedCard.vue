@@ -9,7 +9,7 @@
 
 <template>
     <article
-        class="bg-bg-secondary/40 border-border/40 flex flex-col justify-between gap-1 rounded-lg border p-2.5 text-xs sm:flex-row sm:items-center"
+        class="bg-bg-secondary/40 border-border/40 flex flex-col justify-between gap-3 rounded-lg border p-2.5 text-xs"
     >
         <div class="flex items-center gap-2">
             <span class="text-accent font-semibold">
@@ -25,6 +25,8 @@
             </router-link>
         </div>
 
-        <span v-if="relation?.note" class="text-text-mute italic"> "{{ relation?.note }}" </span>
+        <span v-if="relation?.note" class="text-text-mute overflow-hidden italic">
+            "{{ relation?.note }}"
+        </span>
     </article>
 </template>
