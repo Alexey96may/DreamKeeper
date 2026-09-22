@@ -35,7 +35,6 @@ export const useUIStore = defineStore('ui', () => {
 
         toasts.value.push(newToast);
 
-        // Индивидуальный таймер для каждого тоста
         if (duration > 0) {
             setTimeout(() => {
                 removeToast(id);
@@ -53,15 +52,18 @@ export const useUIStore = defineStore('ui', () => {
     const toggleTheme = () => {
         const themes: ThemeMode[] = [
             'light',
-            'dark',
-            'night',
-            'sepia',
-            'dracula',
-            'emerald',
-            'forest',
-            'mystic',
-            'neon',
-            'nord',
+            'astronomy',
+            'hifi',
+            'nature',
+            'alchemy',
+            'pagan',
+            'astrology',
+            'cinema',
+            'cthulhu',
+            'archive',
+            'noir',
+            'clinic',
+            'temple',
             'system',
         ];
         const currentIndex = themes.indexOf(theme.value);
@@ -73,7 +75,7 @@ export const useUIStore = defineStore('ui', () => {
         let actualTheme = themeMode;
         if (themeMode === 'system') {
             const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-            actualTheme = prefersDark ? 'dark' : 'light';
+            actualTheme = prefersDark ? 'astronomy' : 'light';
         }
         document.documentElement.setAttribute('data-theme', actualTheme);
     };

@@ -2,15 +2,18 @@ import type { Component } from 'vue';
 
 export type ThemeMode =
     | 'light'
-    | 'dark'
-    | 'night'
-    | 'sepia'
-    | 'neon'
-    | 'nord'
-    | 'dracula'
-    | 'forest'
-    | 'emerald'
-    | 'mystic'
+    | 'astronomy'
+    | 'hifi'
+    | 'nature'
+    | 'alchemy'
+    | 'pagan'
+    | 'astrology'
+    | 'cinema'
+    | 'cthulhu'
+    | 'archive'
+    | 'noir'
+    | 'clinic'
+    | 'temple'
     | 'system';
 
 export interface ThemeOption {

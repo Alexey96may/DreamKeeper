@@ -45,102 +45,61 @@
 
 :root {
     /* === ФОНЫ И ПОВЕРХНОСТИ (Surface Layers) === */
-    --bg-primary: #ffffff; /* Основной фон всей страницы/тела приложения */
-    --bg-secondary: #f3f4f6; /* Фон карточек, сайдбара, второстепенных блоков */
-    --bg-tertiary: #e5e7eb; /* Фон полей ввода, инпутов, ховер-состояний элементов списка */
-    --bg-elevated: #ffffff; /* Приподнятые поверхности: модальные окна, выпадающие списки (dropdown), тултипы */
-
-    /* === ТЕКСТОВЫЕ УРОВНИ (Typography Colors) === */
-    --text-primary: #111827; /* Заголовки, основной контент, важный читаемый текст */
-    --text-secondary: #4b5563; /* Второстепенные описания, метаданные, подзаголовки */
-    --text-muted: #9ca3af; /* Плейсхолдеры в инпутах, таймстампы, еле заметные подписи */
-    --text-inverse: #ffffff; /* Текст, который пишется поверх закрашенных кнопок (например, поверх --accent) */
-
-    /* === АКЦЕНТЫ И ДЕЙСТВИЯ (Brand & Actions) === */
-    --accent: #2563eb; /* Основной фирменный цвет: кнопки действий, активные ссылки, переключатели */
-    --accent-hover: #1d4ed8; /* Цвет акцентного элемента при наведении курсора */
-    --accent-active: #1e40af; /* Состояние акцента в момент клика/нажатия */
-    --accent-subtle: #eff6ff; /* Слегка подкрашенный фон с акцентным оттенком (для мягкой подсветки, тегов) */
-
-    /* === ГРАНИЦЫ И КОНТУРЫ (Borders & Focus) === */
-    --border-color: #d1d5db; /* Стандартные рамки карточек, разделители крупных блоков */
-    --border-subtle: #e5e7eb; /* Еле заметные тонкие линии для внутренних разделений */
-    --border-strong: #9ca3af; /* Усиленные контуры (например, активный бордер инпута или выбранная карточка) */
-    --ring-color: rgba(
-        37,
-        99,
-        235,
-        0.5
-    ); /* Цвет внешнего контура фокуса (focus-visible) для доступности */
-
-    /* === СЕМАНТИКА: ОШИБКИ И КОШМАРЫ (Danger) === */
-    --danger-text: #991b1b; /* Цвет текста для критических ошибок и карточек-кошмаров */
-    --danger-bg: #fee2e2; /* Мягкий фон для алертов, плашек ошибок и фонов кошмарных снов */
-    --danger-border: #fca5a5; /* Цвет рамки для критических элементов или тревожных карточек */
-
-    /* === СЕМАНТИКА: ПРЕДУПРЕЖДЕНИЯ (Warning) === */
-    --warning-text: #92400e; /* Цвет текста предупреждений */
-    --warning-bg: #fef3c7; /* Фон для блоков предупреждений и важных заметок */
-    --warning-border: #fcd34d; /* Рамка для предупреждающих элементов */
-
-    /* === СЕМАНТИКА: УСПЕХ (Success) === */
-    --success-text: #166534; /* Цвет текста успешных операций */
-    --success-bg: #dcfce7; /* Фон подтверждений, выполненных задач */
-    --success-border: #86efac; /* Рамка для успешных состояний */
-
-    /* === СЕМАНТИКА: ИНФОРМАЦИЯ (Info) === */
-    --info-text: #1e40af; /* Текст для информационных уведомлений и подсказок */
-    --info-bg: #dbeafe; /* Фон информационных блоков */
-    --info-border: #93c5fd; /* Рамка информационных элементов */
-
-    /* === СЕМАНТИКА: МИСТИКА / ОСОЗНАННЫЕ СНЫ (Mystical / Lucid) === */
-    --mystical-text: #581c87; /* Текст для выделения осознанных (lucid) снов */
-    --mystical-bg: #f3e8ff; /* Фирменный глубокий/пастельный фон под специфические сны */
-    --mystical-border: #d8b4fe; /* Рамка для мистических или вещих карточек */
-
-    /* === СЕМАНТИКА: АРХИВ / НЕЙТРАЛЬНОЕ (Muted Status) === */
-    --muted-status-text: #374151; /* Текст для скрытых, архивных или второстепенных статусов */
-    --muted-status-bg: #f9fafb; /* Фоновый цвет приглушенных элементов */
-    --muted-status-border: #e5e7eb; /* Рамка для архивных элементов */
-}
-
-[data-theme='default'] {
     --bg-primary: #ffffff;
     --bg-secondary: #f3f4f6;
     --bg-tertiary: #e5e7eb;
     --bg-elevated: #ffffff;
+
+    /* === ТЕКСТОВЫЕ УРОВНИ (Typography Colors) === */
     --text-primary: #111827;
     --text-secondary: #4b5563;
     --text-muted: #9ca3af;
     --text-inverse: #ffffff;
+
+    /* === АКЦЕНТЫ И ДЕЙСТВИЯ (Brand & Actions) === */
     --accent: #2563eb;
     --accent-hover: #1d4ed8;
     --accent-active: #1e40af;
     --accent-subtle: #eff6ff;
+
+    /* === ГРАНИЦЫ И КОНТУРЫ (Borders & Focus) === */
     --border-color: #d1d5db;
     --border-subtle: #e5e7eb;
     --border-strong: #9ca3af;
     --ring-color: rgba(37, 99, 235, 0.5);
+
+    /* === СЕМАНТИКА: ОШИБКИ И КОШМАРЫ (Danger) === */
     --danger-text: #991b1b;
     --danger-bg: #fee2e2;
     --danger-border: #fca5a5;
+
+    /* === СЕМАНТИКА: ПРЕДУПРЕЖДЕНИЯ (Warning) === */
     --warning-text: #92400e;
     --warning-bg: #fef3c7;
     --warning-border: #fcd34d;
+
+    /* === СЕМАНТИКА: УСПЕХ (Success) === */
     --success-text: #166534;
     --success-bg: #dcfce7;
     --success-border: #86efac;
+
+    /* === СЕМАНТИКА: ИНФОРМАЦИЯ (Info) === */
     --info-text: #1e40af;
     --info-bg: #dbeafe;
     --info-border: #93c5fd;
+
+    /* === СЕМАНТИКА: МИСТИКА / ОСОЗНАННЫЕ СНЫ (Mystical / Lucid) === */
     --mystical-text: #581c87;
     --mystical-bg: #f3e8ff;
     --mystical-border: #d8b4fe;
+
+    /* === СЕМАНТИКА: АРХИВ / НЕЙТРАЛЬНОЕ (Muted Status) === */
     --muted-status-text: #374151;
     --muted-status-bg: #f9fafb;
     --muted-status-border: #e5e7eb;
 }
 
+[data-theme='default'],
 [data-theme='light'] {
     --bg-primary: #f8fafc;
     --bg-secondary: #ffffff;
@@ -178,23 +137,24 @@
     --muted-status-border: #e2e8f0;
 }
 
-[data-theme='dark'] {
-    --bg-primary: #121212;
-    --bg-secondary: #1e1e1e;
-    --bg-tertiary: #2a2a2a;
-    --bg-elevated: #242424;
-    --text-primary: #e0e0e0;
-    --text-secondary: #a0a0a0;
-    --text-muted: #666666;
-    --text-inverse: #121212;
-    --accent: #3b82f6;
-    --accent-hover: #60a5fa;
-    --accent-active: #2563eb;
-    --accent-subtle: #1e3a8a;
-    --border-color: #333333;
-    --border-subtle: #262626;
-    --border-strong: #525252;
-    --ring-color: rgba(59, 130, 246, 0.5);
+/* === АСТРОНОМИЯ (Научный стиль / Бывшая Dark) === */
+[data-theme='astronomy'] {
+    --bg-primary: #0b0f19;
+    --bg-secondary: #111827;
+    --bg-tertiary: #1f2937;
+    --bg-elevated: #182234;
+    --text-primary: #f3f4f6;
+    --text-secondary: #9ca3af;
+    --text-muted: #6b7280;
+    --text-inverse: #0b0f19;
+    --accent: #6366f1;
+    --accent-hover: #818cf8;
+    --accent-active: #4f46e5;
+    --accent-subtle: #1e1b4b;
+    --border-color: #1f2937;
+    --border-subtle: #111827;
+    --border-strong: #4f46e5;
+    --ring-color: rgba(99, 102, 241, 0.5);
     --danger-text: #fca5a5;
     --danger-bg: #450a0a;
     --danger-border: #7f1d1d;
@@ -207,89 +167,16 @@
     --info-text: #93c5fd;
     --info-bg: #172554;
     --info-border: #1e40af;
-    --mystical-text: #d8b4fe;
-    --mystical-bg: #3b0764;
-    --mystical-border: #6b21a8;
-    --muted-status-text: #9ca3af;
-    --muted-status-bg: #1a1a1a;
-    --muted-status-border: #2e2e2e;
-}
-
-[data-theme='night'] {
-    --bg-primary: #000000;
-    --bg-secondary: #0a0a0a;
-    --bg-tertiary: #171717;
-    --bg-elevated: #121212;
-    --text-primary: #f5f5f5;
-    --text-secondary: #a3a3a3;
-    --text-muted: #525252;
-    --text-inverse: #000000;
-    --accent: #6366f1;
-    --accent-hover: #818cf8;
-    --accent-active: #4f46e5;
-    --accent-subtle: #1e1b4b;
-    --border-color: #262626;
-    --border-subtle: #171717;
-    --border-strong: #404040;
-    --ring-color: rgba(99, 102, 241, 0.5);
-    --danger-text: #f87171;
-    --danger-bg: #3f1212;
-    --danger-border: #7f1d1d;
-    --warning-text: #fbbf24;
-    --warning-bg: #451a03;
-    --warning-border: #78350f;
-    --success-text: #4ade80;
-    --success-bg: #064e3b;
-    --success-border: #065f46;
-    --info-text: #60a5fa;
-    --info-bg: #1e3a8a;
-    --info-border: #1d4ed8;
     --mystical-text: #c084fc;
     --mystical-bg: #2e1065;
     --mystical-border: #581c87;
-    --muted-status-text: #737373;
-    --muted-status-bg: #050505;
-    --muted-status-border: #1a1a1a;
+    --muted-status-text: #9ca3af;
+    --muted-status-bg: #0d1320;
+    --muted-status-border: #1f2937;
 }
 
-[data-theme='sepia'] {
-    --bg-primary: #f4ecd8;
-    --bg-secondary: #eae0c8;
-    --bg-tertiary: #dfd4b8;
-    --bg-elevated: #fffef8;
-    --text-primary: #433422;
-    --text-secondary: #6b563d;
-    --text-muted: #9c8466;
-    --text-inverse: #f4ecd8;
-    --accent: #a0522d;
-    --accent-hover: #8b4513;
-    --accent-active: #6e360f;
-    --accent-subtle: #f5eedc;
-    --border-color: #d2c2a6;
-    --border-subtle: #ddcaa5;
-    --border-strong: #9c8466;
-    --ring-color: rgba(160, 82, 45, 0.4);
-    --danger-text: #8b0000;
-    --danger-bg: #f9d6d6;
-    --danger-border: #e09f9f;
-    --warning-text: #8b6508;
-    --warning-bg: #faedd0;
-    --warning-border: #e2c277;
-    --success-text: #2e6b34;
-    --success-bg: #d7edd8;
-    --success-border: #9ec9a3;
-    --info-text: #27408b;
-    --info-bg: #d8e2f8;
-    --info-border: #9fb5e0;
-    --mystical-text: #5d367a;
-    --mystical-bg: #eddfee;
-    --mystical-border: #bca0d3;
-    --muted-status-text: #594631;
-    --muted-status-bg: #eee5d0;
-    --muted-status-border: #d2c2a6;
-}
-
-[data-theme='neon'] {
+/* === HI-FI / ЛАБОРАТОРИЯ (Осознанность & ЭЭГ / Бывшая Neon) === */
+[data-theme='hifi'] {
     --bg-primary: #0b091a;
     --bg-secondary: #16122d;
     --bg-tertiary: #221a44;
@@ -326,7 +213,46 @@
     --muted-status-border: #241c47;
 }
 
-[data-theme='nord'] {
+/* === АЛХИМИЯ / ГРИМУАР (Древний стиль / Бывшая Sepia) === */
+[data-theme='alchemy'] {
+    --bg-primary: #f4ecd8;
+    --bg-secondary: #eae0c8;
+    --bg-tertiary: #dfd4b8;
+    --bg-elevated: #fffef8;
+    --text-primary: #433422;
+    --text-secondary: #6b563d;
+    --text-muted: #9c8466;
+    --text-inverse: #f4ecd8;
+    --accent: #a0522d;
+    --accent-hover: #8b4513;
+    --accent-active: #6e360f;
+    --accent-subtle: #f5eedc;
+    --border-color: #d2c2a6;
+    --border-subtle: #ddcaa5;
+    --border-strong: #9c8466;
+    --ring-color: rgba(160, 82, 45, 0.4);
+    --danger-text: #8b0000;
+    --danger-bg: #f9d6d6;
+    --danger-border: #e09f9f;
+    --warning-text: #8b6508;
+    --warning-bg: #faedd0;
+    --warning-border: #e2c277;
+    --success-text: #2e6b34;
+    --success-bg: #d7edd8;
+    --success-border: #9ec9a3;
+    --info-text: #27408b;
+    --info-bg: #d8e2f8;
+    --info-border: #9fb5e0;
+    --mystical-text: #5d367a;
+    --mystical-bg: #eddfee;
+    --mystical-border: #bca0d3;
+    --muted-status-text: #594631;
+    --muted-status-bg: #eee5d0;
+    --muted-status-border: #d2c2a6;
+}
+
+/* === ЯЗЫЧЕСТВО / РУНЫ (Северный стиль / Бывшая Nord) === */
+[data-theme='pagan'] {
     --bg-primary: #2e3440;
     --bg-secondary: #3b4252;
     --bg-tertiary: #434c5e;
@@ -363,44 +289,8 @@
     --muted-status-border: #434c5e;
 }
 
-[data-theme='dracula'] {
-    --bg-primary: #282a36;
-    --bg-secondary: #383a59;
-    --bg-tertiary: #44475a;
-    --bg-elevated: #2f3142;
-    --text-primary: #f8f8f2;
-    --text-secondary: #bd93f9;
-    --text-muted: #6272a4;
-    --text-inverse: #282a36;
-    --accent: #ff79c6;
-    --accent-hover: #ff92d0;
-    --accent-active: #ff55b3;
-    --accent-subtle: #44475a;
-    --border-color: #44475a;
-    --border-subtle: #383a59;
-    --border-strong: #bd93f9;
-    --ring-color: rgba(255, 121, 198, 0.5);
-    --danger-text: #ff5555;
-    --danger-bg: #5c2c2c;
-    --danger-border: #ff5555;
-    --warning-text: #f1fa8c;
-    --warning-bg: #54562c;
-    --warning-border: #f1fa8c;
-    --success-text: #50fa7b;
-    --success-bg: #225232;
-    --success-border: #50fa7b;
-    --info-text: #8be9fd;
-    --info-bg: #29545c;
-    --info-border: #8be9fd;
-    --mystical-text: #bd93f9;
-    --mystical-bg: #3a2e5c;
-    --mystical-border: #bd93f9;
-    --muted-status-text: #8590ba;
-    --muted-status-bg: #22242f;
-    --muted-status-border: #383a59;
-}
-
-[data-theme='forest'] {
+/* === ПРИРОДА / ТРАВНИЧЕСТВО (Народный стиль / Бывшая Forest) === */
+[data-theme='nature'] {
     --bg-primary: #f4f6f0;
     --bg-secondary: #e6ebd9;
     --bg-tertiary: #d2dac1;
@@ -437,44 +327,8 @@
     --muted-status-border: #b8c7ac;
 }
 
-[data-theme='emerald'] {
-    --bg-primary: #061a14;
-    --bg-secondary: #0b2920;
-    --bg-tertiary: #133d30;
-    --bg-elevated: #0f3328;
-    --text-primary: #e2f8f0;
-    --text-secondary: #8ae9c1;
-    --text-muted: #4e8c73;
-    --text-inverse: #061a14;
-    --accent: #10b981;
-    --accent-hover: #34d399;
-    --accent-active: #059669;
-    --accent-subtle: #064e3b;
-    --border-color: #1b4d3e;
-    --border-subtle: #133d30;
-    --border-strong: #10b981;
-    --ring-color: rgba(16, 185, 129, 0.5);
-    --danger-text: #fca5a5;
-    --danger-bg: #450a0a;
-    --danger-border: #7f1d1d;
-    --warning-text: #fde047;
-    --warning-bg: #422006;
-    --warning-border: #78350f;
-    --success-text: #6ee7b7;
-    --success-bg: #022c22;
-    --success-border: #047857;
-    --info-text: #7dd3fc;
-    --info-bg: #082f49;
-    --info-border: #0369a1;
-    --mystical-text: #d8b4fe;
-    --mystical-bg: #3b0764;
-    --mystical-border: #6b21a8;
-    --muted-status-text: #74a693;
-    --muted-status-bg: #08221a;
-    --muted-status-border: #133d30;
-}
-
-[data-theme='mystic'] {
+/* === АСТРОЛОГИЯ (Эзотерический стиль / Бывшая Mystic) === */
+[data-theme='astrology'] {
     --bg-primary: #110d1c;
     --bg-secondary: #1d1630;
     --bg-tertiary: #2c2146;
@@ -511,6 +365,244 @@
     --muted-status-border: #2c2146;
 }
 
+/* === КИНО / СЦЕНАРИЙ (Кинематографический / Нуар) === */
+[data-theme='cinema'] {
+    --bg-primary: #141416;
+    --bg-secondary: #1c1c20;
+    --bg-tertiary: #282830;
+    --bg-elevated: #222228;
+    --text-primary: #f0ede6; /* Цвет полотна киноэкрана */
+    --text-secondary: #a3a098;
+    --text-muted: #66645e;
+    --text-inverse: #141416;
+    --accent: #e5a93c; /* Янтарный свет прожектора */
+    --accent-hover: #f5b84c;
+    --accent-active: #c78d2b;
+    --accent-subtle: #332712;
+    --border-color: #333238;
+    --border-subtle: #242328;
+    --border-strong: #e5a93c;
+    --ring-color: rgba(229, 169, 60, 0.5);
+    --danger-text: #f87171;
+    --danger-bg: #3f1212;
+    --danger-border: #7f1d1d;
+    --warning-text: #fbbf24;
+    --warning-bg: #451a03;
+    --warning-border: #78350f;
+    --success-text: #4ade80;
+    --success-bg: #064e3b;
+    --success-border: #065f46;
+    --info-text: #e5a93c;
+    --info-bg: #2b2210;
+    --info-border: #8c631a;
+    --mystical-text: #c084fc;
+    --mystical-bg: #2e1065;
+    --mystical-border: #581c87;
+    --muted-status-text: #8c8982;
+    --muted-status-bg: #18181a;
+    --muted-status-border: #282830;
+}
+
+/* === КТУЛХУ / БЕЗДНА (Лавкрафтовский ужас) === */
+[data-theme='cthulhu'] {
+    --bg-primary: #051317;
+    --bg-secondary: #0a2128;
+    --bg-tertiary: #11323b;
+    --bg-elevated: #0e2a32;
+    --text-primary: #c0e3e5;
+    --text-secondary: #74a3a8;
+    --text-muted: #3d686e;
+    --text-inverse: #051317;
+    --accent: #14b8a6; /* Фосфоресцирующий бирюзовый */
+    --accent-hover: #2dd4bf;
+    --accent-active: #0d9488;
+    --accent-subtle: #083333;
+    --border-color: #17424d;
+    --border-subtle: #0f2c34;
+    --border-strong: #14b8a6;
+    --ring-color: rgba(20, 184, 166, 0.5);
+    --danger-text: #f87171;
+    --danger-bg: #3f1212;
+    --danger-border: #7f1d1d;
+    --warning-text: #fbbf24;
+    --warning-bg: #451a03;
+    --warning-border: #78350f;
+    --success-text: #34d399;
+    --success-bg: #064e3b;
+    --success-border: #047857;
+    --info-text: #38bdf8;
+    --info-bg: #0c4a6e;
+    --info-border: #0284c7;
+    --mystical-text: #e879f9;
+    --mystical-bg: #4a044e;
+    --mystical-border: #a21caf;
+    --muted-status-text: #5d888e;
+    --muted-status-bg: #07191f;
+    --muted-status-border: #11323b;
+}
+
+/* === АРХИВ / ДОССЬЕ (Светлая канцелярская картотека, холодный стальной и бланки) === */
+[data-theme='archive'] {
+    --bg-primary: #e2e8f0; /* Холодный серый стального картотечного шкафа */
+    --bg-secondary: #ffffff; /* Чистый бланк дела / Лист документа */
+    --bg-tertiary: #cbd5e1; /* Разделительная ярлык-вкладка папки */
+    --bg-elevated: #ffffff; /* Выпадающие списки и модалки */
+
+    --text-primary: #0f172a; /* Контрастная чётрая печать / Печатная машинка */
+    --text-secondary: #475569; /* Серые служебные пометки */
+    --text-muted: #94a3b8; /* Выцветший карандашный штамп */
+    --text-inverse: #ffffff;
+
+    --accent: #dc2626; /* Ярко-красный гриф "СЕКРЕТНО" / Резиновый штамп */
+    --accent-hover: #b91c1c;
+    --accent-active: #991b1b;
+    --accent-subtle: #fee2e2;
+
+    --border-color: #94a3b8; /* Границы листов и папок */
+    --border-subtle: #cbd5e1;
+    --border-strong: #475569;
+    --ring-color: rgba(220, 38, 38, 0.4);
+
+    --danger-text: #991b1b;
+    --danger-bg: #fee2e2;
+    --danger-border: #fca5a5;
+
+    --warning-text: #b45309;
+    --warning-bg: #fef3c7;
+    --warning-border: #fcd34d;
+
+    --success-text: #15803d;
+    --success-bg: #dcfce7;
+    --success-border: #86efac;
+
+    --info-text: #1d4ed8;
+    --info-bg: #dbeafe;
+    --info-border: #93c5fd;
+
+    --mystical-text: #6b21a8;
+    --mystical-bg: #f3e8ff;
+    --mystical-border: #d8b4fe;
+
+    --muted-status-text: #475569;
+    --muted-status-bg: #f1f5f9;
+    --muted-status-border: #cbd5e1;
+}
+
+/* === НУАР / РАССЛЕДОВАНИЕ (Высококонтрастный монохром) === */
+[data-theme='noir'] {
+    --bg-primary: #09090b;
+    --bg-secondary: #18181b;
+    --bg-tertiary: #27272a;
+    --bg-elevated: #202024;
+    --text-primary: #ffffff;
+    --text-secondary: #a1a1aa;
+    --text-muted: #52525b;
+    --text-inverse: #09090b;
+    --accent: #e4e4e7; /* Холодный стальной / белый свет фонаря */
+    --accent-hover: #ffffff;
+    --accent-active: #71717a;
+    --accent-subtle: #27272a;
+    --border-color: #3f3f46;
+    --border-subtle: #27272a;
+    --border-strong: #a1a1aa;
+    --ring-color: rgba(228, 228, 231, 0.5);
+    --danger-text: #f87171;
+    --danger-bg: #3f1212;
+    --danger-border: #991b1b;
+    --warning-text: #fbbf24;
+    --warning-bg: #451a03;
+    --warning-border: #b45309;
+    --success-text: #4ade80;
+    --success-bg: #064e3b;
+    --success-border: #047857;
+    --info-text: #60a5fa;
+    --info-bg: #1e3a8a;
+    --info-border: #1d4ed8;
+    --mystical-text: #e879f9;
+    --mystical-bg: #4a044e;
+    --mystical-border: #a21caf;
+    --muted-status-text: #71717a;
+    --muted-status-bg: #121215;
+    --muted-status-border: #27272a;
+}
+
+/* === КЛИНИКА / ПСИХОАНАЛИЗ (Спокойный, мягкий медицинский шалфей) === */
+[data-theme='clinic'] {
+    --bg-primary: #f1f5f9;
+    --bg-secondary: #ffffff;
+    --bg-tertiary: #e2e8f0;
+    --bg-elevated: #ffffff;
+    --text-primary: #1e293b;
+    --text-secondary: #475569;
+    --text-muted: #94a3b8;
+    --text-inverse: #ffffff;
+    --accent: #0d9488; /* Спокойный медико-бирюзовый */
+    --accent-hover: #14b8a6;
+    --accent-active: #0f766e;
+    --accent-subtle: #ccfbf1;
+    --border-color: #cbd5e1;
+    --border-subtle: #e2e8f0;
+    --border-strong: #0d9488;
+    --ring-color: rgba(13, 148, 136, 0.4);
+    --danger-text: #b91c1c;
+    --danger-bg: #fee2e2;
+    --danger-border: #fca5a5;
+    --warning-text: #b45309;
+    --warning-bg: #fef3c7;
+    --warning-border: #fcd34d;
+    --success-text: #15803d;
+    --success-bg: #dcfce7;
+    --success-border: #86efac;
+    --info-text: #0369a1;
+    --info-bg: #e0f2fe;
+    --info-border: #7dd3fc;
+    --mystical-text: #6b21a8;
+    --mystical-bg: #f3e8ff;
+    --mystical-border: #d8b4fe;
+    --muted-status-text: #64748b;
+    --muted-status-bg: #f8fafc;
+    --muted-status-border: #e2e8f0;
+}
+
+/* === ХРАМ / СВЯТИЛИЩЕ (Созерцание, свечной воск, пурпур) === */
+[data-theme='temple'] {
+    --bg-primary: #1a1222;
+    --bg-secondary: #251a30;
+    --bg-tertiary: #352645;
+    --bg-elevated: #2c1e3a;
+    --text-primary: #f5eeeb;
+    --text-secondary: #c5b8cc;
+    --text-muted: #82728c;
+    --text-inverse: #1a1222;
+    --accent: #d97706; /* Свечной отблеск / благородное золото */
+    --accent-hover: #f59e0b;
+    --accent-active: #b45309;
+    --accent-subtle: #3a2208;
+    --border-color: #47335c;
+    --border-subtle: #2d1d3d;
+    --border-strong: #d97706;
+    --ring-color: rgba(217, 119, 6, 0.5);
+    --danger-text: #f87171;
+    --danger-bg: #3f1212;
+    --danger-border: #7f1d1d;
+    --warning-text: #fbbf24;
+    --warning-bg: #451a03;
+    --warning-border: #78350f;
+    --success-text: #4ade80;
+    --success-bg: #064e3b;
+    --success-border: #065f46;
+    --info-text: #a855f7;
+    --info-bg: #3b0764;
+    --info-border: #7e22ce;
+    --mystical-text: #f472b6;
+    --mystical-bg: #500724;
+    --mystical-border: #9d174d;
+    --muted-status-text: #9d8ca6;
+    --muted-status-bg: #20162b;
+    --muted-status-border: #352645;
+}
+
+/* === АДАПТАЦИЯ ДЛЯ ВНЕШНИХ БИБЛИОТЕК (например, V-Calendar) === */
 :root,
 [data-theme] {
     --vc-accent-50: var(--accent-subtle);

@@ -36,7 +36,7 @@
                 class="hover:bg-bg-secondary border-border/60 flex grow-0 items-center justify-center px-2 py-1 text-sm transition-colors sm:border-r"
             >
                 <component
-                    :is="THEME_OPTIONS_MAP[uiStore.theme].icon"
+                    :is="THEME_OPTIONS_MAP[uiStore.theme]?.icon"
                     class="h-4 w-4 shrink-0"
                     aria-hidden="true"
                 />
@@ -50,7 +50,7 @@
                 class="text-text-soft hover:text-text-primary hidden grow items-center justify-center gap-1 self-center px-2 py-1 text-xs font-medium transition-colors sm:flex"
             >
                 <span class="inline capitalize">
-                    {{ THEME_OPTIONS_MAP[uiStore.theme].label }}
+                    {{ THEME_OPTIONS_MAP[uiStore.theme]?.label }}
                 </span>
                 <svg
                     class="h-3.5 w-3.5 transition-transform"
