@@ -60,10 +60,9 @@
                     <Moon class="h-10 w-10 shrink-0" aria-hidden="true" />
                 </div>
                 <div class="flex flex-col gap-6">
-                    <h1
-                        class="text-text-primary text-4xl font-extrabold tracking-tight sm:text-5xl"
-                    >
-                        О проекте Dream<span class="text-accent text-4xl!">Keeper</span>
+                    <h1 class="text-text-primary font-extrabold tracking-tight sm:text-5xl">
+                        О проекте <span class="text-text-primary md:text-3xl!">Dream</span
+                        ><span class="text-accent text-xl! md:text-3xl!">Keeper</span>
                     </h1>
                     <p class="text-text-soft mx-auto max-w-2xl text-lg leading-relaxed sm:text-xl">
                         Ваш личный проводник в бессознательное. Пространство для бережного
