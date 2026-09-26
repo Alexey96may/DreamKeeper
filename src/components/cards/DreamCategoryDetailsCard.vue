@@ -9,23 +9,28 @@
     } from '@/types/Dream';
     import AppSmartTime from '@/components/ui/AppSmartTime.vue';
 
-    const props = defineProps<{
-        /** Dream category type */
+    interface Props {
         type: DreamCategory;
-        /** Object with details for the selected category */
         details: LucidDetails | NightmareDetails | PropheticDetails;
-    }>();
+        isPressed?: boolean;
+        isInFilter?: boolean;
+    }
+
+    const props = withDefaults(defineProps<Props>(), {
+        isPressed: false,
+        isInFilter: false,
+    });
 
     const cardClasses = computed(() => {
         switch (props.type) {
             case 'nightmare':
-                return 'space-y-1.5 rounded-lg border border-danger-border/30 bg-danger-bg/30 p-3.5 text-xs';
+                return 'border-danger-border/30 bg-danger-bg/30 text-xs';
             case 'prophetic':
-                return 'space-y-1.5 rounded-lg border border-mystical-border/30 bg-mystical-bg/30 p-3.5 text-xs';
+                return 'border-mystical-border/30 bg-mystical-bg/30 text-xs';
             case 'lucid':
-                return 'space-y-1.5 rounded-lg border border-success-border/30 bg-success-bg/30 p-3.5 text-xs';
+                return 'border-success-border/30 bg-success-bg/30 text-xs';
             default:
-                return 'bg-bg-secondary/30 border-border-subtle/30 space-y-1.5 rounded-lg border p-3.5 text-xs';
+                return 'border-border-subtle/30 bg-bg-secondary/30 text-xs';
         }
     });
 
@@ -47,8 +52,17 @@
 
 <template>
     <article
-        :class="cardClasses"
+        :class="[
+            'space-y-1.5 rounded-lg border p-3.5 transition-all duration-200',
+            cardClasses,
+            isPressed
+                ? 'border-accent! bg-accent/25! text-text-primary ring-accent/50 cursor-pointer font-semibold shadow-sm ring-2'
+                : isInFilter
+                  ? 'border-accent/60 hover:border-accent hover:bg-accent/10 animate-pulse cursor-pointer shadow-[0_0_8px_rgba(var(--color-accent-rgb),0.15)]'
+                  : 'hover:border-border/80 hover:text-text-primary',
+        ]"
         :aria-label="`Детали категории: ${categoryConfig?.label || type}`"
+        :aria-pressed="isPressed"
     >
         <header :class="headerClasses">
             <component :is="categoryConfig?.icon" class="h-4 w-4 shrink-0" aria-hidden="true" />

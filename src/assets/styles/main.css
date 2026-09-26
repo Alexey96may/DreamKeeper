@@ -1,8 +1,9 @@
+@import 'tailwindcss';
+@import './reset.css';
+
 @import './fonts.css';
 @import './themes.css';
-@import './reset.css';
 @import './base.css';
-@import 'tailwindcss';
 
 @theme {
     /* Backgrounds */

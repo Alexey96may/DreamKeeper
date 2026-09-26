@@ -118,7 +118,7 @@
 
 <template>
     <div
-        class="flex w-full flex-col gap-1.5 text-left"
+        class="flex w-full flex-col gap-2 text-left sm:gap-3"
         :class="{ 'cursor-not-allowed opacity-60': isDisabled }"
     >
         <!-- Label -->
@@ -131,7 +131,7 @@
                 isDisabled ? 'cursor-not-allowed' : 'cursor-pointer',
             ]"
         >
-            <span class="flex items-center gap-1.5">
+            <span class="flex items-center gap-2 sm:gap-3">
                 <AppTooltip v-if="hint" :content="hint" :required="required" />
                 <span>{{ label }}</span>
                 <span v-if="required" class="text-status-error ml-0.5 font-bold" aria-hidden="true"

@@ -24,7 +24,7 @@
             {{ element.title }}
         </h3>
 
-        <ul class="m-0 flex w-full list-none gap-1.5 overflow-x-auto p-0 py-2" role="list">
+        <ul class="m-0 flex w-full list-none gap-1.5 overflow-x-auto p-0 pb-2 lg:pb-3" role="list">
             <li v-for="(tag, idx) in element.tags" :key="idx">
                 <AppTag
                     :is-pressed="tagsArr?.includes(tag) || element.id === tag"

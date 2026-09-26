@@ -3,8 +3,14 @@ import { useRouter } from 'vue-router';
 export function useNavigation() {
     const router = useRouter();
 
-    const goBack = () => {
-        router.push('/');
+    const goBack = (fallback?: string | object) => {
+        if (fallback) {
+            router.push(fallback);
+        } else if (window.history.length > 1) {
+            router.back();
+        } else {
+            router.push('/');
+        }
     };
 
     const goToDreamDetail = (slug: string | undefined) => {

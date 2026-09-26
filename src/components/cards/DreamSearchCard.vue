@@ -62,7 +62,7 @@
         role="button"
         :aria-label="ariaLabel"
         :class="[
-            'dream-card cursor-pointer rounded-lg border p-4 transition duration-200 outline-none focus-visible:ring-2',
+            'dream-card border-border-primary cursor-pointer rounded-lg border p-4 transition duration-200 outline-none focus-visible:ring-2',
             {
                 'bg-ring': isSelected,
             },
@@ -71,13 +71,13 @@
         @keydown.enter.space.prevent="handleClick"
     >
         <div class="flex items-start justify-between gap-4">
-            <div class="space-y-1">
-                <span
+            <div class="space-y-4">
+                <h3
                     v-if="dream.title"
-                    class="text-text-soft bg-bg-primary border-border/50 inline-block rounded-lg border px-2.5 py-0.5 text-xs"
+                    class="text-text-secondary bg-bg-primary inline-block text-xs"
                 >
                     {{ dream.title }}
-                </span>
+                </h3>
                 <p class="text-text-primary text-sm font-medium">
                     {{ dream.description || 'Без описания' }}
                 </p>

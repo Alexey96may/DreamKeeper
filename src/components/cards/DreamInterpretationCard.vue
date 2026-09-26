@@ -21,7 +21,7 @@
 
 <template>
     <article
-        class="bg-bg-secondary/40 border-border/40 relative overflow-hidden rounded-lg border p-3.5 text-xs"
+        class="bg-bg-secondary/40 border-border/40 relative rounded-lg border p-3.5"
         :class="{ 'bg-success-bg/50': interpretation.isAccurate }"
         :aria-label="`Интерпретация по тегу: ${interpretation.tag}`"
     >
@@ -38,17 +38,19 @@
             />
         </div>
 
-        <header class="relative z-10 flex flex-wrap items-center justify-between gap-2">
-            <h3 class="text-text-primary m-0 flex items-center gap-1.5 text-sm font-bold">
-                <Link class="inline h-3.5 w-3.5 shrink-0" aria-hidden="true" />
-                <span>{{ getSymbolTitle }}</span>
-            </h3>
-
-            <div class="flex items-center gap-2">
+        <header class="z-10 pt-4 sm:pt-0">
+            <div class="absolute top-0 right-2 translate-y-[-50%]">
                 <AppTag :aria-label="`Источник интерпретации: ${interpretation.source.title}`">
-                    {{ interpretation.source.title }}
+                    <span class="w-full grow align-middle text-xs">{{
+                        interpretation.source.title
+                    }}</span>
                 </AppTag>
             </div>
+
+            <h4 class="text-text-primary m-0 flex items-center gap-1.5 font-bold">
+                <Link class="inline h-3.5 w-3.5 shrink-0" aria-hidden="true" />
+                {{ getSymbolTitle }}
+            </h4>
         </header>
 
         <p class="text-text-mute relative z-10 mt-1.5 leading-relaxed">

@@ -2,11 +2,13 @@ import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { useUIStore } from '@/stores/modules/ui';
 import { useSleepStore } from '@/stores/modules/dream';
-import { useUserStateStore } from '@/stores/modules/userState'; // Поменяйте путь на ваш стор состояний
+import { truncateString } from '@/utils/formatters';
+import { useUserStateStore } from '@/stores/modules/userState';
 
 export interface DeleteConfig {
     id: number | string;
     deleteFn: (id: number) => Promise<boolean>;
+    name?: string;
     confirmMessage?: string;
     successMessage?: string;
     restoredMessage?: string;
@@ -29,9 +31,8 @@ export function useCrud() {
 
         const {
             deleteFn,
-            confirmMessage = 'Удалить этот элемент?',
+            confirmMessage = 'Удалить ' + (config.name ? config.name : 'этот элемент') + '?',
             successMessage = 'Удалено',
-            restoredMessage = 'Восстановлено',
             duration = 3000,
             redirectUrl,
             onSuccess,
@@ -70,7 +71,6 @@ export function useCrud() {
                 isCancelled = true;
                 clearTimeout(timer);
                 deletingItems.value = deletingItems.value.filter((item) => item !== numericId);
-                addToast({ message: restoredMessage, type: 'info', duration: 1000 });
             },
         });
     };
@@ -78,13 +78,16 @@ export function useCrud() {
     /**
      * Удаление сна
      */
-    const handleDeleteDream = (id: number | string, date?: string) => {
+    const handleDeleteDream = (id: number | string, date?: string, name?: string) => {
+        const truncatedName = truncateString(name || '', 15);
+
         return deleteWithUndo({
             id,
             deleteFn: (numericId) => sleepStore.deleteDream(numericId),
-            confirmMessage: 'Забыть этот сон?',
-            successMessage: 'Сон забыт!',
-            restoredMessage: 'Сон восстановлен',
+
+            confirmMessage:
+                'Забыть ' + (truncatedName ? '«' + truncatedName + '»' : 'этот сон') + '?',
+            successMessage: 'Сон ' + (truncatedName ? '«' + truncatedName + '»' : '') + 'забыт.',
             duration: 4000,
             redirectUrl: date ? `/day/${date}` : '/',
         });
@@ -99,7 +102,6 @@ export function useCrud() {
             deleteFn: (numericId) => userStateStore.deleteState(numericId),
             confirmMessage: 'Удалить состояние?',
             successMessage: 'Состояние удалено!',
-            restoredMessage: 'Восстановлено',
             duration: 3000,
             onSuccess,
         });

@@ -60,11 +60,11 @@
                     <Moon class="h-10 w-10 shrink-0" aria-hidden="true" />
                 </div>
                 <div class="flex flex-col gap-6">
-                    <h1 class="text-text-primary font-extrabold tracking-tight sm:text-5xl">
-                        О проекте <span class="text-text-primary text-xl! md:text-3xl!">Dream</span
-                        ><span class="text-accent text-xl! md:text-3xl!">Keeper</span>
+                    <h1 class="text-text-primary font-extrabold tracking-tight">
+                        О проекте <span class="text-text-primary">Dream</span
+                        ><span class="text-accent">Keeper</span>
                     </h1>
-                    <p class="text-text-soft mx-auto max-w-2xl text-lg leading-relaxed sm:text-xl">
+                    <p class="text-text-soft mx-auto max-w-2xl leading-relaxed">
                         Ваш личный проводник в бессознательное. Пространство для бережного
                         сохранения, анализа и осмысления каждого ночного путешествия.
                     </p>
@@ -75,7 +75,7 @@
             <section
                 class="bg-bg-secondary border-border flex flex-col gap-4 rounded-2xl border p-8 shadow-sm"
             >
-                <h2 class="text-text-primary text-2xl font-bold">Суть платформы</h2>
+                <h2 class="text-text-primary font-bold">Суть платформы</h2>
                 <p class="text-text-soft leading-relaxed">
                     Сны — это уникальный язык нашего разума, на котором подсознание ведет диалог с
                     реальностью. Однако память о них хрупка: без своевременной фиксации детали
@@ -90,7 +90,7 @@
             <!-- How to Use -->
             <section class="flex flex-col gap-8">
                 <div class="flex flex-col gap-2 text-center">
-                    <h2 class="text-text-primary text-3xl font-bold">Как использовать сервис</h2>
+                    <h2 class="text-text-primary font-bold">Как использовать сервис</h2>
                     <p class="text-text-soft">Три простых шага к осознанному ведению дневника</p>
                 </div>
 
@@ -101,13 +101,13 @@
                         class="bg-bg-secondary border-border relative flex flex-col justify-between rounded-xl border p-6"
                     >
                         <div class="flex flex-col gap-3">
-                            <span class="text-accent/40 font-mono text-3xl font-extrabold">{{
+                            <span class="text-accent/40 font-mono font-extrabold">{{
                                 step.number
                             }}</span>
-                            <h3 class="text-text-primary text-xl font-semibold">
+                            <h3 class="text-text-primary font-semibold">
                                 {{ step.title }}
                             </h3>
-                            <p class="text-text-soft text-sm leading-relaxed">{{ step.text }}</p>
+                            <p class="text-text-soft leading-relaxed">{{ step.text }}</p>
                         </div>
                     </article>
                 </div>
@@ -115,7 +115,7 @@
 
             <!-- Features Grid -->
             <section class="flex flex-col gap-8">
-                <h2 class="text-text-primary text-center text-3xl font-bold">Возможности</h2>
+                <h2 class="text-text-primary text-center font-bold">Возможности</h2>
 
                 <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
                     <div
@@ -130,8 +130,8 @@
                                 aria-hidden="true"
                             />
                         </div>
-                        <h3 class="text-text-primary text-lg font-semibold">{{ feature.title }}</h3>
-                        <p class="text-text-soft text-sm leading-relaxed">
+                        <h3 class="text-text-primary font-semibold">{{ feature.title }}</h3>
+                        <p class="text-text-soft leading-relaxed">
                             {{ feature.description }}
                         </p>
                     </div>
@@ -143,9 +143,7 @@
                 class="bg-bg-secondary border-border flex flex-col items-center gap-6 rounded-2xl border p-10 text-center shadow-sm"
             >
                 <div class="flex flex-col gap-2">
-                    <h2 class="text-text-primary text-2xl font-bold sm:text-3xl">
-                        Готовы начать путешествие?
-                    </h2>
+                    <h2 class="text-text-primary font-bold">Готовы начать путешествие?</h2>
                     <p class="text-text-soft mx-auto max-w-md">
                         Запишите свой первый сон прямо сейчас и откройте дверь в неизведанные уголки
                         разума.

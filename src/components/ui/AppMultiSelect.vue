@@ -239,14 +239,13 @@
 
 <template>
     <div ref="selectContainer" class="relative w-full">
-        <div class="flex flex-col gap-1.5">
+        <div class="flex flex-col gap-2 sm:gap-3">
             <!-- Label -->
             <label
                 v-if="label"
                 :id="`${id}-label`"
                 :for="id"
                 class="text-text-soft flex items-center text-sm font-medium"
-                @click="toggleOpen"
             >
                 <AppTooltip v-if="hint" :content="hint" />
                 <span>{{ label }}</span>

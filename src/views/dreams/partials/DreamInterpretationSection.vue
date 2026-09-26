@@ -10,7 +10,7 @@
             </AppButton>
         </div>
 
-        <div class="space-y-3">
+        <div class="space-y-6">
             <AppMultiSelect
                 id="form-perspective"
                 v-model="activeSources"
@@ -19,137 +19,139 @@
                 placeholder="Все источники интерпретаций"
             />
 
-            <div
-                v-for="(interp, idx) in list"
-                :key="idx"
-                class="border-border-muted/60 bg-bg-secondary/50 relative flex flex-col gap-3 rounded-lg border p-3 sm:flex-row sm:items-start"
-            >
-                <div class="relative grid flex-1 grid-cols-1 gap-3">
-                    <!-- Обертка с relative для позиционирования подсказок -->
-                    <div class="relative">
-                        <AppTextInput
-                            :model-value="
-                                activeRowIndex === idx && activeField === 'tag'
-                                    ? searchTagQuery
-                                    : getSymbolTitle(interp.tag)
-                            "
-                            @update:model-value="handleSymbolInput(idx, $event)"
-                            @focus="handleSymbolFocus(idx, interp.tag)"
-                            @blur="clearFocus"
-                            placeholder="Символ (напр. Вода)"
-                            label="Символ"
-                            :error-message="
-                                sleepStore.validationErrors[`interpretations.${idx}.tag`]
-                            "
-                            @input="sleepStore.clearError(`interpretations.${idx}.tag`)"
-                        />
-
-                        <ul
-                            v-if="
-                                activeRowIndex === idx &&
-                                activeField === 'tag' &&
-                                suggestedSymbols.length > 0
-                            "
-                            class="border-accent bg-bg-muted absolute top-full right-0 left-0 z-50 mt-1 max-h-60 overflow-x-visible overflow-y-auto rounded-md border shadow-lg"
+            <!-- Оборачиваем список в TransitionGroup с тегом div и относительным позиционированием -->
+            <TransitionGroup name="list" tag="div" class="relative space-y-3">
+                <!-- CARD -->
+                <div
+                    v-for="(interp, idx) in list"
+                    :key="interp.tag + idx"
+                    class="border-border-muted/60 bg-bg-secondary/50 relative flex flex-col gap-3 rounded-lg border p-4 transition-all sm:flex-row sm:items-start"
+                >
+                    <div class="relative grid flex-1 grid-cols-1 gap-3">
+                        <div
+                            class="border-border-muted flex items-center justify-between gap-3 border-b pb-2.5"
                         >
-                            <li
-                                v-for="symbol in suggestedSymbols"
-                                :key="symbol.tag"
-                                @mousedown.prevent="selectSymbol(idx, symbol)"
-                                class="hover:bg-accent-hover flex cursor-pointer items-center justify-between px-4 py-2 text-sm"
-                            >
-                                <span class="text-text-muted font-medium">
-                                    {{ symbol.title }}
-                                </span>
-                                <span class="font-mono text-xs text-gray-400">
-                                    {{ symbol.tag }}
-                                </span>
-                            </li>
-                        </ul>
-                    </div>
+                            <AppCheckbox
+                                :model-value="interp.isAccurate"
+                                @update:model-value="
+                                    (val) => {
+                                        if (Array.isArray(val)) return;
+                                        updateField(idx, 'isAccurate', val);
+                                    }
+                                "
+                                label="Сбылось"
+                                hint="Подтвердилось в реальности"
+                                :error-message="
+                                    sleepStore.validationErrors[`interpretations.${idx}.isAccurate`]
+                                "
+                                @change="sleepStore.clearError(`interpretations.${idx}.isAccurate`)"
+                            />
 
-                    <div class="relative">
-                        <AppTextarea
-                            :model-value="interp.meaning"
-                            @update:model-value="updateField(idx, 'meaning', $event)"
-                            @focus="handleMeaningFocus(idx, interp.tag, interp.meaning)"
-                            @blur="activeRowIndex = null"
-                            placeholder="Значение / Толкование"
-                            label="Толкование"
-                            :error-message="
-                                sleepStore.validationErrors[`interpretations.${idx}.meaning`]
-                            "
-                            @input="sleepStore.clearError(`interpretations.${idx}.meaning`)"
-                            :rows="5"
-                        />
+                            <AppButton
+                                size="xs"
+                                @click="removeInterpretation(idx)"
+                                variant="danger"
+                                :icon-left="X"
+                                title="Удалить символ"
+                            />
+                        </div>
+                        <div class="relative">
+                            <AppTextInput
+                                :model-value="
+                                    activeRowIndex === idx && activeField === 'tag'
+                                        ? searchTagQuery
+                                        : getSymbolTitle(interp.tag)
+                                "
+                                @update:model-value="handleSymbolInput(idx, $event)"
+                                @focus="handleSymbolFocus(idx, interp.tag)"
+                                @blur="clearFocus"
+                                placeholder="Символ (напр. Вода)"
+                                label="Символ"
+                                :error-message="
+                                    sleepStore.validationErrors[`interpretations.${idx}.tag`]
+                                "
+                                @input="sleepStore.clearError(`interpretations.${idx}.tag`)"
+                            />
 
-                        <!-- Выпадающий список (используем @mousedown.prevent вместо @click) -->
-                        <ul
-                            v-if="
-                                activeRowIndex === idx &&
-                                activeField === 'meaning' &&
-                                suggestedInterpretations.length > 0
-                            "
-                            class="border-accent bg-bg-muted divide-border/40 absolute top-full right-0 left-0 z-50 mt-1 max-h-60 divide-y overflow-x-visible overflow-y-auto rounded-md border shadow-lg"
-                        >
-                            <li
-                                v-for="interpr in suggestedInterpretations"
-                                :key="interpr.id"
-                                class="p-2"
+                            <ul
+                                v-if="
+                                    activeRowIndex === idx &&
+                                    activeField === 'tag' &&
+                                    suggestedSymbols.length > 0
+                                "
+                                class="border-accent bg-bg-muted absolute top-full right-0 left-0 z-50 mt-1 max-h-60 overflow-x-visible overflow-y-auto rounded-md border shadow-lg"
                             >
-                                <!-- Заголовок группы (Источник) -->
-                                <div
-                                    class="px-2 py-1 font-mono text-xs font-semibold tracking-wider text-gray-400 uppercase"
+                                <li
+                                    v-for="symbol in suggestedSymbols"
+                                    :key="symbol.tag"
+                                    @mousedown.prevent="selectSymbol(idx, symbol)"
+                                    class="hover:bg-accent-hover flex cursor-pointer items-center justify-between px-4 py-2 text-sm"
                                 >
-                                    Источник: {{ interpr.sourceId }}
-                                </div>
+                                    <span class="text-text-muted font-medium">
+                                        {{ symbol.title }}
+                                    </span>
+                                    <span class="font-mono text-xs text-gray-400">
+                                        {{ symbol.tag }}
+                                    </span>
+                                </li>
+                            </ul>
+                        </div>
 
-                                <!-- Внутренний список значений -->
-                                <ul class="mt-1 space-y-0.5">
-                                    <li
-                                        v-for="(meaning, mIdx) in interpr.meanings"
-                                        :key="mIdx"
-                                        @mousedown.prevent="
-                                            selectInterpr(idx, meaning, interpr.sourceId)
-                                        "
-                                        class="hover:bg-accent-hover text-text-muted flex cursor-pointer items-center justify-between rounded px-3 py-1.5 text-sm transition-colors"
+                        <div class="relative">
+                            <AppTextarea
+                                :model-value="interp.meaning"
+                                @update:model-value="updateField(idx, 'meaning', $event)"
+                                @focus="handleMeaningFocus(idx, interp.tag, interp.meaning)"
+                                @blur="activeRowIndex = null"
+                                placeholder="Значение / Толкование"
+                                label="Толкование"
+                                :error-message="
+                                    sleepStore.validationErrors[`interpretations.${idx}.meaning`]
+                                "
+                                @input="sleepStore.clearError(`interpretations.${idx}.meaning`)"
+                                :rows="5"
+                            />
+
+                            <!-- Выпадающий список (используем @mousedown.prevent вместо @click) -->
+                            <ul
+                                v-if="
+                                    activeRowIndex === idx &&
+                                    activeField === 'meaning' &&
+                                    suggestedInterpretations.length > 0
+                                "
+                                class="border-accent bg-bg-muted divide-border/40 absolute top-full right-0 left-0 z-50 mt-1 max-h-60 divide-y overflow-x-visible overflow-y-auto rounded-md border shadow-lg"
+                            >
+                                <li
+                                    v-for="interpr in suggestedInterpretations"
+                                    :key="interpr.id"
+                                    class="p-2"
+                                >
+                                    <!-- Заголовок группы (Источник) -->
+                                    <div
+                                        class="px-2 py-1 font-mono text-xs font-semibold tracking-wider text-gray-400 uppercase"
                                     >
-                                        <span>{{ meaning }}</span>
-                                    </li>
-                                </ul>
-                            </li>
-                        </ul>
-                    </div>
+                                        Источник: {{ interpr.sourceId }}
+                                    </div>
 
-                    <div class="flex items-center pt-2 sm:pt-6">
-                        <AppCheckbox
-                            :model-value="interp.isAccurate"
-                            @update:model-value="
-                                (val) => {
-                                    if (Array.isArray(val)) return;
-                                    updateField(idx, 'isAccurate', val);
-                                }
-                            "
-                            label="Сбылось"
-                            hint="Подтвердилось в реальности"
-                            :error-message="
-                                sleepStore.validationErrors[`interpretations.${idx}.isAccurate`]
-                            "
-                            @change="sleepStore.clearError(`interpretations.${idx}.isAccurate`)"
-                        />
+                                    <!-- Внутренний список значений -->
+                                    <ul class="mt-1 space-y-0.5">
+                                        <li
+                                            v-for="(meaning, mIdx) in interpr.meanings"
+                                            :key="mIdx"
+                                            @mousedown.prevent="
+                                                selectInterpr(idx, meaning, interpr.sourceId)
+                                            "
+                                            class="hover:bg-accent-hover text-text-muted flex cursor-pointer items-center justify-between rounded px-3 py-1.5 text-sm transition-colors"
+                                        >
+                                            <span>{{ meaning }}</span>
+                                        </li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </div>
                     </div>
                 </div>
-
-                <div class="flex justify-end pt-1 sm:pt-6">
-                    <AppButton
-                        size="xs"
-                        @click="removeInterpretation(idx)"
-                        variant="danger"
-                        :icon-left="X"
-                        title="Удалить символ"
-                    />
-                </div>
-            </div>
+            </TransitionGroup>
         </div>
     </div>
 </template>
@@ -327,3 +329,26 @@
         return dynamicSources;
     });
 </script>
+
+<style scoped>
+    /* Плавное появление и исчезновение карточек */
+    .list-enter-active,
+    .list-leave-active {
+        transition: all 0.3s ease;
+    }
+
+    .list-enter-from,
+    .list-leave-to {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+
+    .list-move {
+        transition: transform 0.3s ease;
+    }
+
+    .list-leave-active {
+        position: relative;
+        width: 100%;
+    }
+</style>

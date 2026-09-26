@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div class="flex flex-col gap-4">
         <AppTextInput
             :model-value="props.preSleepContext"
             @update:model-value="onFieldChange('preSleepContext', $event)"

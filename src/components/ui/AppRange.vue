@@ -142,7 +142,7 @@
 </script>
 
 <template>
-    <div class="flex w-full flex-col gap-1.5">
+    <div class="flex w-full flex-col gap-2 sm:gap-3">
         <!-- Label Bar: Header Title + Value Badge -->
         <div
             v-if="label"
@@ -181,7 +181,7 @@
                 :aria-invalid="Boolean(errorMessage)"
                 :aria-describedby="ariaDescribedBy"
                 :aria-required="required"
-                class="bg-bg-secondary focus:ring-accent/50 h-2 w-full cursor-pointer appearance-none rounded-lg transition-opacity duration-150 focus:ring-2 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50"
+                class="bg-accent-subtle focus:ring-accent/50 h-2 w-full cursor-pointer appearance-none rounded-lg transition-opacity duration-150 focus:ring-2 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50"
                 :class="[accentColor, errorMessage ? 'accent-red-500' : '']"
                 @input="handleInput"
                 @blur="emit('blur', $event)"

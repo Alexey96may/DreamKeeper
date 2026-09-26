@@ -12,36 +12,10 @@
   - content (string) [Required]: The text message displayed inside the popover.
   - required (boolean) [Optional]: Changes the trigger icon state/color to indicate a required field.
   - iconSize (number) [Optional]: Size of the Lucide HelpCircle icon (default: 16).
-
-  Usage Example:
-  -----------------------------------------------------------------------------
-  <template>
-    <label class="form-label" :for="fieldId">
-      <span>Category of Phenomenon</span>
-
-      Embedded AppTooltip inside label
-      <AppTooltip
-        content="Select the primary phenomenon experienced during the sleep paralysis phase."
-        :required="true"
-      />
-    </label>
-    <select :id="fieldId" v-model="selectedCategory">
-      options
-    </select>
-  </template>
-
-  <script setup lang="ts">
-  import AppTooltip from '@/components/AppTooltip.vue';
-  import { ref } from 'vue';
-
-  const fieldId = 'phenomenon-category';
-  const selectedCategory = ref('');
-  </script>
-  =============================================================================
 -->
 
 <script setup lang="ts">
-    import { ref, onMounted, onUnmounted, useId } from 'vue';
+    import { ref, onMounted, onUnmounted, useId, nextTick } from 'vue';
     import { HelpCircle } from 'lucide-vue-next';
 
     interface Props {
@@ -56,49 +30,109 @@
     });
 
     const isOpen = ref(false);
-    const tooltipRef = ref<HTMLElement | null>(null);
+    const triggerRef = ref<HTMLElement | null>(null);
+    const popoverRef = ref<HTMLElement | null>(null);
 
-    // Unique IDs for WCAG accessibility (aria-describedby / aria-controls)
+    // Координаты и смещение стрелки для Teleport
+    const popoverStyle = ref({
+        top: '0px',
+        left: '0px',
+    });
+
+    const arrowOffset = ref(0); // Смещение стрелки, если поповер сместился к краю
+
     const tooltipId = useId();
 
-    const toggleTooltip = (event: Event) => {
-        // Prevent form triggers or default label focusing behavior
+    const updatePosition = () => {
+        if (!triggerRef.value) return;
+        const triggerRect = triggerRef.value.getBoundingClientRect();
+
+        // Базовые координаты: центр триггера по горизонтали, сверху от триггера
+        const spacing = 8;
+        const top = triggerRect.top + window.scrollY - spacing;
+        const triggerCenterX = triggerRect.left + triggerRect.width / 2;
+
+        let left = triggerCenterX;
+        let currentArrowOffset = 0;
+
+        // Примерная ширина поповера (max-width: 260px, но берем реальную или максимальную)
+        const popoverWidth = popoverRef.value ? popoverRef.value.offsetWidth : 260;
+        const halfWidth = popoverWidth / 2;
+        const padding = 12; // Минимальный отступ от края экрана в пикселях
+
+        // Проверяем выход за левый край экрана
+        if (triggerCenterX - halfWidth < padding) {
+            const overflowLeft = padding - (triggerCenterX - halfWidth);
+            left = padding + halfWidth;
+            currentArrowOffset = -overflowLeft; // Сдвигаем стрелку вправо
+        }
+        // Проверяем выход за правый край экрана
+        else if (triggerCenterX + halfWidth > window.innerWidth - padding) {
+            const overflowRight = triggerCenterX + halfWidth - (window.innerWidth - padding);
+            left = window.innerWidth - padding - halfWidth;
+            currentArrowOffset = overflowRight; // Сдвигаем стрелку влево
+        }
+
+        popoverStyle.value = {
+            top: `${top}px`,
+            left: `${left + window.scrollX}px`,
+        };
+        arrowOffset.value = currentArrowOffset;
+    };
+
+    const toggleTooltip = async (event: Event) => {
         event.preventDefault();
         event.stopPropagation();
         isOpen.value = !isOpen.value;
+        if (isOpen.value) {
+            await nextTick();
+            updatePosition();
+        }
     };
 
     const closeTooltip = () => {
         isOpen.value = false;
     };
 
-    // Keyboard listener for Escape key
     const handleKeyDown = (event: KeyboardEvent) => {
         if (event.key === 'Escape' && isOpen.value) {
             closeTooltip();
         }
     };
 
-    // Click Outside listener
     const handleClickOutside = (event: MouseEvent) => {
-        if (tooltipRef.value && !tooltipRef.value.contains(event.target as Node)) {
+        const target = event.target as Node;
+        const isClickInsideTrigger = triggerRef.value?.contains(target);
+        const isClickInsidePopover = popoverRef.value?.contains(target);
+
+        if (!isClickInsideTrigger && !isClickInsidePopover) {
             closeTooltip();
+        }
+    };
+
+    const handleScrollOrResize = () => {
+        if (isOpen.value) {
+            updatePosition();
         }
     };
 
     onMounted(() => {
         document.addEventListener('keydown', handleKeyDown);
         document.addEventListener('mousedown', handleClickOutside);
+        window.addEventListener('scroll', handleScrollOrResize, true);
+        window.addEventListener('resize', handleScrollOrResize);
     });
 
     onUnmounted(() => {
         document.removeEventListener('keydown', handleKeyDown);
         document.removeEventListener('mousedown', handleClickOutside);
+        window.removeEventListener('scroll', handleScrollOrResize, true);
+        window.removeEventListener('resize', handleScrollOrResize);
     });
 </script>
 
 <template>
-    <span ref="tooltipRef" class="app-tooltip-wrapper">
+    <span ref="triggerRef" class="app-tooltip-wrapper">
         <!-- Trigger Button -->
         <button
             type="button"
@@ -117,18 +151,27 @@
         </button>
 
         <!-- Popover Container -->
-        <Transition name="tooltip-fade">
-            <div
-                v-if="isOpen"
-                :id="tooltipId"
-                class="app-tooltip-popover"
-                role="tooltip"
-                aria-live="polite"
-            >
-                <div class="app-tooltip-arrow" aria-hidden="true"></div>
-                <p class="app-tooltip-content line-clamp-3 text-sm">{{ content }}</p>
-            </div>
-        </Transition>
+        <Teleport to="body">
+            <Transition name="tooltip-fade">
+                <div
+                    v-if="isOpen"
+                    ref="popoverRef"
+                    :id="tooltipId"
+                    class="app-tooltip-popover"
+                    :style="popoverStyle"
+                    role="tooltip"
+                    aria-live="polite"
+                >
+                    <!-- Стрелка динамически смещается, если поповер прижался к краю экрана -->
+                    <div
+                        class="app-tooltip-arrow"
+                        :style="{ transform: `translateX(calc(-50% + ${arrowOffset}px))` }"
+                        aria-hidden="true"
+                    ></div>
+                    <p class="app-tooltip-content line-clamp-3 text-xs lg:text-sm">{{ content }}</p>
+                </div>
+            </Transition>
+        </Teleport>
     </span>
 </template>
 
@@ -160,13 +203,11 @@
         outline: none;
     }
 
-    /* Base Hover / Active */
     .app-tooltip-trigger:hover,
     .app-tooltip-trigger.is-active {
         color: var(--accent, #3b82f6);
     }
 
-    /* Required Styling Override */
     .app-tooltip-trigger.is-required {
         color: var(--danger-text, #ef4444);
         transition: all 0.25s;
@@ -182,10 +223,6 @@
         outline-offset: 2px;
     }
 
-    .app-tooltip-trigger.is-required:focus-visible {
-        filter: brightness(0.8);
-    }
-
     .app-tooltip-icon {
         flex-shrink: 0;
     }
@@ -193,10 +230,8 @@
     /* Popover Element */
     .app-tooltip-popover {
         position: absolute;
-        bottom: calc(100% + 8px);
-        left: 50%;
-        transform: translateX(-50%);
-        z-index: 50;
+        transform: translate(-50%, -100%);
+        z-index: 9999;
         width: max-content;
         max-width: 260px;
         padding: 0.5rem 0.75rem;
@@ -220,12 +255,12 @@
         position: absolute;
         top: 100%;
         left: 50%;
-        transform: translateX(-50%);
         width: 0;
         height: 0;
         border-left: 5px solid transparent;
         border-right: 5px solid transparent;
         border-top: 5px solid var(--bg-secondary, #1f2937);
+        transition: transform 0.05s linear;
     }
 
     /* Vue Animations */
@@ -239,6 +274,6 @@
     .tooltip-fade-enter-from,
     .tooltip-fade-leave-to {
         opacity: 0;
-        transform: translate(-50%, 4px);
+        transform: translate(-50%, calc(-100% + 4px));
     }
 </style>

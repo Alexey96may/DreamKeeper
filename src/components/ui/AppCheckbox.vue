@@ -116,7 +116,7 @@
 </script>
 
 <template>
-    <div class="flex flex-col gap-1.5">
+    <div class="flex flex-col gap-2 sm:gap-3">
         <!-- Main Checkbox Container -->
         <label
             :for="checkboxId"
@@ -171,7 +171,7 @@
             <!-- Label Text -->
             <span
                 v-if="label || $slots.default"
-                class="text-text-primary flex items-center gap-1.5 text-xs leading-relaxed font-medium"
+                class="text-text-primary flex items-center gap-2 text-xs leading-relaxed font-medium sm:gap-3"
             >
                 <slot>{{ label }}</slot>
                 <span v-if="required" class="text-status-error ml-0.5 font-bold" aria-hidden="true"

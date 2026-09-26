@@ -118,12 +118,12 @@
 </script>
 
 <template>
-    <div class="flex w-full flex-col gap-1.5">
+    <div class="flex w-full flex-col gap-2 sm:gap-3">
         <!-- Label -->
         <label
             v-if="label"
             :for="textareaId"
-            class="text-text-soft flex items-center gap-1.5 text-sm font-medium"
+            class="text-text-soft flex items-center gap-2 text-sm font-medium sm:gap-3"
         >
             <AppTooltip v-if="hint" :content="hint" />
             <span>{{ label }}</span>

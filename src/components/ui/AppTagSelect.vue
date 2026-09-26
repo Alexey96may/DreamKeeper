@@ -68,7 +68,6 @@
 
     const isDisabled = computed(() => props.isDisabled || props.isLoading);
 
-    // Гибкая проверка выбранного значения (устойчивая к строкам/числам)
     const isSelected = (value: T): boolean => {
         if (props.multiple) {
             if (!Array.isArray(props.modelValue)) return false;
@@ -132,7 +131,7 @@
         <label
             v-if="label"
             :id="`${groupId}-label`"
-            class="text-text-soft mb-2 flex items-center gap-1.5 text-xs font-medium"
+            class="text-text-soft mb-2.5 flex items-center gap-2 text-xs font-medium sm:gap-3"
         >
             <AppTooltip v-if="hint" :content="hint" />
             <span>{{ label }}</span>
@@ -147,22 +146,25 @@
             :role="multiple ? 'group' : 'radiogroup'"
             :aria-labelledby="label ? `${groupId}-label` : undefined"
             :aria-describedby="ariaDescribedBy"
-            class="ove flex gap-2 overflow-x-auto pb-2"
+            class="flex gap-2 overflow-x-auto pb-2.5"
         >
-            <AppChip
-                v-for="cat in options"
-                :key="String(cat.value)"
-                :is-pressed="isSelected(cat.value)"
-                :role="multiple ? undefined : 'radio'"
-                :aria-checked="multiple ? undefined : isSelected(cat.value)"
-                :icon="cat.icon"
-                :hint="cat?.description ?? ''"
-                :disabled="isDisabled || cat.isDisabled"
-                :is-loading="isLoading"
-                @click="handleToggle(cat.value)"
-            >
-                {{ cat.label }}
-            </AppChip>
+            <template v-for="cat in options" :key="String(cat.value)">
+                <AppChip
+                    :is-pressed="isSelected(cat.value)"
+                    :role="multiple ? undefined : 'radio'"
+                    :aria-checked="multiple ? undefined : isSelected(cat.value)"
+                    :icon="cat.icon"
+                    :disabled="isDisabled || cat.isDisabled"
+                    :is-loading="isLoading"
+                    @click="handleToggle(cat.value)"
+                >
+                    {{ cat.label }}
+
+                    <template v-if="cat?.description" #tooltip>
+                        <AppTooltip :content="cat.description" />
+                    </template>
+                </AppChip>
+            </template>
         </div>
 
         <AppErrorMessage :error-message="errorMessage" :error-id="errorId" />

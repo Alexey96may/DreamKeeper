@@ -120,3 +120,9 @@ export const formatRelativeTime = (dateString: string | null): string => {
         return dateString || '';
     }
 };
+
+export function truncateString(str: string, maxLength = 50, ellipsis = '…') {
+    if (!str || str.length <= maxLength) return str;
+
+    return str.slice(0, maxLength).trim() + ellipsis;
+}

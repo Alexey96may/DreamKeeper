@@ -1,28 +1,26 @@
 <template>
-    <div class="mx-auto max-w-4xl p-4 sm:p-6">
-        <div class="mb-8 flex items-center justify-between">
-            <AppButton @click="goBack" size="xs" variant="back" :icon-left="MoveLeft">
-                <span>Назад</span>
-            </AppButton>
-        </div>
+    <div class="container p-4 sm:p-6">
+        <AppButton class="mb-8" @click="goBack()" size="xs" variant="back" :icon-left="MoveLeft">
+            Назад
+        </AppButton>
 
         <h1
-            class="border-border-muted text-text-primary mb-4! border-t py-4 text-xl font-bold sm:text-2xl"
+            class="border-border-muted text-text-primary mb-4 border-t py-6 text-xl font-bold sm:text-2xl"
         >
-            {{ isEditMode ? 'Редактировать сон' : 'Записать сон' }}
+            {{ isEditMode ? 'Редактировать сон ' : 'Записать новый сон' }}
         </h1>
 
         <form @submit.prevent="handleSubmit" class="space-y-6">
-            <div class="border-border-muted flex w-full overflow-x-auto overflow-y-hidden">
+            <div class="border-border-muted flex w-full overflow-x-auto overflow-y-hidden border-b">
                 <button
                     v-for="tab in tabs"
                     :key="tab.id"
                     type="button"
                     @click="activeTab = tab.id"
                     :class="[
-                        '-mb-px border-b-2 px-4 py-2.5 text-sm font-medium whitespace-nowrap transition-colors',
+                        '-mb-px rounded-t-md px-4 py-2.5 text-sm font-medium whitespace-nowrap transition-colors',
                         activeTab === tab.id
-                            ? 'border-primary text-primary font-semibold'
+                            ? 'text-text-inverse bg-accent-active'
                             : 'text-text-secondary hover:text-text-primary border-transparent',
                     ]"
                 >
@@ -30,96 +28,98 @@
                 </button>
             </div>
 
-            <!-- Контент вкладок -->
+            <!-- Контент вкладок с анимацией -->
             <div class="pt-2">
-                <!-- Вкладка 1: Основное -->
-                <div v-show="activeTab === 'main'" class="space-y-6">
-                    <DreamMainSection
-                        v-model:title="form.title"
-                        v-model:description="form.description"
-                        v-model:date="form.date"
-                        v-model:time-of-day="form.timeOfDay"
-                    />
-
-                    <DreamCategorySection
-                        v-model:categories="form.categories"
-                        v-model:category-details="form.categoryDetails"
-                        :dreamDate="form.date"
-                    />
-
-                    <DreamFlagSection
-                        v-model:is-archived="form.isArchived"
-                        v-model:is-draft="form.isDraft"
-                        v-model:is-favorite="form.isFavorite"
-                        v-model:is-pinned="form.isPinned"
-                        v-model:is-private="form.isPrivate"
-                        v-model:is-deleted="form.isDeleted"
-                    />
-                </div>
-
-                <!-- Вкладка 2: Детали -->
-                <div v-show="activeTab === 'details'" class="space-y-6">
-                    <DreamVisualSection
-                        v-model:visualStyle="form.visualStyle"
-                        v-model:perspective="form.perspective"
-                        v-model:roles="form.roles"
-                        v-model:sensations="form.sensations"
-                    />
-
-                    <DreamEventSection
-                        v-model:phenomena="form.phenomena"
-                        v-model:phenomena-details="form.phenomenaDetails"
-                    />
-
-                    <DreamEstimateSection
-                        v-model:quality="form.quality"
-                        v-model:clarity="form.clarity"
-                        v-model:mood-after="form.moodAfter"
-                    />
-                </div>
-
-                <!-- Вкладка 3: Аналитика -->
-                <div v-show="activeTab === 'analytics'" class="space-y-6">
-                    <DreamAnalyticsSection
-                        v-model:characters="form.characters"
-                        v-model:locations="form.locations"
-                        v-model:objects="form.objects"
-                        v-model:emotions="form.emotions"
-                    />
-                </div>
-
-                <!-- Вкладка 4: Контекст и толкования -->
-                <div v-show="activeTab === 'context'" class="space-y-6">
-                    <div
-                        class="border-border-muted bg-bg-primary/80 space-y-6 rounded-xl border p-4 sm:p-6"
-                    >
-                        <DreamContextSection
-                            v-model:preSleepContext="form.preSleepContext"
-                            v-model:personalNotes="form.personalNotes"
+                <Transition name="fade" mode="out-in">
+                    <!-- Вкладка 1: Основное -->
+                    <div v-if="activeTab === 'main'" key="main" class="space-y-6">
+                        <DreamMainSection
+                            v-model:title="form.title"
+                            v-model:description="form.description"
+                            v-model:date="form.date"
+                            v-model:time-of-day="form.timeOfDay"
                         />
 
-                        <DreamInterpretationSection
-                            v-model:interpretations="form.interpretations"
+                        <DreamCategorySection
+                            v-model:categories="form.categories"
+                            v-model:category-details="form.categoryDetails"
+                            :dreamDate="form.date"
                         />
 
-                        <DreamRelatedSection
-                            v-model:related-dreams="form.relatedDreams"
-                            :slug="slug"
+                        <DreamFlagSection
+                            v-model:is-archived="form.isArchived"
+                            v-model:is-draft="form.isDraft"
+                            v-model:is-favorite="form.isFavorite"
+                            v-model:is-pinned="form.isPinned"
+                            v-model:is-private="form.isPrivate"
+                            v-model:is-deleted="form.isDeleted"
                         />
                     </div>
-                </div>
+
+                    <!-- Вкладка 2: Детали -->
+                    <div v-else-if="activeTab === 'details'" key="details" class="space-y-6">
+                        <DreamVisualSection
+                            v-model:visualStyle="form.visualStyle"
+                            v-model:perspective="form.perspective"
+                            v-model:roles="form.roles"
+                            v-model:sensations="form.sensations"
+                        />
+
+                        <DreamEventSection
+                            v-model:phenomena="form.phenomena"
+                            v-model:phenomena-details="form.phenomenaDetails"
+                        />
+
+                        <DreamEstimateSection
+                            v-model:quality="form.quality"
+                            v-model:clarity="form.clarity"
+                            v-model:mood-after="form.moodAfter"
+                        />
+                    </div>
+
+                    <!-- Вкладка 3: Аналитика -->
+                    <div v-else-if="activeTab === 'analytics'" key="analytics" class="space-y-6">
+                        <DreamAnalyticsSection
+                            v-model:characters="form.characters"
+                            v-model:locations="form.locations"
+                            v-model:objects="form.objects"
+                            v-model:emotions="form.emotions"
+                        />
+                    </div>
+
+                    <!-- Вкладка 4: Контекст и толкования -->
+                    <div v-else-if="activeTab === 'context'" key="context" class="space-y-6">
+                        <div
+                            class="border-border-muted bg-bg-primary/80 space-y-6 rounded-xl border p-4 sm:p-6"
+                        >
+                            <DreamContextSection
+                                v-model:preSleepContext="form.preSleepContext"
+                                v-model:personalNotes="form.personalNotes"
+                            />
+
+                            <DreamInterpretationSection
+                                v-model:interpretations="form.interpretations"
+                            />
+
+                            <DreamRelatedSection
+                                v-model:related-dreams="form.relatedDreams"
+                                :slug="slug"
+                            />
+                        </div>
+                    </div>
+                </Transition>
             </div>
 
             <AppErrorMessage :error-message="sleepStore.error" />
 
             <!-- Кнопки управления (доступны из любой вкладки) -->
             <div class="border-border-muted flex items-center justify-end gap-3 border-t pt-4">
-                <AppButton @click="goBack" variant="ghost"><span>Отмена</span></AppButton>
+                <AppButton @click="goBack" variant="ghost">Отмена</AppButton>
 
                 <AppButton size="xs" type="submit" variant="primary" :disabled="sleepStore.loading">
-                    <span>{{
+                    {{
                         sleepStore.loading ? 'Сохранение...' : isEditMode ? 'Сохранить' : 'Создать'
-                    }}</span>
+                    }}
                 </AppButton>
             </div>
         </form>
@@ -310,3 +310,22 @@
         }
     };
 </script>
+
+<style scoped>
+    .fade-enter-active,
+    .fade-leave-active {
+        transition:
+            opacity 0.15s ease,
+            transform 0.15s ease;
+    }
+
+    .fade-enter-from {
+        opacity: 0;
+        transform: translateY(4px);
+    }
+
+    .fade-leave-to {
+        opacity: 0;
+        transform: translateY(-4px);
+    }
+</style>

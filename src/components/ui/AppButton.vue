@@ -54,17 +54,18 @@
     });
 
     // Style mappings
+    // Style mappings
     const variantClasses: Record<ButtonVariant, string> = {
         primary:
-            'bg-accent text-white hover:bg-accent-hover border-transparent shadow-sm active:scale-[0.98] cursor-pointer',
+            'bg-accent text-text-inverse hover:bg-accent-hover border-transparent shadow-sm active:scale-[0.98] cursor-pointer',
         secondary:
-            'bg-bg-secondary text-text-secondary hover:text-text-inverse hover:bg-accent-hover border-border active:scale-[0.98] cursor-pointer',
-        danger: 'text-danger-text hover:bg-danger-bg border-border-danger hover:scale-[0.98] cursor-pointer',
+            'bg-bg-secondary text-text-primary hover:text-text-inverse hover:bg-accent hover:border-accent border-border active:scale-[0.98] cursor-pointer',
+        danger: 'bg-danger-bg text-danger-text hover:opacity-90 border-danger-border active:scale-[0.98] cursor-pointer',
         outline:
-            'bg-transparent text-text-primary hover:bg-accent-hover border-border active:scale-[0.98] cursor-pointer',
-        ghost: 'bg-transparent text-text-muted hover:text-text-primary hover:bg-accent-hover border-transparent cursor-pointer',
-        add: 'bg-transparent text-accent hover:text-accent/80 border-none active:scale-[0.98] cursor-pointer',
-        back: 'text-text-mute hover:text-text-mute/80 focus-visible:outline-accent border-none flex cursor-pointer items-center gap-2 rounded-md font-medium transition-colors focus-visible:outline focus-visible:outline-2',
+            'bg-transparent text-text-primary hover:bg-accent-subtle hover:text-accent hover:border-accent border-border active:scale-[0.98] cursor-pointer',
+        ghost: 'bg-transparent text-text-secondary hover:text-text-primary hover:bg-bg-secondary border-transparent cursor-pointer',
+        add: 'bg-transparent text-accent hover:text-accent-hover border-none active:scale-[0.98] cursor-pointer',
+        back: 'text-text-secondary hover:text-text-primary focus-visible:outline-accent border-none flex cursor-pointer items-center gap-2 rounded-md font-medium transition-colors focus-visible:outline focus-visible:outline-2',
     };
 
     /* Адаптивные размеры кнопок (Mobile -> Tablet -> Desktop >= 1024px) */

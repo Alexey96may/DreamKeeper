@@ -1,7 +1,13 @@
 <template>
     <div class="text-text-primary transition-theme duration-theme">
-        <div class="container mx-auto max-w-2xl px-4 py-6">
-            <AppButton @click="goBack" size="xs" class="mb-8" variant="back" :icon-left="MoveLeft">
+        <div class="container px-4 py-6">
+            <AppButton
+                @click="goBack({ name: 'home' })"
+                size="xs"
+                class="mb-8"
+                variant="back"
+                :icon-left="MoveLeft"
+            >
                 Назад к календарю
             </AppButton>
 
@@ -17,26 +23,30 @@
 
                 <!-- Сны за день -->
                 <div class="mt-4">
-                    <div class="mb-4! flex items-center justify-between">
+                    <div class="mb-8 flex items-center justify-between">
                         <h4 class="text-text-soft text-sm font-medium">Сны</h4>
 
                         <AppButton
                             v-if="isAllowedDay"
                             @click="goToAddDream(date)"
-                            size="xs"
-                            variant="add"
+                            size="sm"
+                            variant="primary"
                             :icon-left="PlusIcon"
-                        >
-                            <span>Добавить</span>
-                        </AppButton>
+                        />
                     </div>
 
-                    <div v-if="dayDreams.length > 0" class="flex flex-col gap-4">
+                    <!-- Используем TransitionGroup вместо обычного div -->
+                    <TransitionGroup
+                        v-if="dayDreams.length > 0"
+                        name="list"
+                        tag="div"
+                        class="flex flex-col gap-4"
+                    >
                         <div
                             v-for="dream in dayDreams"
                             :key="dream.id"
-                            @click="goToDreamDetail(dream.slug)"
-                            class="bg-bg-secondary/50 border-border/50 cursor-pointer rounded-lg border p-3 transition duration-200"
+                            @click="isDeleting(dream.id) ? '' : goToDreamDetail(dream.slug)"
+                            class="bg-bg-secondary/50 border-border-primary cursor-pointer rounded-lg border p-3 transition duration-200"
                             :class="{ 'opacity-50': isDeleting(dream.id) }"
                         >
                             <div
@@ -65,7 +75,9 @@
                                     class="flex min-w-1/5 flex-row-reverse items-center justify-end gap-2 sm:flex-row"
                                 >
                                     <AppButton
-                                        @click.stop="handleDelete(dream.id, dream.date)"
+                                        @click.stop="
+                                            handleDelete(dream.id, dream.date, dream.title)
+                                        "
                                         size="sm"
                                         variant="danger"
                                         :disabled="isDeleting(dream.id)"
@@ -82,29 +94,27 @@
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    </TransitionGroup>
 
                     <p v-else class="text-text-mute mt-4 text-sm">Нет снов за этот день</p>
                 </div>
 
                 <!-- Состояние за день -->
-                <div class="border-border mt-6 border-t pt-4">
-                    <div class="mb-4! flex items-center justify-between">
+                <div class="border-border-muted mt-6 border-t pt-4">
+                    <div class="mb-8 flex items-center justify-between">
                         <h4 class="text-text-soft text-sm font-medium">Состояние за день</h4>
 
                         <AppButton
                             v-if="isAllowedDay"
                             @click="isModalOpen = true"
-                            size="xs"
-                            variant="add"
+                            size="sm"
+                            variant="primary"
                             :icon-left="dayState ? Edit2Icon : PlusIcon"
-                        >
-                            <span>{{ dayState ? 'Редактировать' : 'Добавить' }}</span>
-                        </AppButton>
+                        />
                     </div>
 
                     <div v-if="dayState" class="flex flex-col gap-4">
-                        <div class="flex items-center justify-evenly gap-4 overflow-auto">
+                        <div class="flex items-center justify-evenly gap-4 overflow-auto pb-2">
                             <AppRating
                                 v-if="dayState.mood !== undefined && dayState.mood > 0"
                                 label="Настроение"
@@ -237,5 +247,27 @@
             opacity: 1;
             transform: translateY(0);
         }
+    }
+    /* Плавное перемещение карточек при пересчете элементов списка (например, при удалении) */
+    .list-move {
+        transition: transform 0.3s ease;
+    }
+
+    /* Анимация появления и исчезновения элементов */
+    .list-enter-active,
+    .list-leave-active {
+        transition: all 0.3s ease;
+    }
+
+    .list-enter-from,
+    .list-leave-to {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+
+    /* Важно для корректного сдвига остальных элементов при удалении конкретной карточки */
+    .list-leave-active {
+        position: absolute;
+        width: 100%;
     }
 </style>

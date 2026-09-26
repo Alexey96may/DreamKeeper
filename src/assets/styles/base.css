@@ -1,73 +1,256 @@
-body {
-    min-height: 100vh;
-    color: var(--color-text);
-    background: var(--color-background);
-    transition:
-        color 0.3s ease,
-        background-color 0.3s ease,
-        border-color 0.3s ease,
-        box-shadow 0.3s ease;
-    font-family:
-        'Inter',
-        -apple-system,
-        BlinkMacSystemFont,
-        'Segoe UI',
-        Roboto,
-        Oxygen,
-        Ubuntu,
-        Cantarell,
-        'Fira Sans',
-        'Droid Sans',
-        'Helvetica Neue',
-        sans-serif;
-    font-size: 16px;
-    font-weight: 400;
+@base {
+    body {
+        min-height: 100vh;
+        color: var(--color-text);
+        background: var(--color-background);
+        transition:
+            color 0.3s ease,
+            background-color 0.3s ease,
+            border-color 0.3s ease,
+            box-shadow 0.3s ease;
+        font-family:
+            'Inter',
+            -apple-system,
+            BlinkMacSystemFont,
+            'Segoe UI',
+            Roboto,
+            Oxygen,
+            Ubuntu,
+            Cantarell,
+            'Fira Sans',
+            'Droid Sans',
+            'Helvetica Neue',
+            sans-serif;
+        font-size: 16px;
+        font-weight: 400;
+        text-rendering: optimizeLegibility;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+    }
 
-    text-rendering: optimizeLegibility;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
+    /* Базовые стили для тегов заголовков и текста */
+    h1 {
+        font-size: 1.25rem;
+    }
+    h2 {
+        font-size: 1.15rem;
+    }
+    h3 {
+        font-size: 1.05rem;
+    }
+    h4 {
+        font-size: 0.95rem;
+    }
+    p,
+    a,
+    span,
+    textarea {
+        font-size: 0.7rem;
+    }
+    small {
+        font-size: 0.65rem;
+    }
+
+    @media (min-width: 640px) {
+        h1 {
+            font-size: 1.4rem; /* ~22.4px */
+        }
+
+        h2 {
+            font-size: 1.25rem; /* 20px */
+        }
+
+        h3 {
+            font-size: 1.1rem; /* ~17.6px */
+        }
+
+        h4 {
+            font-size: 0.95rem; /* ~15.2px */
+        }
+
+        p,
+        a,
+        span,
+        button,
+        textarea {
+            font-size: 0.74rem; /* ~14.4px */
+        }
+
+        small {
+            font-size: 0.7rem; /* ~12.8px */
+        }
+    }
+
+    /* md: 768px */
+    @media (min-width: 768px) {
+        h1 {
+            font-size: 1.55rem; /* ~24.8px */
+        }
+
+        h2 {
+            font-size: 1.4rem; /* ~22.4px */
+        }
+
+        h3 {
+            font-size: 1.15rem; /* ~18.4px */
+        }
+
+        h4 {
+            font-size: 1rem; /* 16px */
+        }
+
+        p,
+        a,
+        span,
+        button,
+        textarea {
+            font-size: 0.765rem; /* ~14.8px */
+        }
+
+        small {
+            font-size: 0.825rem; /* ~13.2px */
+        }
+    }
+
+    /* lg: 1024px */
+    @media (min-width: 1024px) {
+        h1 {
+            font-size: 1.7rem; /* ~27.2px */
+        }
+
+        h2 {
+            font-size: 1.55rem; /* ~24.8px */
+        }
+
+        h3 {
+            font-size: 1.2rem; /* ~19.2px */
+        }
+
+        h4 {
+            font-size: 1.05rem; /* ~16.8px */
+        }
+
+        p,
+        a,
+        span,
+        button,
+        textarea {
+            font-size: 0.85rem; /* ~15.2px */
+        }
+
+        small {
+            font-size: 0.85rem; /* ~13.6px */
+        }
+    }
+
+    /* xl: 1280px */
+    @media (min-width: 1280px) {
+        h1 {
+            font-size: 1.85rem; /* ~29.6px */
+        }
+
+        h2 {
+            font-size: 1.68rem; /* ~26.8px */
+        }
+
+        h3 {
+            font-size: 1.25rem; /* 20px */
+        }
+
+        h4 {
+            font-size: 1.08rem; /* ~17.2px */
+        }
+
+        p,
+        a,
+        span,
+        button,
+        textarea {
+            font-size: 0.9rem; /* ~15.6px */
+        }
+
+        small {
+            font-size: 0.875rem; /* 14px */
+        }
+    }
+
+    /* 2xl / Максимум: 1440px */
+    @media (min-width: 1440px) {
+        h1 {
+            font-size: 2rem; /* 32px */
+        }
+
+        h2 {
+            font-size: 1.8rem; /* ~28.8px */
+        }
+
+        h3 {
+            font-size: 1.3rem; /* ~20.8px */
+        }
+
+        h4 {
+            font-size: 1.1rem; /* ~17.6px */
+        }
+
+        p,
+        a,
+        span,
+        button,
+        textarea {
+            font-size: 1rem; /* 16px */
+        }
+
+        small {
+            font-size: 0.9rem; /* ~14.4px */
+        }
+    }
+}
+
+@layer base {
+    ::-webkit-scrollbar {
+        width: 3px;
+        height: 3px;
+    }
+
+    @media (min-width: 1024px) {
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+    }
+
+    /* Трек (дорожка) */
+    ::-webkit-scrollbar-track {
+        background: color-mix(in srgb, var(--color-bg-secondary) 70%, transparent);
+        border-radius: 4px;
+    }
+
+    /* Ползунок */
+    ::-webkit-scrollbar-thumb {
+        background: var(--color-accent);
+        border-radius: 4px;
+        transition: background 0.2s ease;
+    }
+
+    /* При наведении */
+    ::-webkit-scrollbar-thumb:hover {
+        background: var(--color-accent-hover);
+    }
 }
 
 /* ============================================
-   7. СКРОЛЛБАР
-   ============================================ */
-
-::-webkit-scrollbar {
-    width: 4px;
-    height: 4px;
-    opacity: 0.7;
-}
-
-::-webkit-scrollbar-track {
-    background: var(--color-background-soft);
-    border-radius: 4px;
-    opacity: 0.7;
-}
-
-::-webkit-scrollbar-thumb {
-    background: var(--color-accent);
-    opacity: 0.7;
-    border-radius: 4px;
-    transition: background 0.2s;
-    cursor: grabbing;
-}
-
-::-webkit-scrollbar-thumb:hover {
-    background: var(--color-accent-hover);
-}
-
-/* ============================================
-   8. ВСПОМОГАТЕЛЬНЫЕ КЛАССЫ
+   ВСПОМОГАТЕЛЬНЫЕ КЛАССЫ
    ============================================ */
 
 .container {
     width: 100%;
     max-width: 1280px;
-    margin: 0 auto;
-    padding: 0 20px;
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: 20px;
+    padding-right: 20px;
 }
 
-/* Градиент для заголовков */
 .text-gradient {
     background: linear-gradient(135deg, var(--color-accent), var(--color-accent-hover));
     -webkit-background-clip: text;
@@ -75,7 +258,6 @@ body {
     background-clip: text;
 }
 
-/* Карточка */
 .card {
     background: var(--color-background-card);
     border: 1px solid var(--color-border);
@@ -90,7 +272,6 @@ body {
     border-color: var(--color-border-hover);
 }
 
-/* Кнопки */
 .btn-primary {
     display: inline-flex;
     align-items: center;
@@ -137,7 +318,6 @@ body {
     transform: translateY(-2px);
 }
 
-/* Инпуты */
 .input {
     width: 100%;
     padding: 12px 16px;
@@ -160,7 +340,6 @@ body {
     color: var(--color-text-mute);
 }
 
-/* Анимации */
 @keyframes fadeIn {
     from {
         opacity: 0;
@@ -188,182 +367,4 @@ body {
 
 .pulse {
     animation: pulse 2s ease-in-out infinite;
-}
-
-/* < 640px */
-h1 {
-    font-size: 1.25rem; /* 20px */
-}
-
-h2 {
-    font-size: 1.15rem; /* ~18.4px */
-}
-
-h3 {
-    font-size: 1.05rem; /* ~16.8px */
-}
-
-h4 {
-    font-size: 0.95rem; /* ~15.2px */
-}
-
-p,
-a,
-span,
-textarea {
-    font-size: 0.7rem; /* 14px */
-}
-
-small {
-    font-size: 0.65rem; /* 12px */
-}
-
-/* sm: 640px */
-@media (min-width: 640px) {
-    h1 {
-        font-size: 1.4rem; /* ~22.4px */
-    }
-
-    h2 {
-        font-size: 1.25rem; /* 20px */
-    }
-
-    h3 {
-        font-size: 1.1rem; /* ~17.6px */
-    }
-
-    h4 {
-        font-size: 0.95rem; /* ~15.2px */
-    }
-
-    p,
-    a,
-    span,
-    textarea {
-        font-size: 0.74rem; /* ~14.4px */
-    }
-
-    small {
-        font-size: 0.7rem; /* ~12.8px */
-    }
-}
-
-/* md: 768px */
-@media (min-width: 768px) {
-    h1 {
-        font-size: 1.55rem; /* ~24.8px */
-    }
-
-    h2 {
-        font-size: 1.4rem; /* ~22.4px */
-    }
-
-    h3 {
-        font-size: 1.15rem; /* ~18.4px */
-    }
-
-    h4 {
-        font-size: 1rem; /* 16px */
-    }
-
-    p,
-    a,
-    span,
-    textarea {
-        font-size: 0.765rem; /* ~14.8px */
-    }
-
-    small {
-        font-size: 0.825rem; /* ~13.2px */
-    }
-}
-
-/* lg: 1024px */
-@media (min-width: 1024px) {
-    h1 {
-        font-size: 1.7rem; /* ~27.2px */
-    }
-
-    h2 {
-        font-size: 1.55rem; /* ~24.8px */
-    }
-
-    h3 {
-        font-size: 1.2rem; /* ~19.2px */
-    }
-
-    h4 {
-        font-size: 1.05rem; /* ~16.8px */
-    }
-
-    p,
-    a,
-    span,
-    textarea {
-        font-size: 0.85rem; /* ~15.2px */
-    }
-
-    small {
-        font-size: 0.85rem; /* ~13.6px */
-    }
-}
-
-/* xl: 1280px */
-@media (min-width: 1280px) {
-    h1 {
-        font-size: 1.85rem; /* ~29.6px */
-    }
-
-    h2 {
-        font-size: 1.68rem; /* ~26.8px */
-    }
-
-    h3 {
-        font-size: 1.25rem; /* 20px */
-    }
-
-    h4 {
-        font-size: 1.08rem; /* ~17.2px */
-    }
-
-    p,
-    a,
-    span,
-    textarea {
-        font-size: 0.9rem; /* ~15.6px */
-    }
-
-    small {
-        font-size: 0.875rem; /* 14px */
-    }
-}
-
-/* 2xl / Максимум: 1440px */
-@media (min-width: 1440px) {
-    h1 {
-        font-size: 2rem; /* 32px */
-    }
-
-    h2 {
-        font-size: 1.8rem; /* ~28.8px */
-    }
-
-    h3 {
-        font-size: 1.3rem; /* ~20.8px */
-    }
-
-    h4 {
-        font-size: 1.1rem; /* ~17.6px */
-    }
-
-    p,
-    a,
-    span,
-    textarea {
-        font-size: 1rem; /* 16px */
-    }
-
-    small {
-        font-size: 0.9rem; /* ~14.4px */
-    }
 }

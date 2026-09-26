@@ -1,16 +1,24 @@
 <template>
-    <main
-        class="text-text-primary transition-theme duration-theme min-h-screen pb-12"
+    <div
+        class="text-text-primary transition-theme duration-theme"
         aria-label="Детальный просмотр сна"
     >
-        <div class="container mx-auto max-w-3xl px-4 py-6">
-            <!-- Индикатор загрузки -->
+        <div class="container px-4 py-6">
+            <AppButton
+                @click="goBack()"
+                size="xs"
+                class="mb-8"
+                variant="back"
+                :icon-left="MoveLeft"
+            >
+                Назад
+            </AppButton>
 
             <div
                 v-if="sleepStore.loading && !dream"
                 role="status"
                 aria-live="polite"
-                class="dream-card text-text-mute p-8 text-center"
+                class="dream-card text-text-mute p-6 text-center sm:p-8 sm:pt-10"
             >
                 Загрузка данных о сне...
             </div>
@@ -18,7 +26,7 @@
             <!-- Карточка сна -->
             <article
                 v-else-if="dream"
-                class="dream-card relative space-y-6 p-6 pt-8 sm:p-8 sm:pt-10"
+                class="dream-card relative space-y-8 p-6 pt-8 sm:p-8 sm:pt-10"
                 aria-labelledby="dream-title"
             >
                 <!-- 1. Шапка: Заголовок, дата, время суток и флаги (избранное/закреплено) -->
@@ -96,23 +104,6 @@
                     <h1 id="dream-title" class="text-text-primary mt-3 font-bold">
                         {{ dream.title }}
                     </h1>
-
-                    <!-- Основные категории -->
-                    <div
-                        v-if="dream.categories?.length"
-                        class="mt-3 flex flex-wrap gap-2"
-                        aria-label="Категории сна"
-                    >
-                        <div v-for="cat in dream.categories" :key="cat">
-                            <AppTag
-                                @click="filterStore.toggleArrayFilter('categories', cat)"
-                                :is-in-filter="filterStore.filters.isActive"
-                                :is-pressed="filterStore.filters.categories.includes(cat)"
-                                :icon="DREAM_CATEGORY_MAP[cat].icon"
-                                :hint="DREAM_CATEGORY_MAP[cat].label"
-                            />
-                        </div>
-                    </div>
                 </header>
 
                 <!-- 2. Оценки (Качество, Ясность, Настроение после) -->
@@ -156,10 +147,10 @@
                 <!-- 3. Контекст перед сном -->
                 <section
                     v-if="preSleepContextText"
-                    class="border-accent bg-accent/5 flex flex-col gap-1.5 rounded-r-lg border-l-4 p-3.5"
+                    class="border-accent bg-accent/5 flex flex-col gap-2 rounded-r-lg border-l-4 p-3.5"
                 >
                     <span
-                        class="text-accent flex items-center gap-1.5 text-xs font-bold tracking-wider"
+                        class="text-accent flex items-center gap-2 text-xs font-bold tracking-wider"
                     >
                         <ArrowBigLeftDash /><span>Перед сном</span>
                     </span>
@@ -169,19 +160,30 @@
                 </section>
 
                 <!-- 4. Основное описание сна -->
-                <section v-if="dream.description" class="flex flex-col gap-1.5">
-                    <h2 class="text-text-soft text-xs font-semibold tracking-wider">Описание</h2>
+                <section v-if="dream.description" class="flex flex-col gap-2">
+                    <h2
+                        class="text-text-primary border-border-muted border-b pb-2 font-semibold tracking-wider"
+                    >
+                        Описание
+                    </h2>
                     <p class="text-text-primary text-base leading-relaxed whitespace-pre-line">
                         {{ dream.description }}
                     </p>
                 </section>
 
                 <!-- 5.(Lucid, Nightmare, Prophetic) -->
-                <section v-if="hasCategoryDetails" class="flex flex-col gap-3">
-                    <h2 class="text-text-soft font-semibold tracking-wider">Детали категорий</h2>
+                <section v-if="hasCategoryDetails" class="flex flex-col gap-4">
+                    <h2
+                        class="text-text-primary border-border-muted border-b pb-2 font-semibold tracking-wider"
+                    >
+                        Категории сна
+                    </h2>
 
                     <DreamCategoryDetailsCard
                         v-if="dream.categoryDetails?.lucid"
+                        @click="filterStore.toggleArrayFilter('categories', 'lucid')"
+                        :is-in-filter="filterStore.filters.isActive"
+                        :is-pressed="filterStore.filters.categories.includes('lucid')"
                         type="lucid"
                         key="lucid"
                         :details="dream.categoryDetails.lucid"
@@ -189,6 +191,9 @@
 
                     <DreamCategoryDetailsCard
                         v-if="dream.categoryDetails?.nightmare"
+                        @click="filterStore.toggleArrayFilter('categories', 'nightmare')"
+                        :is-in-filter="filterStore.filters.isActive"
+                        :is-pressed="filterStore.filters.categories.includes('nightmare')"
                         type="nightmare"
                         key="nightmare"
                         :details="dream.categoryDetails.nightmare"
@@ -196,6 +201,9 @@
 
                     <DreamCategoryDetailsCard
                         v-if="dream.categoryDetails?.prophetic"
+                        @click="filterStore.toggleArrayFilter('categories', 'prophetic')"
+                        :is-in-filter="filterStore.filters.isActive"
+                        :is-pressed="filterStore.filters.categories.includes('prophetic')"
                         type="prophetic"
                         key="prophetic"
                         :details="dream.categoryDetails.prophetic"
@@ -203,196 +211,100 @@
                 </section>
 
                 <!-- 6. Особые явления (Phenomena) и их детали -->
-                <section v-if="dream.phenomena?.length" class="flex flex-col gap-3">
-                    <h2 class="text-text-soft text-xs font-semibold tracking-wider">
+                <section v-if="dream.phenomena?.length" class="flex flex-col gap-4">
+                    <h2
+                        class="text-text-primary border-border-muted border-b pb-2 font-semibold tracking-wider"
+                    >
                         Феномены и особые события
                     </h2>
 
-                    <div class="flex flex-wrap gap-1.5">
-                        <AppTag
-                            v-for="item in dream.phenomena"
-                            :key="item"
-                            @click="filterStore.toggleArrayFilter('events', item)"
-                            :is-in-filter="filterStore.filters.isActive"
-                            :is-pressed="filterStore.filters.events.includes(item)"
-                            :icon="DREAM_PHENOMENON_MAP[item].icon"
-                            :hint="DREAM_PHENOMENON_MAP[item || ''].label"
-                        />
-                    </div>
-
-                    <!-- Детали феноменов -->
                     <div
                         v-if="dream.phenomenaDetails"
-                        class="grid grid-cols-1 gap-3 text-xs sm:grid-cols-2"
+                        class="grid grid-cols-1 gap-4 text-xs sm:grid-cols-2"
                     >
-                        <!-- Смерть -->
-                        <div v-if="dream.phenomenaDetails.death" class="dream-card rounded-lg p-3">
-                            <span
-                                class="text-text-primary mb-1.5 flex items-center gap-1.5 font-bold"
-                                ><component :is="DREAM_PHENOMENON_MAP['death'].icon" />
-                                {{ DREAM_PHENOMENON_MAP['death'].label }}</span
-                            >
-                            <p v-if="dream.phenomenaDetails.death.cause" class="text-text-mute">
-                                Причина:
-                                {{ DEATH_CAUSE_MAP[dream.phenomenaDetails.death.cause].label }}
-                            </p>
-                            <p
-                                v-if="dream.phenomenaDetails.death.aftermath"
-                                class="text-text-mute mt-0.5"
-                            >
-                                После смерти:
-                                {{
-                                    DEATH_AFTERMATH_MAP[dream.phenomenaDetails.death.aftermath]
-                                        .label
-                                }}
-                            </p>
-                        </div>
+                        <DreamPhenomenonCard
+                            v-if="dream.phenomenaDetails.death"
+                            @click="filterStore.toggleArrayFilter('events', 'death')"
+                            type="death"
+                            :details="dream.phenomenaDetails"
+                            :is-in-filter="filterStore.filters.isActive"
+                            :is-pressed="filterStore.filters.events.includes('death')"
+                        />
 
-                        <!-- Полёт -->
-                        <div v-if="dream.phenomenaDetails.flying" class="dream-card rounded-lg p-3">
-                            <span
-                                class="text-text-primary mb-1.5 flex items-center gap-1.5 font-bold"
-                                ><component :is="DREAM_PHENOMENON_MAP['flying'].icon" />
-                                {{ DREAM_PHENOMENON_MAP['flying'].label }}</span
-                            >
-                            <p v-if="dream.phenomenaDetails.flying.type" class="text-text-mute">
-                                Стиль:
-                                {{ FLYING_TYPE_MAP[dream.phenomenaDetails.flying.type].label }}
-                            </p>
-                            <p
-                                v-if="dream.phenomenaDetails.flying.altitude"
-                                class="text-text-mute mt-0.5"
-                            >
-                                Высота:
-                                {{
-                                    FLYING_ALTITUDE_MAP[dream.phenomenaDetails.flying.altitude]
-                                        .label
-                                }}
-                            </p>
-                        </div>
+                        <DreamPhenomenonCard
+                            v-if="dream.phenomenaDetails.flying"
+                            @click="filterStore.toggleArrayFilter('events', 'flying')"
+                            type="flying"
+                            :details="dream.phenomenaDetails"
+                            :is-in-filter="filterStore.filters.isActive"
+                            :is-pressed="filterStore.filters.events.includes('flying')"
+                        />
 
-                        <!-- Падение -->
-                        <div
+                        <DreamPhenomenonCard
                             v-if="dream.phenomenaDetails.falling"
-                            class="dream-card rounded-lg p-3"
-                        >
-                            <span
-                                class="text-text-primary mb-1.5 flex items-center gap-1.5 font-bold"
-                                ><component :is="DREAM_PHENOMENON_MAP['falling'].icon" />
-                                {{ DREAM_PHENOMENON_MAP['falling'].label }}</span
-                            >
-                            <p v-if="dream.phenomenaDetails.falling.origin" class="text-text-mute">
-                                Откуда:
-                                {{
-                                    FALLING_ORIGIN_MAP[dream.phenomenaDetails.falling.origin].label
-                                }}
-                            </p>
-                            <p
-                                v-if="dream.phenomenaDetails.falling.outcome"
-                                class="text-text-mute mt-0.5"
-                            >
-                                Итог:
-                                {{
-                                    FALLING_OUTCOME_MAP[dream.phenomenaDetails.falling.outcome]
-                                        .label
-                                }}
-                            </p>
-                        </div>
+                            @click="filterStore.toggleArrayFilter('events', 'falling')"
+                            type="falling"
+                            :details="dream.phenomenaDetails"
+                            :is-in-filter="filterStore.filters.isActive"
+                            :is-pressed="filterStore.filters.events.includes('falling')"
+                        />
 
-                        <!-- Сонный паралич -->
-                        <div
+                        <DreamPhenomenonCard
                             v-if="dream.phenomenaDetails.paralysis"
-                            class="dream-card rounded-lg p-3 transition-colors"
-                        >
-                            <span
-                                class="text-text-primary mb-1.5 flex items-center gap-1.5 font-bold"
-                                ><component :is="DREAM_PHENOMENON_MAP['paralysis'].icon" />
-                                {{ DREAM_PHENOMENON_MAP['paralysis'].label }}</span
-                            >
-                            <p
-                                v-if="dream.phenomenaDetails.paralysis.timing"
-                                class="text-text-mute"
-                            >
-                                Время:
-                                {{
-                                    PARALYSIS_TIMING_MAP[dream.phenomenaDetails.paralysis.timing]
-                                        .label
-                                }}
-                            </p>
-                            <p
-                                v-if="dream.phenomenaDetails.paralysis.hallucinations?.length"
-                                class="text-text-mute mt-1"
-                            >
-                                Галлюцинации:
-                                {{
-                                    dream.phenomenaDetails.paralysis.hallucinations
-                                        .map((e) => PARALYSIS_HALLUCINATIONS_MAP[e].label)
-                                        .join(', ')
-                                }}
-                            </p>
-                        </div>
+                            @click="filterStore.toggleArrayFilter('events', 'paralysis')"
+                            type="paralysis"
+                            :details="dream.phenomenaDetails"
+                            :is-in-filter="filterStore.filters.isActive"
+                            :is-pressed="filterStore.filters.events.includes('paralysis')"
+                        />
 
-                        <!-- Ложное пробуждение -->
-                        <div
+                        <DreamPhenomenonCard
                             v-if="dream.phenomenaDetails.nestedDream"
-                            class="dream-card rounded-lg p-3"
-                        >
-                            <span
-                                class="text-text-primary mb-1.5 flex items-center gap-1.5 font-bold"
-                                ><component :is="DREAM_PHENOMENON_MAP['nested_dream'].icon" />{{
-                                    DREAM_PHENOMENON_MAP['nested_dream'].label
-                                }}</span
-                            >
-                            <p class="text-text-mute">
-                                Уровней вложенности:
-                                {{ dream.phenomenaDetails.nestedDream.nestingLevels ?? 1 }}
-                            </p>
-                        </div>
+                            @click="filterStore.toggleArrayFilter('events', 'nested_dream')"
+                            type="nested_dream"
+                            :details="dream.phenomenaDetails"
+                            :is-in-filter="filterStore.filters.isActive"
+                            :is-pressed="filterStore.filters.events.includes('nested_dream')"
+                        />
                     </div>
                 </section>
 
                 <!-- 7. Восприятие и Стиль (Визуал, Перспектива, Роли, Ощущения) -->
                 <section v-if="hasPerceptionDetails" class="flex flex-col gap-6">
-                    <h2 class="text-text-soft font-semibold tracking-wider">Восприятие</h2>
+                    <h2
+                        class="text-text-primary border-border-muted border-b pb-2 font-semibold tracking-wider"
+                    >
+                        Восприятие
+                    </h2>
 
-                    <div class="flex flex-col gap-3">
-                        <div class="flex flex-wrap items-center gap-2" v-if="dream.visualStyle">
-                            <h3>Визуальный стиль:</h3>
+                    <div class="flex items-center gap-4 overflow-x-auto pb-2">
+                        <AppTag
+                            v-if="dream.visualStyle"
+                            :is-in-filter="filterStore.filters.isActive"
+                            @click="filterStore.toggleArrayFilter('visualStyle', dream.visualStyle)"
+                            :is-pressed="
+                                filterStore.filters.visualStyle.includes(dream.visualStyle)
+                            "
+                            :icon="VISUAL_STYLE_MAP[dream.visualStyle].icon"
+                            >{{ VISUAL_STYLE_MAP[dream.visualStyle].label }}
+                        </AppTag>
 
-                            <AppTag
-                                :is-in-filter="filterStore.filters.isActive"
-                                @click="
-                                    filterStore.toggleArrayFilter('visualStyle', dream.visualStyle)
-                                "
-                                :is-pressed="
-                                    filterStore.filters.visualStyle.includes(dream.visualStyle)
-                                "
-                                :icon="VISUAL_STYLE_MAP[dream.visualStyle].icon"
-                                >{{ VISUAL_STYLE_MAP[dream.visualStyle].label }}
-                            </AppTag>
-                        </div>
-
-                        <div class="flex flex-wrap items-center gap-2" v-if="dream.perspective">
-                            <h3>Лицо:</h3>
-
-                            <AppTag
-                                :is-in-filter="filterStore.filters.isActive"
-                                @click="
-                                    filterStore.toggleArrayFilter('perspective', dream.perspective)
-                                "
-                                :is-pressed="
-                                    filterStore.filters.perspective.includes(dream.perspective)
-                                "
-                                :icon="PERSPECTIVE_MAP[dream.perspective].icon"
-                                >{{ PERSPECTIVE_MAP[dream.perspective].label }}
-                            </AppTag>
-                        </div>
+                        <AppTag
+                            v-if="dream.perspective"
+                            :is-in-filter="filterStore.filters.isActive"
+                            @click="filterStore.toggleArrayFilter('perspective', dream.perspective)"
+                            :is-pressed="
+                                filterStore.filters.perspective.includes(dream.perspective)
+                            "
+                            :icon="PERSPECTIVE_MAP[dream.perspective].icon"
+                            >{{ PERSPECTIVE_MAP[dream.perspective].label }}
+                        </AppTag>
                     </div>
 
                     <!-- Роли -->
-                    <div v-if="dream.roles?.length" class="flex flex-col gap-1.5">
-                        <span class="text-text-mute text-xs">Роль в сюжетe:</span>
-                        <div class="flex w-full gap-1.5 overflow-x-auto py-2">
+                    <div v-if="dream.roles?.length" class="flex flex-col gap-2">
+                        <h3 class="text-text-mute">Роль в сюжетe:</h3>
+                        <div class="flex w-full gap-2 overflow-x-auto pb-2">
                             <AppTag
                                 v-for="role in dream.roles"
                                 :key="role"
@@ -406,9 +318,9 @@
                     </div>
 
                     <!-- Органы чувств -->
-                    <div v-if="dream.sensations?.length" class="flex flex-col gap-1.5">
-                        <span class="text-text-mute text-xs">Сенсорные ощущения:</span>
-                        <div class="flex flex-wrap gap-1.5">
+                    <div v-if="dream.sensations?.length" class="flex flex-col gap-2">
+                        <h3 class="text-text-mute">Сенсорные ощущения:</h3>
+                        <div class="flex flex-wrap gap-2">
                             <AppTag
                                 v-for="sensation in dream.sensations"
                                 :key="sensation"
@@ -423,14 +335,16 @@
                 </section>
 
                 <!-- 8. Аналитика (Персонажи, Локации, Предметы, Эмоции) -->
-                <section v-if="hasAnalytics" class="flex flex-col gap-3">
-                    <h2 class="text-text-soft text-xs font-semibold tracking-wider">
+                <section v-if="hasAnalytics" class="flex flex-col gap-4">
+                    <h2
+                        class="text-text-primary border-border-muted border-b pb-2 font-semibold tracking-wider"
+                    >
                         Аналитические элементы
                     </h2>
 
                     <div
                         v-if="analiticElements.length"
-                        class="grid grid-cols-1 gap-3 lg:grid-cols-2"
+                        class="grid grid-cols-1 gap-4 lg:grid-cols-2"
                     >
                         <div v-for="element in analiticElements" :key="element.id">
                             <DreamElementsCard
@@ -443,73 +357,87 @@
                 </section>
 
                 <!-- 9. Интерпретация / Сонник -->
-                <section v-if="interpretationsWithSource.length" class="flex flex-col gap-3">
-                    <h2 class="text-text-soft text-xs font-semibold tracking-wider">
+                <section v-if="interpretationsWithSource.length" class="flex flex-col gap-8">
+                    <h2
+                        class="text-text-primary border-border-muted border-b pb-2 font-semibold tracking-wider"
+                    >
                         Интерпретации
                     </h2>
 
-                    <DreamInterpretationCard
-                        v-for="interp in interpretationsWithSource"
-                        :key="interp.interpretationId"
-                        :interpretation="interp"
-                    />
-                </section>
-
-                <!-- 10. Личные заметки -->
-                <section v-if="dream.personalNotes" class="flex flex-col gap-3">
-                    <h2 class="text-text-soft text-xs font-semibold tracking-wider">
-                        Личные заметки
-                    </h2>
-                    <p
-                        class="text-text-primary bg-bg-secondary/30 border-border/30 mt-1.5 overflow-auto rounded-lg border p-3.5 text-xs leading-relaxed italic"
-                    >
-                        {{ dream.personalNotes }}
-                    </p>
+                    <div class="flex flex-col gap-6">
+                        <DreamInterpretationCard
+                            v-for="interp in interpretationsWithSource"
+                            :key="interp.interpretationId"
+                            :interpretation="interp"
+                        />
+                    </div>
                 </section>
 
                 <!-- 11. Связанные сны -->
-                <section v-if="dream.relatedDreams?.length" class="flex flex-col gap-3">
-                    <h2 class="text-text-soft text-xs font-semibold tracking-wider">
+                <section v-if="dream.relatedDreams?.length" class="flex flex-col gap-4">
+                    <h2
+                        class="text-text-primary border-border-muted border-b pb-2 font-semibold tracking-wider"
+                    >
                         Связанные сны
                     </h2>
 
                     <DreamRelatedCard v-for="rel in relatedDreams" :key="rel.id" :relation="rel" />
                 </section>
 
-                <!-- Метаданные создания / редактирования -->
+                <!-- 10. Личные заметки -->
+                <section v-if="dream.personalNotes" class="flex flex-col gap-4">
+                    <h2
+                        class="text-text-primary border-border-muted border-b pb-2 font-semibold tracking-wider"
+                    >
+                        Личные заметки
+                    </h2>
+                    <p
+                        class="text-text-primary bg-bg-secondary/30 mt-1.5 overflow-auto rounded-lg leading-relaxed italic"
+                    >
+                        “{{ dream.personalNotes }}”
+                    </p>
+                </section>
+
+                <!-- Нижняя панель: Метаданные и Кнопки управления -->
                 <footer
-                    class="border-border/30 text-text-mute flex flex-col gap-1.5 border-t pt-4 text-[11px]"
+                    class="border-border/35 text-text-muted mt-6 flex flex-col gap-4 border-t pt-4 text-[11px]"
                 >
-                    <p v-if="dream.createdAt">
-                        <span class="text-xs font-medium">Создано: </span>
-                        <AppSmartTime :date="dream.createdAt" />
-                    </p>
-                    <p v-if="dream.updatedAt">
-                        <span class="text-xs font-medium">Изменено: </span>
-                        <AppSmartTime :date="dream.updatedAt" />
-                    </p>
+                    <!-- Даты создания/изменения -->
+                    <div class="flex flex-wrap items-center gap-x-3 gap-y-1">
+                        <div v-if="dream.createdAt" class="flex items-center gap-1">
+                            <span class="opacity-75">Создано:</span>
+                            <AppSmartTime :date="dream.createdAt" />
+                        </div>
+
+                        <span v-if="dream.createdAt && dream.updatedAt" class="opacity-60">•</span>
+
+                        <div v-if="dream.updatedAt" class="flex items-center gap-1">
+                            <span class="opacity-75">Изменено:</span>
+                            <AppSmartTime :date="dream.updatedAt" />
+                        </div>
+                    </div>
+
+                    <!-- Кнопки управления -->
+                    <div class="flex items-center justify-between">
+                        <AppButton
+                            @click="handleDelete(dream.id, dream.date, dream.title)"
+                            size="xs"
+                            variant="danger"
+                            :disabled="isDeleting(dream.id)"
+                        >
+                            <span>Удалить</span>
+                        </AppButton>
+
+                        <AppButton
+                            @click="goToEdit(slug)"
+                            size="xs"
+                            variant="primary"
+                            :disabled="isDeleting(dream.id)"
+                        >
+                            <span>Редактировать</span>
+                        </AppButton>
+                    </div>
                 </footer>
-
-                <!-- Кнопки управления -->
-                <div class="border-border/50 mt-6 flex items-center justify-between border-t pt-4">
-                    <AppButton
-                        @click="handleDelete(dream.id, dream.date)"
-                        size="xs"
-                        variant="danger"
-                        :disabled="isDeleting(dream.id)"
-                    >
-                        <span>Удалить</span>
-                    </AppButton>
-
-                    <AppButton
-                        @click="goToEdit(slug)"
-                        size="xs"
-                        variant="primary"
-                        :disabled="isDeleting(dream.id)"
-                    >
-                        <span>Редактировать</span>
-                    </AppButton>
-                </div>
             </article>
 
             <!-- Пустое состояние -->
@@ -519,7 +447,7 @@
 
             <DreamFilterApplyBar :dream-slug="slug" />
         </div>
-    </main>
+    </div>
 </template>
 
 <script setup lang="ts">
@@ -535,6 +463,7 @@
         Trash2,
         FileEdit,
         Archive,
+        MoveLeft,
     } from 'lucide-vue-next';
     import AppButton from '@/components/ui/AppButton.vue';
     import AppTag from '@/components/ui/AppTag.vue';
@@ -542,26 +471,18 @@
     import DreamRelatedCard from '@/components/cards/DreamRelatedCard.vue';
     import DreamElementsCard from '@/components/cards/DreamElementsCard.vue';
     import DreamCategoryDetailsCard from '@/components/cards/DreamCategoryDetailsCard.vue';
+    import DreamPhenomenonCard from '@/components/cards/DreamPhenomenonCard.vue';
     import AppRating from '@/components/ui/AppRating.vue';
     import { useCrud } from '@/composables/crud';
     import AppSmartTime from '@/components/ui/AppSmartTime.vue';
     import DreamFilterApplyBar from '@/components/sections/DreamFilterApplyBar.vue';
     import { useNavigation } from '@/composables/routing/useNavigation';
     import { useInterpretationSourceStore } from '@/stores/modules/useInterpretationSourceStore';
+
     import type { DreamElementsObject, AnaliticsIds } from '@/types/Dream';
 
     import {
         TIME_OF_DAY_MAP,
-        DREAM_CATEGORY_MAP,
-        DREAM_PHENOMENON_MAP,
-        DEATH_CAUSE_MAP,
-        DEATH_AFTERMATH_MAP,
-        FLYING_TYPE_MAP,
-        FLYING_ALTITUDE_MAP,
-        FALLING_ORIGIN_MAP,
-        FALLING_OUTCOME_MAP,
-        PARALYSIS_TIMING_MAP,
-        PARALYSIS_HALLUCINATIONS_MAP,
         VISUAL_STYLE_MAP,
         PERSPECTIVE_MAP,
         PARTICIPANT_ROLE_MAP,
@@ -583,7 +504,7 @@
 
     const { handleDelete, isDeleting } = useCrud();
 
-    const { goToEdit } = useNavigation();
+    const { goToEdit, goBack } = useNavigation();
 
     // Преобразуем строковый route param в number согласно интерфейсу Dream
     const dream = computed(() => {

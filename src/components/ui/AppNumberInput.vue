@@ -230,14 +230,14 @@
 </script>
 
 <template>
-    <div class="flex w-full flex-col gap-1.5">
+    <div class="flex w-full flex-col gap-2 sm:gap-3">
         <!-- Input Label Bar -->
         <label
             v-if="label"
             :for="inputId"
             class="text-text-soft flex items-center justify-between text-sm font-medium"
         >
-            <span class="flex items-center gap-1.5">
+            <span class="flex items-center gap-2 sm:gap-3">
                 <AppTooltip v-if="hint" :content="hint" :required="required" />
                 <span>{{ label }}</span>
                 <span v-if="required" class="text-status-error font-bold" aria-hidden="true"

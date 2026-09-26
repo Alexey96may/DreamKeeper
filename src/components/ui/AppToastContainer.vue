@@ -1,6 +1,6 @@
 <template>
     <div
-        class="pointer-events-none fixed right-5 bottom-5 z-55 flex w-full max-w-95 flex-col-reverse gap-2.5 px-4 sm:px-0"
+        class="pointer-events-none fixed inset-0 bottom-5 z-55 flex w-full flex-col-reverse gap-2.5 px-4 sm:inset-auto sm:right-5 sm:bottom-5 sm:max-w-95"
     >
         <TransitionGroup
             enter-active-class="transition duration-300 ease-out"
@@ -15,7 +15,7 @@
                 v-for="toast in toastStore.toasts"
                 :key="toast.id"
                 :class="[
-                    'pointer-events-auto relative overflow-hidden rounded-xl border p-4 shadow-lg backdrop-blur-md transition-all',
+                    'pointer-events-auto relative overflow-hidden rounded-md border p-4 shadow-lg backdrop-blur-md transition-all xl:rounded-xl',
                     getConfig(toast.type).borderClass,
                     getConfig(toast.type).bgClass,
                 ]"
@@ -27,7 +27,7 @@
                             :is="getConfig(toast.type).icon"
                             :class="['h-5 w-5 shrink-0', getConfig(toast.type).iconClass]"
                         />
-                        <p class="text-text-primary text-sm leading-snug font-medium">
+                        <p class="text-text-primary line-clamp-2 text-sm leading-snug font-medium">
                             {{ toast.message }}
                         </p>
                     </div>
@@ -38,7 +38,7 @@
                         <AppButton
                             v-if="toast.actionLabel"
                             @click="handleAction(toast)"
-                            size="sm"
+                            size="xs"
                             variant="secondary"
                             >{{ toast.actionLabel }}</AppButton
                         >
@@ -46,7 +46,7 @@
                         <AppButton
                             v-if="!toast.showProgress"
                             @click="toastStore.removeToast(toast.id)"
-                            size="sm"
+                            size="xs"
                             variant="danger"
                             :icon-left="X"
                         />

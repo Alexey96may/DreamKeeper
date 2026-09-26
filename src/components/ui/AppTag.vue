@@ -49,7 +49,7 @@
 
     interface Props {
         isPressed?: boolean;
-        isInFilter?: boolean; // Новый пропс для демонстрации доступности фильтрации
+        isInFilter?: boolean;
         type?: 'button' | 'submit' | 'reset';
         disabled?: boolean;
         isLoading?: boolean;
@@ -90,12 +90,12 @@
         :disabled="isDisabled"
         :aria-pressed="role ? undefined : isPressed"
         :aria-checked="ariaChecked"
-        class="focus:ring-accent/50 relative inline-flex items-center gap-1.5 rounded-lg border px-3 py-1.5 text-xs font-medium text-nowrap transition-all duration-200 focus:ring-2 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50"
+        class="relative inline-flex items-center gap-1.5 rounded-lg border px-3 py-1.5 text-xs font-medium text-nowrap transition-all duration-200 disabled:cursor-not-allowed disabled:opacity-50"
         :class="[
             isPressed
-                ? 'border-accent bg-accent/20 text-accent font-semibold shadow-sm'
+                ? 'border-accent bg-accent/20 focus:ring-accent/50 text-accent cursor-pointer font-semibold shadow-sm focus:ring-2 focus:outline-none'
                 : isInFilter
-                  ? 'border-accent/60 bg-bg-secondary text-text-primary hover:border-accent hover:bg-accent/10 animate-pulse shadow-[0_0_8px_rgba(var(--color-accent-rgb),0.15)]'
+                  ? 'border-accent/60 bg-bg-secondary focus:ring-accent/50 text-text-primary hover:border-accent hover:bg-accent/10 animate-pulse cursor-pointer shadow-[0_0_8px_rgba(var(--color-accent-rgb),0.15)] focus:ring-2 focus:outline-none'
                   : 'border-border bg-bg-secondary text-text-soft hover:border-border/80 hover:text-text-primary',
         ]"
         @click="handleClick"
@@ -117,6 +117,8 @@
 
         <span v-if="$slots.default" class="text-sm"><slot /></span>
 
-        <AppTooltip v-if="hint" :content="hint" />
+        <!-- Тултип внутри кнопки рендерим только если нет внешнего управления или кастомного решения -->
+        <AppTooltip v-if="hint && !$slots.tooltip" :content="hint" />
+        <slot name="tooltip" />
     </button>
 </template>
