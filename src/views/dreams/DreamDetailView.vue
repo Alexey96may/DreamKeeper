@@ -109,10 +109,10 @@
                 <!-- 2. Оценки (Качество, Ясность, Настроение после) -->
                 <section
                     v-if="hasRatings"
-                    class="bg-bg-secondary/40 border-border/40 rounded-xl border p-4"
+                    class="bg-bg-secondary/40 border-border-strong rounded-md border p-4 lg:rounded-lg"
                     aria-label="Оценки сна"
                 >
-                    <div class="grid grid-cols-3 gap-2 text-center">
+                    <div class="grid grid-cols-3 gap-1.5 text-center">
                         <AppRating
                             v-if="dream.quality !== undefined && dream.quality > 0"
                             label="Качество"
@@ -144,7 +144,7 @@
                     </div>
                 </section>
 
-                <!-- 3. Контекст перед сном -->
+                <!-- 3. -->
                 <section
                     v-if="preSleepContextText"
                     class="border-accent bg-accent/5 flex flex-col gap-2 rounded-r-lg border-l-4 p-3.5"
@@ -154,7 +154,7 @@
                     >
                         <ArrowBigLeftDash /><span>Перед сном</span>
                     </span>
-                    <p class="text-text-primary text-sm leading-relaxed italic">
+                    <p class="text-text-primary overflow-hidden text-sm leading-relaxed italic">
                         {{ preSleepContextText }}
                     </p>
                 </section>
@@ -392,7 +392,7 @@
                         Личные заметки
                     </h2>
                     <p
-                        class="text-text-primary bg-bg-secondary/30 mt-1.5 overflow-auto rounded-lg leading-relaxed italic"
+                        class="text-text-primary overflow-auto rounded-lg py-2.5 leading-relaxed italic"
                     >
                         “{{ dream.personalNotes }}”
                     </p>

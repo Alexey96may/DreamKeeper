@@ -1,6 +1,6 @@
 <template>
     <article
-        class="border-border-primary bg-bg-primary hover:border-primary/50 relative flex h-full flex-col justify-between rounded-sm border p-5 pt-7 shadow-sm transition-all duration-200 hover:shadow-md lg:rounded-lg"
+        class="border-border-primary bg-bg-primary hover:border-primary/50 relative flex h-full flex-col justify-between rounded-sm border p-5 pt-8 shadow-sm transition-all duration-200 hover:shadow-md lg:rounded-lg"
     >
         <p
             class="border-danger-border text-danger-text bg-danger-bg absolute -top-2 -left-2 flex items-baseline gap-1.5 rounded-sm border px-2.5 py-0.5 lg:rounded-lg"
@@ -13,7 +13,7 @@
         </p>
 
         <div class="mb-3">
-            <div class="mb-3 flex items-start justify-between gap-2">
+            <div class="mb-5 flex items-start justify-between gap-2">
                 <div
                     class="text-text-secondary flex grow items-center justify-between gap-1.5 text-xs font-medium"
                 >
@@ -27,7 +27,6 @@
                     </div>
                 </div>
 
-                <!-- Флаги/Статусы -->
                 <div class="flex items-center gap-1.5">
                     <FilePen v-if="dream.isDraft" class="text-accent h-3.5 w-3.5" />
                     <Pin v-if="dream.isPinned" class="text-accent h-3.5 w-3.5" />

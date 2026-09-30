@@ -64,7 +64,7 @@
         :class="[
             'dream-card border-border-primary cursor-pointer rounded-lg border p-4 transition duration-200 outline-none focus-visible:ring-2',
             {
-                'bg-ring': isSelected,
+                'bg-ring/25': isSelected,
             },
         ]"
         @click="handleClick"
@@ -72,13 +72,10 @@
     >
         <div class="flex items-start justify-between gap-4">
             <div class="space-y-4">
-                <h3
-                    v-if="dream.title"
-                    class="text-text-secondary bg-bg-primary inline-block text-xs"
-                >
+                <h3 v-if="dream.title" class="text-text-secondaryinline-block line-clamp-1 text-xs">
                     {{ dream.title }}
                 </h3>
-                <p class="text-text-primary text-sm font-medium">
+                <p class="text-text-primary line-clamp-4 text-xs font-medium sm:text-sm">
                     {{ dream.description || 'Без описания' }}
                 </p>
 

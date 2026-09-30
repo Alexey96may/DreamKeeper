@@ -114,7 +114,7 @@
 
             <!-- Кнопки управления (доступны из любой вкладки) -->
             <div class="border-border-muted flex items-center justify-end gap-3 border-t pt-4">
-                <AppButton @click="goBack" variant="ghost">Отмена</AppButton>
+                <AppButton @click="goBack('/')" variant="ghost">Отмена</AppButton>
 
                 <AppButton size="xs" type="submit" variant="primary" :disabled="sleepStore.loading">
                     {{

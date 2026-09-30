@@ -6,12 +6,12 @@
     >
         <div v-show="filterStore.filters.isActive">
             <div
-                class="text-text-primary bg-bg-secondary border-border/50 absolute -top-2 -right-2 flex items-center gap-1 rounded-full border px-2 py-0.5 text-xs font-medium shadow-sm"
+                class="text-text-primary bg-bg-secondary border-border-primary absolute -top-4 -right-2 z-10 flex items-center gap-1 rounded-full border px-2 py-0.5 text-xs font-medium shadow-sm"
                 role="status"
                 aria-live="polite"
             >
                 <AppTooltip content="Количество найденых снов" />
-                <span>{{ filterStore.matchingCount }}</span>
+                <span class="text-[10px] sm:text-xs">{{ filterStore.matchingCount }}</span>
             </div>
 
             <div class="flex gap-2">

@@ -1,6 +1,6 @@
 <!--
 ===============================================================================
-  AppDatePicker.vue — Accessible Date Picker Component (v-calendar v3)
+  AppDatePicker.vue — Accessible Date Picker Component (v-calendar)
 ===============================================================================
 -->
 
@@ -11,10 +11,8 @@
     import AppTooltip from '@/components/ui/AppTooltip.vue';
     import AppErrorMessage from '@/components/ui/AppErrorMessage.vue';
     import { useFieldFocus } from '@/composables/useFieldFocus';
-    import 'v-calendar-3/style.css';
 
     interface Props {
-        /** Ожидает ISO-строку (например, "2026-08-13T00:00:00.000Z") или null */
         modelValue?: string | null;
         label?: string;
         hint?: string;
@@ -23,7 +21,6 @@
         isDisabled?: boolean;
         required?: boolean;
         placeholder?: string;
-        /** Маски отображения в инпуте */
         masks?: {
             input?: string;
         };
@@ -55,13 +52,11 @@
         (e: 'input'): void;
     }>();
 
-    // Уникальные ID для A11y связей
     const baseId = useId();
     const inputId = `date-picker-input-${baseId}`;
     const hintId = `date-picker-hint-${baseId}`;
     const errorId = `date-picker-error-${baseId}`;
 
-    // Преобразование ISO строки в Date объект для v-calendar и обратно в чистый UTC ISO
     const dateValue = computed<Date | null>({
         get: () => {
             if (!props.modelValue) return null;
@@ -78,7 +73,6 @@
             const month = String(val.getUTCMonth() + 1).padStart(2, '0');
             const day = String(val.getUTCDate()).padStart(2, '0');
 
-            // Результат: "YYYY-MM-DDTHH:mm:ssZ" (например: "2026-08-13T00:00:00Z")
             const timeString = props.isTimeDate ? 'T00:00:00' : '';
             const isoLocal = `${year}-${month}-${day}${timeString}`;
 
@@ -98,6 +92,8 @@
     const popoverOpts = {
         visibility: 'click' as const,
         placement: 'bottom-start' as const,
+        // Корректно пробрасываем стили попапа через сам пропс, чтобы не бороться с телепортацией
+        popperTriggers: ['click'],
     };
 
     const { targetRef, focus } = useFieldFocus({
@@ -118,7 +114,7 @@
 
 <template>
     <div
-        class="flex w-full flex-col gap-2 text-left sm:gap-3"
+        class="flex w-full flex-col gap-2 text-left"
         :class="{ 'cursor-not-allowed opacity-60': isDisabled }"
     >
         <!-- Label -->
@@ -131,7 +127,7 @@
                 isDisabled ? 'cursor-not-allowed' : 'cursor-pointer',
             ]"
         >
-            <span class="flex items-center gap-2 sm:gap-3">
+            <span class="flex items-center gap-2">
                 <AppTooltip v-if="hint" :content="hint" :required="required" />
                 <span>{{ label }}</span>
                 <span v-if="required" class="text-status-error ml-0.5 font-bold" aria-hidden="true"
@@ -143,6 +139,7 @@
         <!-- v-calendar Date Picker Wrapper -->
         <VDatePicker
             v-model="dateValue"
+            locale="ru"
             :disabled="isDisabled"
             :masks="masks"
             :popover="popoverOpts"
@@ -192,18 +189,85 @@
     </div>
 </template>
 
-<style id="v-calendar-a11y-overrides">
-    .vc-popover-content-wrapper {
-        --vc-font-family: inherit;
+<style scoped>
+    /* Основной контейнер попапа */
+    :deep(.vc-popover-content-wrapper) {
         z-index: 50 !important;
     }
 
-    /* Адаптация темы календаря v-calendar под токены приложения */
-    .vc-container {
-        --vc-bg: var(--bg-secondary);
-        --vc-border: var(--border-primary);
-        --vc-text-color: var(--text-primary);
-        --vc-accent-bg: var(--accent);
-        --vc-accent-color: var(--text-inverse);
+    /* Календарь и дизайн-токены */
+    :deep(.vc-container) {
+        --vc-font-family: inherit;
+        background-color: var(--bg-secondary) !important;
+        border: 1px solid var(--border-color) !important;
+        color: var(--text-primary) !important;
+        border-radius: 0.75rem !important;
+        box-shadow:
+            0 10px 25px -5px rgb(0 0 0 / 0.25),
+            0 8px 10px -6px rgb(0 0 0 / 0.25);
+    }
+
+    /* Шапка календаря */
+    :deep(.vc-header) {
+        margin-bottom: 0.5rem !important;
+    }
+
+    :deep(.vc-title) {
+        color: var(--text-primary) !important;
+        font-weight: 600 !important;
+    }
+
+    :deep(.vc-arrow) {
+        background-color: transparent !important;
+        color: var(--text-primary) !important;
+        border: 1px solid var(--border-color) !important;
+        border-radius: 0.5rem !important;
+    }
+
+    :deep(.vc-arrow:hover) {
+        background-color: var(--bg-tertiary) !important;
+        border-color: var(--border-hover) !important;
+        color: var(--accent) !important;
+    }
+
+    /* Дни недели */
+    :deep(.vc-weekday) {
+        color: var(--text-soft) !important;
+        font-weight: 500 !important;
+        font-size: 0.75rem !important;
+    }
+
+    /* Обычные ячейки дней */
+    :deep(.vc-day-content) {
+        color: var(--text-primary) !important;
+        font-weight: 400 !important;
+        border-radius: 0.5rem !important;
+    }
+
+    :deep(.vc-day-content:hover) {
+        background-color: var(--bg-tertiary) !important;
+        color: var(--accent) !important;
+    }
+
+    /* Выбранный день: фон и цвет текста */
+    :deep(.vc-highlight) {
+        background-color: var(--accent) !important;
+        border-radius: 0.5rem !important;
+    }
+
+    :deep(.vc-highlight *),
+    :deep(.vc-day [aria-selected='true']) {
+        color: var(--text-inverse, #ffffff) !important;
+    }
+
+    /* Дни из соседних месяцев */
+    :deep(.vc-day.is-not-in-month .vc-day-content) {
+        color: var(--text-soft) !important;
+        opacity: 0.4 !important;
+    }
+
+    /* Сегодняшний день */
+    :deep(.vc-day.is-today .vc-day-content:not(.vc-highlight *)) {
+        border: 1px solid var(--accent) !important;
     }
 </style>

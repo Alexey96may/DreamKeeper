@@ -9,7 +9,7 @@
 
 <template>
     <article
-        class="bg-bg-secondary/40 border-border/40 flex flex-col justify-between gap-3 rounded-lg border p-2.5 text-xs"
+        class="bg-bg-secondary/40 border-border-primary flex flex-col justify-between gap-3 rounded-lg border p-3.5 text-xs"
     >
         <div class="flex items-center gap-2">
             <span class="text-accent font-semibold">

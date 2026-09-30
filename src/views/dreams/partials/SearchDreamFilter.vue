@@ -248,7 +248,7 @@
 </template>
 
 <script setup lang="ts">
-    import { ref, computed, onMounted, onUnmounted, nextTick } from 'vue';
+    import { ref, computed, onMounted, nextTick } from 'vue';
     import { useSleepStore } from '@/stores/modules/dream';
     import { useDreamFilterStore } from '@/stores/modules/dreamFilter';
     import AppButton from '@/components/ui/AppButton.vue';
@@ -274,7 +274,6 @@
 
     const searchInput = ref<HTMLInputElement | null>(null);
 
-    // Сбор уникальных эмоций и персонажей из всех доступных снов для фильтрации
     const allEmotions = computed(() => {
         const set = new Set<string>();
         sleepStore.sleeps.forEach((d) => d.emotions?.forEach((e) => set.add(e)));
@@ -344,9 +343,5 @@
         nextTick(() => {
             searchInput.value?.focus();
         });
-    });
-
-    onUnmounted(async () => {
-        filterStore.toggleActive(false);
     });
 </script>

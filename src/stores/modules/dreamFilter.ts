@@ -2,6 +2,15 @@ import { ref, computed, watch } from 'vue';
 import { defineStore } from 'pinia';
 import { useSleepStore } from '@/stores/modules/dream';
 import { sanitizeDateString } from '@/utils/date';
+import {
+    DREAM_CATEGORY_MAP,
+    DREAM_PHENOMENON_MAP,
+    PERSPECTIVE_MAP,
+    SENSORY_ASPECT_MAP,
+    PARTICIPANT_ROLE_MAP,
+    VISUAL_STYLE_MAP,
+    TIME_OF_DAY_MAP,
+} from '@/constants/Dream';
 
 import type {
     DreamCategory,
@@ -41,6 +50,13 @@ export interface DreamFilterState {
     isDeleted: boolean;
     isDraft: boolean;
     isPrivate: boolean;
+}
+
+export interface ActiveFilterTag<T = unknown> {
+    key: keyof DreamFilterState;
+    label: string;
+    value?: T;
+    subKey?: string;
 }
 
 type ArrayFilterKey =
@@ -258,7 +274,209 @@ export const useDreamFilterStore = defineStore('dreamFilter', () => {
 
     const matchingCount = computed(() => filteredDreams.value.length);
 
-    // Метод для ручного переключения главного тумблера активности
+    const activeFilterTags = computed<ActiveFilterTag[]>(() => {
+        if (!filters.value.isActive) return [];
+
+        const tags: ActiveFilterTag[] = [];
+
+        // 1. Поиск
+        if (filters.value.searchQuery.trim()) {
+            tags.push({
+                key: 'searchQuery',
+                label: `Поиск: «${filters.value.searchQuery.trim()}»`,
+            });
+        }
+
+        // 2. Даты
+        if (filters.value.dateFrom) {
+            tags.push({
+                key: 'dateFrom',
+                label: `От: ${filters.value.dateFrom}`,
+            });
+        }
+        if (filters.value.dateTo) {
+            tags.push({
+                key: 'dateTo',
+                label: `До: ${filters.value.dateTo}`,
+            });
+        }
+
+        // 3. Числовые показатели и ползунки
+        if (filters.value.minLucidControl !== undefined) {
+            tags.push({
+                key: 'minLucidControl',
+                label: `Осознанность от ${filters.value.minLucidControl}`,
+            });
+        }
+        if (filters.value.maxNightmareFear !== undefined) {
+            tags.push({
+                key: 'maxNightmareFear',
+                label: `Страх до ${filters.value.maxNightmareFear}`,
+            });
+        }
+        if (filters.value.propheticFulfilled !== undefined) {
+            tags.push({
+                key: 'propheticFulfilled',
+                label: filters.value.propheticFulfilled ? 'Вещий (сбылся)' : 'Вещий (не сбылся)',
+            });
+        }
+        if (filters.value.minQuality !== undefined) {
+            tags.push({ key: 'minQuality', label: `Качество сна ≥ ${filters.value.minQuality}` });
+        }
+        if (filters.value.minClarity !== undefined) {
+            tags.push({ key: 'minClarity', label: `Четкость ≥ ${filters.value.minClarity}` });
+        }
+        if (filters.value.minMoodAfter !== undefined) {
+            tags.push({
+                key: 'minMoodAfter',
+                label: `Настроение после ≥ ${filters.value.minMoodAfter}`,
+            });
+        }
+
+        const arrayLabels: Record<ArrayFilterKey, string> = {
+            categories: 'Категория',
+            events: 'Феномен',
+            timeOfDay: 'Время суток',
+            visualStyle: 'Стиль',
+            perspective: 'Перспектива',
+            roles: 'Роль',
+            sensations: 'Ощущение',
+            characters: 'Персонаж',
+            locations: 'Место',
+            objects: 'Объект',
+            emotions: 'Эмоция',
+        };
+
+        // Словары для маппинга ключей в названия из конфига
+        const mapsRecord: Partial<Record<ArrayFilterKey, Record<string, { label: string }>>> = {
+            categories: DREAM_CATEGORY_MAP,
+            events: DREAM_PHENOMENON_MAP,
+            timeOfDay: TIME_OF_DAY_MAP,
+            visualStyle: VISUAL_STYLE_MAP,
+            perspective: PERSPECTIVE_MAP,
+            roles: PARTICIPANT_ROLE_MAP,
+            sensations: SENSORY_ASPECT_MAP,
+        };
+
+        (Object.keys(arrayLabels) as ArrayFilterKey[]).forEach((key) => {
+            const items = filters.value[key] as string[];
+            const mapObj = mapsRecord[key];
+
+            items.forEach((item) => {
+                // Достаем красивый label из мапы, если он там есть, иначе оставляем само значение
+                const humanLabel = mapObj && mapObj[item]?.label ? mapObj[item].label : item;
+
+                tags.push({
+                    key,
+                    subKey: item,
+                    label: `${arrayLabels[key]}: ${humanLabel}`,
+                });
+            });
+        });
+
+        // 5. Флаги (булевы)
+        if (filters.value.isFavorite) tags.push({ key: 'isFavorite', label: 'Избранные' });
+        if (filters.value.isPinned) tags.push({ key: 'isPinned', label: 'Закрепленные' });
+        if (filters.value.isArchived) tags.push({ key: 'isArchived', label: 'В архиве' });
+        if (filters.value.isDraft) tags.push({ key: 'isDraft', label: 'Черновики' });
+        if (filters.value.isPrivate) tags.push({ key: 'isPrivate', label: 'Личные' });
+
+        return tags;
+    });
+
+    const removeFilterTag = (tag: ActiveFilterTag) => {
+        const { key, subKey } = tag;
+
+        // Список ключей, которые являются массивами строк
+        const arrayKeys: Array<ArrayFilterKey> = [
+            'categories',
+            'events',
+            'timeOfDay',
+            'visualStyle',
+            'perspective',
+            'roles',
+            'sensations',
+            'characters',
+            'locations',
+            'objects',
+            'emotions',
+        ];
+
+        // 1. Если это удаление конкретного элемента из массива
+        if (subKey !== undefined && (arrayKeys as string[]).includes(key)) {
+            // Явно указываем TypeScript, что в данном контексте key — это ключ массива,
+            // а targetArray гарантированно является массивом строк (string[])
+            const targetArray = filters.value[key as ArrayFilterKey] as string[];
+            const index = targetArray.indexOf(subKey);
+            if (index > -1) {
+                targetArray.splice(index, 1);
+            }
+            return;
+        }
+
+        // 2. Сброс полей целиком по их ключу
+        switch (key) {
+            case 'searchQuery':
+                filters.value.searchQuery = '';
+                break;
+            case 'dateFrom':
+                filters.value.dateFrom = undefined;
+                break;
+            case 'dateTo':
+                filters.value.dateTo = undefined;
+                break;
+            case 'minLucidControl':
+                filters.value.minLucidControl = undefined;
+                break;
+            case 'maxNightmareFear':
+                filters.value.maxNightmareFear = undefined;
+                break;
+            case 'propheticFulfilled':
+                filters.value.propheticFulfilled = undefined;
+                break;
+            case 'minQuality':
+                filters.value.minQuality = undefined;
+                break;
+            case 'minClarity':
+                filters.value.minClarity = undefined;
+                break;
+            case 'minMoodAfter':
+                filters.value.minMoodAfter = undefined;
+                break;
+            case 'isFavorite':
+                filters.value.isFavorite = false;
+                break;
+            case 'isPinned':
+                filters.value.isPinned = false;
+                break;
+            case 'isArchived':
+                filters.value.isArchived = false;
+                break;
+            case 'isDeleted':
+                filters.value.isDeleted = false;
+                break;
+            case 'isDraft':
+                filters.value.isDraft = false;
+                break;
+            case 'isPrivate':
+                filters.value.isPrivate = false;
+                break;
+            case 'categories':
+            case 'events':
+            case 'timeOfDay':
+            case 'visualStyle':
+            case 'perspective':
+            case 'roles':
+            case 'sensations':
+            case 'characters':
+            case 'locations':
+            case 'objects':
+            case 'emotions':
+                filters.value[key] = [];
+                break;
+        }
+    };
+
     const toggleActive = (forceState?: boolean) => {
         filters.value.isActive = forceState ?? !filters.value.isActive;
     };
@@ -268,7 +486,6 @@ export const useDreamFilterStore = defineStore('dreamFilter', () => {
         localStorage.removeItem(STORAGE_KEY);
     };
 
-    // Автоматически включаем фильтр при любом изменении параметров
     const toggleArrayFilter = (id: ArrayFilterKey, value: string) => {
         if (!filters.value.isActive) return;
 
@@ -310,8 +527,10 @@ export const useDreamFilterStore = defineStore('dreamFilter', () => {
         filters,
         filteredDreams,
         matchingCount,
+        activeFilterTags,
         toggleActive,
         resetFilters,
+        removeFilterTag,
         toggleArrayFilter,
         toggleBooleanFilter,
         toggleNumberFilter,

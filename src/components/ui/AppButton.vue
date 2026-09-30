@@ -70,18 +70,18 @@
 
     /* Адаптивные размеры кнопок (Mobile -> Tablet -> Desktop >= 1024px) */
     const sizeClasses: Record<ButtonSize, string> = {
-        xs: 'px-2 py-1 text-[10px] md:px-2.5 md:py-1.5 md:text-[11px] lg:px-3 lg:py-1.5 lg:text-xs rounded-md',
-        sm: 'px-2.5 py-1.5 text-xs md:px-3 md:py-2 md:text-[13px] lg:px-3.5 lg:py-2 lg:text-sm rounded-lg',
-        md: 'px-3 py-1.5 text-xs md:px-3.5 md:py-2 md:text-sm lg:px-4 lg:py-2.5 lg:text-base rounded-lg',
-        lg: 'px-3.5 py-2 text-sm md:px-4 md:py-2.5 md:text-base lg:px-5 lg:py-3 lg:text-lg rounded-xl',
+        xs: 'px-2.5 py-1 text-[11px] md:px-3 md:py-1.5 md:text-xs lg:px-3.5 lg:py-1.5 lg:text-xs rounded-md',
+        sm: 'px-3 py-1.5 text-xs md:px-3.5 md:py-2 md:text-sm lg:px-4 lg:py-2 lg:text-sm rounded-lg',
+        md: 'px-3.5 py-2 text-sm md:px-4 md:py-2.5 md:text-base lg:px-5 lg:py-2.5 lg:text-base rounded-lg',
+        lg: 'px-4 py-2.5 text-base md:px-5 md:py-3 md:text-lg lg:px-6 lg:py-3.5 lg:text-lg rounded-xl',
     };
 
     /* Адаптивные размеры иконок */
     const iconSizeClasses: Record<ButtonSize, string> = {
-        xs: 'h-3 w-3 md:h-3.5 md:w-3.5 lg:h-4 lg:w-4 flex-none',
-        sm: 'h-3.5 w-3.5 md:h-4 md:w-4 lg:h-4.5 lg:w-4.5 flex-none',
-        md: 'h-4 w-4 md:h-4.5 md:w-4.5 lg:h-5 lg:w-5 flex-none',
-        lg: 'h-4.5 w-4.5 md:h-5 md:w-5 lg:h-6 lg:w-6 flex-none',
+        xs: 'h-3.5 w-3.5 md:h-4 md:w-4 lg:h-4 lg:w-4 flex-none',
+        sm: 'h-4 w-4 md:h-4.5 md:w-4.5 lg:h-5 lg:w-5 flex-none',
+        md: 'h-4.5 w-4.5 md:h-5 md:w-5 lg:h-5.5 lg:w-5.5 flex-none',
+        lg: 'h-5 w-5 md:h-6 md:w-6 lg:h-6.5 lg:w-6.5 flex-none',
     };
 
     const handleClick = (event: MouseEvent) => {

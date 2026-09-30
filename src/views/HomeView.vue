@@ -24,6 +24,7 @@
             <div class="dream-card mx-auto flex justify-center p-0 lg:w-full lg:px-14 lg:py-8">
                 <Calendar
                     ref="calendar"
+                    locale="ru"
                     :key="calendarKey"
                     :attributes="calendarAttributes"
                     :view="isWeeklyMod ? 'weekly' : 'monthly'"
@@ -378,7 +379,6 @@
         window.removeEventListener('click', closePopoverOnClickOutside);
     });
 </script>
-
 <style scoped>
     :deep(.vc-container) {
         background-color: var(--bg-primary);
@@ -407,9 +407,23 @@
         color: var(--text-primary) !important;
     }
 
+    /* Жёсткий сброс рамок, теней и аутлайнов у всех всплывающих элементов календаря */
+    :deep(.vc-popover-content),
+    :deep(.vc-popover-content *),
+    :deep(.vc-nav-popover-container),
+    :deep([data-popover]),
+    :deep(.vc-popover-caret) {
+        border: none !important;
+        box-shadow: none !important;
+        outline: none !important;
+    }
+
+    /* Стилизуем сам контейнер выбора месяцев/годов под вашу тему */
     :deep(.vc-nav-container) {
         background-color: var(--bg-elevated);
         color: var(--text-primary);
+        border: none !important;
+        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
     }
 
     :deep(.vc-highlights) {
@@ -445,6 +459,17 @@
     }
 
     :deep(.vc-highlight.vc-blue) {
+        background-color: var(--info-bg) !important;
+    }
+
+    :deep(.vc-nav-item.vc-focus:hover) {
+        background-color: var(--info-bg) !important;
+    }
+    :deep(.vc-nav-arrow.vc-focus:hover) {
+        background-color: var(--info-bg) !important;
+    }
+
+    :deep(.vc-nav-title.vc-focus:hover) {
         background-color: var(--info-bg) !important;
     }
 

@@ -10,200 +10,226 @@
             :options="DREAM_CATEGORY_OPTIONS"
         />
 
-        <div
-            v-if="categories.includes('lucid')"
-            class="border-dream-lucid/30 bg-dream-lucid/5 space-y-3 rounded-lg border p-3"
-        >
-            <h4 class="text-dream-lucid text-xs font-semibold">
-                Параметры Осознанного Сна (Lucid)
-            </h4>
-            <div v-if="categoryDetails?.lucid" class="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                <AppRange
-                    :modelValue="props.categoryDetails?.lucid?.controlLevel ?? 0"
-                    @update:modelValue="
-                        (val) => {
-                            updateDetailField('lucid', 'controlLevel', val);
-                        }
-                    "
-                    label="Уровень контроля"
-                    :error-message="
-                        sleepStore.validationErrors['categoryDetails.lucid.controlLevel']
-                    "
-                    @input="sleepStore.clearError('categoryDetails.lucid.controlLevel')"
-                    :min="0"
-                    :max="10"
-                    :step="1"
-                    :value-formatter="computedDreamValueFormatter"
-                />
+        <!-- LUCID -->
+        <Transition name="expand">
+            <div
+                v-if="categories.includes('lucid')"
+                class="border-info-border/30 bg-info-bg/5 space-y-3 rounded-lg border p-3"
+            >
+                <h4 class="text-info-text text-xs font-semibold">
+                    Параметры Осознанного Сна (Lucid)
+                </h4>
+                <div v-if="categoryDetails?.lucid" class="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                    <AppRange
+                        :modelValue="props.categoryDetails?.lucid?.controlLevel ?? 0"
+                        @update:modelValue="
+                            (val) => {
+                                updateDetailField('lucid', 'controlLevel', val);
+                            }
+                        "
+                        label="Уровень контроля"
+                        :error-message="
+                            sleepStore.validationErrors['categoryDetails.lucid.controlLevel']
+                        "
+                        @input="sleepStore.clearError('categoryDetails.lucid.controlLevel')"
+                        :min="0"
+                        :max="10"
+                        :step="1"
+                        :value-formatter="computedDreamValueFormatter"
+                    />
 
-                <AppSelect
-                    :model-value="props.categoryDetails?.lucid?.trigger ?? undefined"
-                    @update:model-value="
-                        (val) => {
-                            updateDetailField('lucid', 'trigger', val);
-                        }
-                    "
-                    label="Триггер осознания"
-                    :error-message="sleepStore.validationErrors['categoryDetails.lucid.trigger']"
-                    :options="LUCID_TRIGGER_OPTIONS"
-                    @clear-error="sleepStore.clearError('categoryDetails.lucid.trigger')"
-                />
+                    <AppSelect
+                        :model-value="props.categoryDetails?.lucid?.trigger ?? undefined"
+                        @update:model-value="
+                            (val) => {
+                                updateDetailField('lucid', 'trigger', val);
+                            }
+                        "
+                        label="Триггер осознания"
+                        :error-message="
+                            sleepStore.validationErrors['categoryDetails.lucid.trigger']
+                        "
+                        :options="LUCID_TRIGGER_OPTIONS"
+                        @clear-error="sleepStore.clearError('categoryDetails.lucid.trigger')"
+                    />
+                </div>
             </div>
-        </div>
+        </Transition>
 
         <!-- NIGHTMARE -->
-
-        <div
-            v-if="categories.includes('nightmare')"
-            class="border-status-error/30 bg-status-error/5 space-y-3 rounded-lg border p-3"
-        >
-            <h4 class="text-status-error text-xs font-semibold">Параметры Кошмара (Nightmare)</h4>
-            <div v-if="categoryDetails?.nightmare" class="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                <AppRange
-                    :model-value="props.categoryDetails?.nightmare?.fearLevel ?? 0"
-                    @update:model-value="
-                        (val) => {
-                            updateDetailField('nightmare', 'fearLevel', val);
-                        }
-                    "
-                    label="Уровень страха"
-                    :min="0"
-                    :max="10"
-                    :step="1"
-                    :value-formatter="computedDreamValueFormatter"
-                    :error-message="
-                        sleepStore.validationErrors['categoryDetails.nightmare.fearLevel']
-                    "
-                    @input="sleepStore.clearError('categoryDetails.nightmare.fearLevel')"
-                />
-
-                <AppCheckbox
-                    :model-value="props.categoryDetails?.nightmare?.hasPhysicalResponse ?? false"
-                    @update:model-value="
-                        (val) => {
-                            if (typeof val === 'boolean') {
-                                updateDetailField('nightmare', 'hasPhysicalResponse', val);
-                            }
-                        }
-                    "
-                    label="Физическая реакция"
-                    hint="Учащённый пульс, пот, испуг?"
-                    accent-color="bg-status-error border-status-error"
-                    :error-message="
-                        sleepStore.validationErrors['categoryDetails.nightmare.hasPhysicalResponse']
-                    "
-                    @change="sleepStore.clearError('categoryDetails.nightmare.hasPhysicalResponse')"
-                />
-            </div>
-
-            <AppTextInput
-                v-if="categoryDetails?.nightmare"
-                :model-value="props.categoryDetails?.nightmare?.copingMechanism ?? ''"
-                @update:model-value="
-                    (val) => {
-                        updateDetailField('nightmare', 'copingMechanism', val);
-                    }
-                "
-                label="Как справился / Завершение"
-                placeholder="Проснулся от крика, дал отпор..."
-                :error-message="
-                    sleepStore.validationErrors['categoryDetails.nightmare.copingMechanism']
-                "
-                @input="sleepStore.clearError('categoryDetails.nightmare.copingMechanism')"
-            />
-        </div>
-
-        <!-- PROPHETIC -->
-        <div
-            v-if="categories.includes('prophetic')"
-            class="border-dream-prophetic/30 bg-dream-prophetic/5 space-y-3 rounded-lg border p-3"
-        >
-            <h4 class="text-dream-prophetic text-xs font-semibold">
-                Параметры Вещего Сна (Prophetic)
-            </h4>
+        <Transition name="expand">
             <div
-                v-if="categoryDetails?.prophetic && dreamDate"
-                class="flex flex-col items-end gap-3"
+                v-if="categories.includes('nightmare')"
+                class="border-danger-border/30 bg-danger-bg/5 space-y-3 rounded-lg border p-3"
             >
-                <AppDatePicker
-                    :model-value="props.categoryDetails?.prophetic?.expectedByDate ?? undefined"
-                    @update:model-value="
-                        (val) => {
-                            updateDetailField(
-                                'prophetic',
-                                'expectedByDate',
-                                val === null ? undefined : val,
-                            );
-                        }
-                    "
-                    label="Ожидаемый срок"
-                    hint="Укажите дату, к которой сон должен реализоваться"
-                    :error-message="
-                        sleepStore.validationErrors['categoryDetails.prophetic.expectedByDate']
-                    "
-                    :min-date="minDreamDate"
-                    @input="sleepStore.clearError('categoryDetails.prophetic.expectedByDate')"
-                />
+                <h4 class="text-danger-text text-xs font-semibold">
+                    Параметры Кошмара (Nightmare)
+                </h4>
+                <div
+                    v-if="categoryDetails?.nightmare"
+                    class="grid grid-cols-1 gap-3 sm:grid-cols-2"
+                >
+                    <AppRange
+                        :model-value="props.categoryDetails?.nightmare?.fearLevel ?? 0"
+                        @update:model-value="
+                            (val) => {
+                                updateDetailField('nightmare', 'fearLevel', val);
+                            }
+                        "
+                        label="Уровень страха"
+                        :min="0"
+                        :max="10"
+                        :step="1"
+                        :value-formatter="computedDreamValueFormatter"
+                        :error-message="
+                            sleepStore.validationErrors['categoryDetails.nightmare.fearLevel']
+                        "
+                        @input="sleepStore.clearError('categoryDetails.nightmare.fearLevel')"
+                    />
 
-                <div class="flex w-full flex-col justify-between gap-3">
                     <AppCheckbox
-                        :model-value="props.categoryDetails?.prophetic?.isFulfilled ?? false"
+                        :model-value="
+                            props.categoryDetails?.nightmare?.hasPhysicalResponse ?? false
+                        "
                         @update:model-value="
                             (val) => {
                                 if (typeof val === 'boolean') {
-                                    updateDetailField('prophetic', 'isFulfilled', val);
+                                    updateDetailField('nightmare', 'hasPhysicalResponse', val);
                                 }
                             }
                         "
-                        label="Уже сбылся"
-                        accent-color="bg-dream-prophetic border-dream-prophetic"
-                        hint="Отметьте, если сон уже сбылся."
+                        label="Физическая реакция"
+                        hint="Учащённый пульс, пот, испуг?"
+                        accent-color="bg-status-error border-status-error"
                         :error-message="
-                            sleepStore.validationErrors['categoryDetails.prophetic.isFulfilled']
+                            sleepStore.validationErrors[
+                                'categoryDetails.nightmare.hasPhysicalResponse'
+                            ]
                         "
-                        @change="sleepStore.clearError('categoryDetails.prophetic.isFulfilled')"
-                        class="shrink-0"
+                        @change="
+                            sleepStore.clearError('categoryDetails.nightmare.hasPhysicalResponse')
+                        "
                     />
+                </div>
 
+                <AppTextInput
+                    v-if="categoryDetails?.nightmare"
+                    :model-value="props.categoryDetails?.nightmare?.copingMechanism ?? ''"
+                    @update:model-value="
+                        (val) => {
+                            updateDetailField('nightmare', 'copingMechanism', val);
+                        }
+                    "
+                    label="Как справился / Завершение"
+                    placeholder="Проснулся от крика, дал отпор..."
+                    :error-message="
+                        sleepStore.validationErrors['categoryDetails.nightmare.copingMechanism']
+                    "
+                    @input="sleepStore.clearError('categoryDetails.nightmare.copingMechanism')"
+                />
+            </div>
+        </Transition>
+
+        <!-- PROPHETIC -->
+        <Transition name="expand">
+            <div
+                v-if="categories.includes('prophetic')"
+                class="border-success-border/30 bg-success-bg/5 space-y-3 rounded-lg border p-3"
+            >
+                <h4 class="text-success-text text-xs font-semibold">
+                    Параметры Вещего Сна (Prophetic)
+                </h4>
+                <div
+                    v-if="categoryDetails?.prophetic && dreamDate"
+                    class="flex flex-col items-end gap-3"
+                >
                     <AppDatePicker
-                        v-show="props.categoryDetails?.prophetic?.isFulfilled"
-                        :model-value="props.categoryDetails?.prophetic?.fulfilledDate ?? ''"
+                        :model-value="props.categoryDetails?.prophetic?.expectedByDate ?? undefined"
                         @update:model-value="
                             (val) => {
                                 updateDetailField(
                                     'prophetic',
-                                    'fulfilledDate',
+                                    'expectedByDate',
                                     val === null ? undefined : val,
                                 );
                             }
                         "
-                        label="Дата исполнения"
-                        hint="Укажите дату, к которой сон реализовался"
-                        :min-date="minDreamDate"
+                        label="Ожидаемый срок"
+                        hint="Укажите дату, к которой сон должен реализоваться"
                         :error-message="
-                            sleepStore.validationErrors['categoryDetails.prophetic.fulfilledDate']
+                            sleepStore.validationErrors['categoryDetails.prophetic.expectedByDate']
                         "
-                        @input="sleepStore.clearError('categoryDetails.prophetic.fulfilledDate')"
+                        :min-date="minDreamDate"
+                        @input="sleepStore.clearError('categoryDetails.prophetic.expectedByDate')"
                     />
-                </div>
-            </div>
 
-            <AppTextInput
-                v-if="categoryDetails?.prophetic"
-                :model-value="props.categoryDetails?.prophetic?.fulfillmentNotes ?? ''"
-                @update:model-value="
-                    (val) => {
-                        updateDetailField('prophetic', 'fulfillmentNotes', val);
-                    }
-                "
-                label="Что именно произошло в реальности"
-                placeholder="Описание события в реальной жизни..."
-                :error-message="
-                    sleepStore.validationErrors['categoryDetails.prophetic.fulfillmentNotes']
-                "
-                @input="sleepStore.clearError('categoryDetails.prophetic.fulfillmentNotes')"
-            />
-        </div>
+                    <div class="flex w-full flex-col justify-between gap-3">
+                        <AppCheckbox
+                            :model-value="props.categoryDetails?.prophetic?.isFulfilled ?? false"
+                            @update:model-value="
+                                (val) => {
+                                    if (typeof val === 'boolean') {
+                                        updateDetailField('prophetic', 'isFulfilled', val);
+                                    }
+                                }
+                            "
+                            label="Уже сбылся"
+                            accent-color="bg-dream-prophetic border-dream-prophetic"
+                            hint="Отметьте, если сон уже сбылся."
+                            :error-message="
+                                sleepStore.validationErrors['categoryDetails.prophetic.isFulfilled']
+                            "
+                            @change="sleepStore.clearError('categoryDetails.prophetic.isFulfilled')"
+                            class="shrink-0"
+                        />
+
+                        <!-- Внутренний Transition для даты исполнения, которая появляется по чекбоксу -->
+                        <Transition name="expand">
+                            <AppDatePicker
+                                v-if="props.categoryDetails?.prophetic?.isFulfilled"
+                                :model-value="props.categoryDetails?.prophetic?.fulfilledDate ?? ''"
+                                @update:model-value="
+                                    (val) => {
+                                        updateDetailField(
+                                            'prophetic',
+                                            'fulfilledDate',
+                                            val === null ? undefined : val,
+                                        );
+                                    }
+                                "
+                                label="Дата исполнения"
+                                hint="Укажите дату, к которой сон реализовался"
+                                :min-date="minDreamDate"
+                                :error-message="
+                                    sleepStore.validationErrors[
+                                        'categoryDetails.prophetic.fulfilledDate'
+                                    ]
+                                "
+                                @input="
+                                    sleepStore.clearError('categoryDetails.prophetic.fulfilledDate')
+                                "
+                            />
+                        </Transition>
+                    </div>
+                </div>
+
+                <AppTextInput
+                    v-if="categoryDetails?.prophetic"
+                    :model-value="props.categoryDetails?.prophetic?.fulfillmentNotes ?? ''"
+                    @update:model-value="
+                        (val) => {
+                            updateDetailField('prophetic', 'fulfillmentNotes', val);
+                        }
+                    "
+                    label="Что именно произошло в реальности"
+                    placeholder="Описание события в реальной жизни..."
+                    :error-message="
+                        sleepStore.validationErrors['categoryDetails.prophetic.fulfillmentNotes']
+                    "
+                    @input="sleepStore.clearError('categoryDetails.prophetic.fulfillmentNotes')"
+                />
+            </div>
+        </Transition>
     </div>
 </template>
 

@@ -11,207 +11,231 @@
         />
 
         <!-- Детали: ПОЛЁТ -->
-        <div
-            v-if="props.phenomena?.includes('flying')"
-            class="border-border-muted/60 bg-bg-secondary/50 space-y-3 rounded-lg border p-3"
-        >
-            <h4 class="text-text-muted text-xs font-semibold tracking-wider uppercase">
-                Детали полёта
-            </h4>
+        <Transition name="expand">
             <div
-                v-if="props.phenomenaDetails?.flying"
-                class="grid grid-cols-1 gap-3 sm:grid-cols-2"
+                v-if="props.phenomena?.includes('flying')"
+                class="border-border-muted/60 bg-bg-secondary/50 space-y-3 overflow-hidden rounded-lg border p-3"
             >
-                <AppSelect
-                    :model-value="props.phenomenaDetails.flying.type"
-                    @update:model-value="
-                        (val) => {
-                            updateDetailField('flying', 'type', val);
-                        }
-                    "
-                    :options="FLYING_TYPE_OPTIONS"
-                    label="Стиль полёта"
-                    :error-message="sleepStore.validationErrors['phenomenaDetails.flying.type']"
-                    @clear-error="sleepStore.clearError('phenomenaDetails.flying.type')"
-                />
-
-                <AppSelect
-                    :model-value="props.phenomenaDetails.flying.altitude"
-                    @update:model-value="
-                        (val) => {
-                            updateDetailField('flying', 'altitude', val);
-                        }
-                    "
-                    :options="FLYING_ALTITUDE_OPTIONS"
-                    label="Высота"
-                    :error-message="sleepStore.validationErrors['phenomenaDetails.flying.altitude']"
-                    @clear-error="sleepStore.clearError('phenomenaDetails.flying.altitude')"
-                />
-            </div>
-        </div>
-
-        <!-- Детали: ПАДЕНИЕ -->
-        <div
-            v-if="props.phenomena?.includes('falling')"
-            class="border-border-muted/60 bg-bg-secondary/50 space-y-3 rounded-lg border p-3"
-        >
-            <h4 class="text-text-muted text-xs font-semibold tracking-wider uppercase">
-                Детали падения
-            </h4>
-            <div
-                v-if="props.phenomenaDetails?.falling"
-                class="grid grid-cols-1 gap-3 sm:grid-cols-2"
-            >
-                <AppSelect
-                    :model-value="props.phenomenaDetails.falling.origin"
-                    @update:model-value="
-                        (val) => {
-                            updateDetailField('falling', 'origin', val);
-                        }
-                    "
-                    :options="FALLING_ORIGIN_OPTIONS"
-                    :error="sleepStore.getError('phenomenaDetails.falling.origin')"
-                    label="Откуда падение"
-                    :error-message="sleepStore.validationErrors['phenomenaDetails.falling.origin']"
-                    @clear-error="sleepStore.clearError('phenomenaDetails.falling.origin')"
-                />
-
-                <AppSelect
-                    :model-value="props.phenomenaDetails.falling.outcome"
-                    @update:model-value="
-                        (val) => {
-                            updateDetailField('falling', 'outcome', val);
-                        }
-                    "
-                    :options="FALLING_OUTCOME_OPTIONS"
-                    :error="sleepStore.validationErrors.phenomenaDetails"
-                    label="Чем закончилось"
-                    :error-message="sleepStore.validationErrors['phenomenaDetails.falling.outcome']"
-                    @clear-error="sleepStore.clearError('phenomenaDetails.falling.outcome')"
-                />
-            </div>
-        </div>
-
-        <!-- Детали: СМЕРТЬ -->
-        <div
-            v-if="props.phenomena?.includes('death')"
-            class="border-border-muted/60 bg-bg-secondary/50 space-y-3 rounded-lg border p-3"
-        >
-            <h4 class="text-text-muted text-xs font-semibold tracking-wider uppercase">
-                Детали смерти во сне
-            </h4>
-            <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                <h4 class="text-text-muted text-xs font-semibold tracking-wider uppercase">
+                    Детали полёта
+                </h4>
                 <div
-                    v-if="props.phenomena?.includes('death') && props.phenomenaDetails?.death"
-                    class="space-y-4"
+                    v-if="props.phenomenaDetails?.flying"
+                    class="grid grid-cols-1 gap-3 sm:grid-cols-2"
                 >
                     <AppSelect
-                        :model-value="props.phenomenaDetails.death.cause"
+                        :model-value="props.phenomenaDetails.flying.type"
                         @update:model-value="
                             (val) => {
-                                updateDetailField('death', 'cause', val);
+                                updateDetailField('flying', 'type', val);
                             }
                         "
-                        :options="DEATH_CAUSE_OPTIONS"
-                        label="Причина / Контекст"
-                        :error-message="sleepStore.validationErrors['phenomenaDetails.death.cause']"
-                        @clear-error="sleepStore.clearError('phenomenaDetails.death.cause')"
+                        :options="FLYING_TYPE_OPTIONS"
+                        label="Стиль полёта"
+                        :error-message="sleepStore.validationErrors['phenomenaDetails.flying.type']"
+                        @clear-error="sleepStore.clearError('phenomenaDetails.flying.type')"
                     />
 
                     <AppSelect
-                        :model-value="props.phenomenaDetails.death.aftermath"
+                        :model-value="props.phenomenaDetails.flying.altitude"
                         @update:model-value="
                             (val) => {
-                                updateDetailField('death', 'aftermath', val);
+                                updateDetailField('flying', 'altitude', val);
                             }
                         "
-                        :options="DEATH_AFTERMATH_OPTIONS"
-                        label="Что произошло сразу после"
+                        :options="FLYING_ALTITUDE_OPTIONS"
+                        label="Высота"
                         :error-message="
-                            sleepStore.validationErrors['phenomenaDetails.death.aftermath']
+                            sleepStore.validationErrors['phenomenaDetails.flying.altitude']
                         "
-                        @clear-error="sleepStore.clearError('phenomenaDetails.death.aftermath')"
+                        @clear-error="sleepStore.clearError('phenomenaDetails.flying.altitude')"
                     />
                 </div>
             </div>
-        </div>
+        </Transition>
+
+        <!-- Детали: ПАДЕНИЕ -->
+        <Transition name="expand">
+            <div
+                v-if="props.phenomena?.includes('falling')"
+                class="border-border-muted/60 bg-bg-secondary/50 space-y-3 overflow-hidden rounded-lg border p-3"
+            >
+                <h4 class="text-text-muted text-xs font-semibold tracking-wider uppercase">
+                    Детали падения
+                </h4>
+                <div
+                    v-if="props.phenomenaDetails?.falling"
+                    class="grid grid-cols-1 gap-3 sm:grid-cols-2"
+                >
+                    <AppSelect
+                        :model-value="props.phenomenaDetails.falling.origin"
+                        @update:model-value="
+                            (val) => {
+                                updateDetailField('falling', 'origin', val);
+                            }
+                        "
+                        :options="FALLING_ORIGIN_OPTIONS"
+                        :error="sleepStore.getError('phenomenaDetails.falling.origin')"
+                        label="Откуда падение"
+                        :error-message="
+                            sleepStore.validationErrors['phenomenaDetails.falling.origin']
+                        "
+                        @clear-error="sleepStore.clearError('phenomenaDetails.falling.origin')"
+                    />
+
+                    <AppSelect
+                        :model-value="props.phenomenaDetails.falling.outcome"
+                        @update:model-value="
+                            (val) => {
+                                updateDetailField('falling', 'outcome', val);
+                            }
+                        "
+                        :options="FALLING_OUTCOME_OPTIONS"
+                        :error="sleepStore.validationErrors.phenomenaDetails"
+                        label="Чем закончилось"
+                        :error-message="
+                            sleepStore.validationErrors['phenomenaDetails.falling.outcome']
+                        "
+                        @clear-error="sleepStore.clearError('phenomenaDetails.falling.outcome')"
+                    />
+                </div>
+            </div>
+        </Transition>
+
+        <!-- Детали: СМЕРТЬ -->
+        <Transition name="expand">
+            <div
+                v-if="props.phenomena?.includes('death')"
+                class="border-border-muted/60 bg-bg-secondary/50 space-y-3 overflow-hidden rounded-lg border p-3"
+            >
+                <h4 class="text-text-muted text-xs font-semibold tracking-wider uppercase">
+                    Детали смерти во сне
+                </h4>
+                <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                    <div
+                        v-if="props.phenomena?.includes('death') && props.phenomenaDetails?.death"
+                        class="space-y-4"
+                    >
+                        <AppSelect
+                            :model-value="props.phenomenaDetails.death.cause"
+                            @update:model-value="
+                                (val) => {
+                                    updateDetailField('death', 'cause', val);
+                                }
+                            "
+                            :options="DEATH_CAUSE_OPTIONS"
+                            label="Причина / Контекст"
+                            :error-message="
+                                sleepStore.validationErrors['phenomenaDetails.death.cause']
+                            "
+                            @clear-error="sleepStore.clearError('phenomenaDetails.death.cause')"
+                        />
+
+                        <AppSelect
+                            :model-value="props.phenomenaDetails.death.aftermath"
+                            @update:model-value="
+                                (val) => {
+                                    updateDetailField('death', 'aftermath', val);
+                                }
+                            "
+                            :options="DEATH_AFTERMATH_OPTIONS"
+                            label="Что произошло сразу после"
+                            :error-message="
+                                sleepStore.validationErrors['phenomenaDetails.death.aftermath']
+                            "
+                            @clear-error="sleepStore.clearError('phenomenaDetails.death.aftermath')"
+                        />
+                    </div>
+                </div>
+            </div>
+        </Transition>
 
         <!-- Детали: СОННЫЙ ПАРАЛИЧ -->
-        <div
-            v-if="props.phenomena?.includes('paralysis')"
-            class="border-border-muted/60 bg-bg-secondary/50 space-y-3 rounded-lg border p-3"
-        >
-            <h4 class="text-text-muted text-xs font-semibold tracking-wider uppercase">
-                Детали сонного паралича
-            </h4>
+        <Transition name="expand">
+            <div
+                v-if="props.phenomena?.includes('paralysis')"
+                class="border-border-muted/60 bg-bg-secondary/50 space-y-3 overflow-hidden rounded-lg border p-3"
+            >
+                <h4 class="text-text-muted text-xs font-semibold tracking-wider uppercase">
+                    Детали сонного паралича
+                </h4>
 
-            <AppSelect
-                v-if="props.phenomenaDetails?.paralysis"
-                :model-value="props.phenomenaDetails.paralysis.timing"
-                @update:model-value="
-                    (val) => {
-                        updateDetailField('paralysis', 'timing', val);
-                    }
-                "
-                :options="PARALYSIS_TIMING_OPTIONS"
-                label="Момент возникновения"
-                :error-message="sleepStore.validationErrors['phenomenaDetails.paralysis.timing']"
-                @clear-error="sleepStore.clearError('phenomenaDetails.paralysis.timing')"
-            />
+                <AppSelect
+                    v-if="props.phenomenaDetails?.paralysis"
+                    :model-value="props.phenomenaDetails.paralysis.timing"
+                    @update:model-value="
+                        (val) => {
+                            updateDetailField('paralysis', 'timing', val);
+                        }
+                    "
+                    :options="PARALYSIS_TIMING_OPTIONS"
+                    label="Момент возникновения"
+                    :error-message="
+                        sleepStore.validationErrors['phenomenaDetails.paralysis.timing']
+                    "
+                    @clear-error="sleepStore.clearError('phenomenaDetails.paralysis.timing')"
+                />
 
-            <AppTagSelect
-                v-if="props.phenomenaDetails?.paralysis?.hallucinations"
-                :modelValue="props.phenomenaDetails.paralysis.hallucinations"
-                @update:modelValue="
-                    (val) => {
-                        if (val === null)
-                            updateDetailField('paralysis', 'hallucinations', undefined);
-                        if (Array.isArray(val))
-                            updateDetailField('paralysis', 'hallucinations', val);
-                    }
-                "
-                label="Галлюцинации"
-                :options="PARALYSIS_HALLUCINATIONS_OPTIONS"
-                :error-message="
-                    sleepStore.validationErrors['phenomenaDetails.paralysis.hallucinations']
-                "
-                @clear-error="sleepStore.clearError('phenomenaDetails.paralysis.hallucinations')"
-            />
-        </div>
+                <AppTagSelect
+                    v-if="props.phenomenaDetails?.paralysis?.hallucinations"
+                    :modelValue="props.phenomenaDetails.paralysis.hallucinations"
+                    @update:modelValue="
+                        (val) => {
+                            if (val === null)
+                                updateDetailField('paralysis', 'hallucinations', undefined);
+                            if (Array.isArray(val))
+                                updateDetailField('paralysis', 'hallucinations', val);
+                        }
+                    "
+                    label="Галлюцинации"
+                    :options="PARALYSIS_HALLUCINATIONS_OPTIONS"
+                    :error-message="
+                        sleepStore.validationErrors['phenomenaDetails.paralysis.hallucinations']
+                    "
+                    @clear-error="
+                        sleepStore.clearError('phenomenaDetails.paralysis.hallucinations')
+                    "
+                />
+            </div>
+        </Transition>
 
         <!-- Детали: ЛОЖНОЕ ПРОБУЖДЕНИЕ -->
-        <div
-            v-if="props.phenomena?.includes('nested_dream')"
-            class="border-border-muted/60 bg-bg-secondary/50 space-y-3 rounded-lg border p-3"
-        >
-            <h4 class="text-text-muted text-xs font-semibold tracking-wider uppercase">
-                Детали ложного пробуждения
-            </h4>
+        <Transition name="expand">
+            <div
+                v-if="props.phenomena?.includes('nested_dream')"
+                class="border-border-muted/60 bg-bg-secondary/50 space-y-3 overflow-hidden rounded-lg border p-3"
+            >
+                <h4 class="text-text-muted text-xs font-semibold tracking-wider uppercase">
+                    Детали ложного пробуждения
+                </h4>
 
-            <AppNumberInput
-                v-if="props.phenomenaDetails?.nestedDream"
-                :modelValue="props.phenomenaDetails.nestedDream.nestingLevels"
-                @update:modelValue="
-                    (val) => {
-                        updateDetailField(
-                            'nestedDream',
-                            'nestingLevels',
-                            val === null ? undefined : val,
-                        );
-                    }
-                "
-                label="Уровень вложенности "
-                hint="Сколько раз «просыпался» во сне?"
-                :min="1"
-                :max="1000"
-                :step="1"
-                :formatter="(val) => `${val} раз`"
-                :error-message="
-                    sleepStore.validationErrors['phenomenaDetails.nestedDream.nestingLevels']
-                "
-                @clearError="sleepStore.clearError('phenomenaDetails.nestedDream.nestingLevels')"
-            />
-        </div>
+                <AppNumberInput
+                    v-if="props.phenomenaDetails?.nestedDream"
+                    :modelValue="props.phenomenaDetails.nestedDream.nestingLevels"
+                    @update:modelValue="
+                        (val) => {
+                            updateDetailField(
+                                'nestedDream',
+                                'nestingLevels',
+                                val === null ? undefined : val,
+                            );
+                        }
+                    "
+                    label="Уровень вложенности "
+                    hint="Сколько раз «просыпался» во сне?"
+                    :min="1"
+                    :max="1000"
+                    :step="1"
+                    :formatter="(val) => `${val} раз`"
+                    :error-message="
+                        sleepStore.validationErrors['phenomenaDetails.nestedDream.nestingLevels']
+                    "
+                    @clearError="
+                        sleepStore.clearError('phenomenaDetails.nestedDream.nestingLevels')
+                    "
+                />
+            </div>
+        </Transition>
     </div>
 </template>
 
@@ -302,3 +326,24 @@
         emit('update:phenomenaDetails', details);
     };
 </script>
+
+<style scoped>
+    .expand-enter-active,
+    .expand-leave-active {
+        transition: all 0.3s ease;
+        max-height: 500px;
+        opacity: 1;
+        overflow: hidden;
+    }
+
+    .expand-enter-from,
+    .expand-leave-to {
+        max-height: 0;
+        opacity: 0;
+        padding-top: 0;
+        padding-bottom: 0;
+        margin-top: 0;
+        margin-bottom: 0;
+        border-width: 0;
+    }
+</style>

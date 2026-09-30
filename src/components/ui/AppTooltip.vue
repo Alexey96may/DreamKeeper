@@ -33,7 +33,7 @@
     const triggerRef = ref<HTMLElement | null>(null);
     const popoverRef = ref<HTMLElement | null>(null);
 
-    // Координаты и смещение стрелки для Teleport
+    //  Teleport
     const popoverStyle = ref({
         top: '0px',
         left: '0px',
@@ -112,7 +112,7 @@
 
     const handleScrollOrResize = () => {
         if (isOpen.value) {
-            updatePosition();
+            closeTooltip();
         }
     };
 

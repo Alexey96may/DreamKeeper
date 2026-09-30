@@ -239,7 +239,7 @@
 
 <template>
     <div ref="selectContainer" class="relative w-full">
-        <div class="flex flex-col gap-2 sm:gap-3">
+        <div class="flex flex-col gap-2">
             <!-- Label -->
             <label
                 v-if="label"

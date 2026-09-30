@@ -8,6 +8,7 @@
 
     const navLinks = [
         { to: '/', label: 'Главная' },
+        { to: '/dream/search', label: 'Поиск' },
         { to: '/about', label: 'О проекте' },
     ];
 </script>
@@ -39,7 +40,7 @@
                     v-for="link in navLinks"
                     :key="link.to"
                     :to="link.to"
-                    class="text-text-soft hover:text-text-inverse hover:bg-accent-hover/30 rounded-xl px-4 py-2 text-sm font-medium transition-colors"
+                    class="text-text-soft hover:text-text-inverse hover:bg-accent-hover/80 rounded-xl px-4 py-2 text-sm font-medium transition-colors"
                     active-class="!text-accent hover:!text-text-inverse bg-accent-soft/50 font-semibold"
                 >
                     {{ link.label }}
@@ -47,6 +48,7 @@
             </nav>
 
             <!-- Правая панель (Тема + Бургер) -->
+
             <div class="flex items-center gap-2">
                 <ThemeSelector />
 

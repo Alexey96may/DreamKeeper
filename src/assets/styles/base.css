@@ -1,8 +1,8 @@
 @base {
     body {
         min-height: 100vh;
-        color: var(--color-text);
-        background: var(--color-background);
+        color: var(--color-text-primary);
+        background: var(--bg-primary);
         transition:
             color 0.3s ease,
             background-color 0.3s ease,
@@ -115,7 +115,7 @@
     /* lg: 1024px */
     @media (min-width: 1024px) {
         h1 {
-            font-size: 1.7rem; /* ~27.2px */
+            font-size: 1.7rem !important; /* ~27.2px */
         }
 
         h2 {

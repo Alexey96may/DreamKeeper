@@ -12,7 +12,7 @@
             </AppButton>
 
             <div class="dream-card fade-in p-6">
-                <div>
+                <div class="border-border-strong border-b pb-3">
                     <h3 class="text-text-primary text-xl font-semibold">
                         {{ formattedDate }}
                     </h3>
@@ -21,88 +21,10 @@
                     </p>
                 </div>
 
-                <!-- Сны за день -->
-                <div class="mt-4">
-                    <div class="mb-8 flex items-center justify-between">
-                        <h4 class="text-text-soft text-sm font-medium">Сны</h4>
-
-                        <AppButton
-                            v-if="isAllowedDay"
-                            @click="goToAddDream(date)"
-                            size="sm"
-                            variant="primary"
-                            :icon-left="PlusIcon"
-                        />
-                    </div>
-
-                    <!-- Используем TransitionGroup вместо обычного div -->
-                    <TransitionGroup
-                        v-if="dayDreams.length > 0"
-                        name="list"
-                        tag="div"
-                        class="flex flex-col gap-4"
-                    >
-                        <div
-                            v-for="dream in dayDreams"
-                            :key="dream.id"
-                            @click="isDeleting(dream.id) ? '' : goToDreamDetail(dream.slug)"
-                            class="bg-bg-secondary/50 border-border-primary cursor-pointer rounded-lg border p-3 transition duration-200"
-                            :class="{ 'opacity-50': isDeleting(dream.id) }"
-                        >
-                            <div
-                                class="relative flex flex-col items-center justify-between gap-6 sm:flex-row sm:gap-4"
-                            >
-                                <AppRating
-                                    class="bg-accent/40 rounded-md p-1.5"
-                                    v-if="dream.quality !== undefined && dream.quality > 0"
-                                    :value="dream.quality"
-                                />
-
-                                <div class="flex flex-col items-center gap-2 sm:items-stretch">
-                                    <h4
-                                        v-if="dream.title"
-                                        class="text-text-soft inline-block rounded-full py-0.5 text-xs"
-                                    >
-                                        {{ dream.title }}
-                                    </h4>
-
-                                    <p class="text-text-primary">
-                                        {{ dream.description || 'Без описания' }}
-                                    </p>
-                                </div>
-
-                                <div
-                                    class="flex min-w-1/5 flex-row-reverse items-center justify-end gap-2 sm:flex-row"
-                                >
-                                    <AppButton
-                                        @click.stop="
-                                            handleDelete(dream.id, dream.date, dream.title)
-                                        "
-                                        size="sm"
-                                        variant="danger"
-                                        :disabled="isDeleting(dream.id)"
-                                        :icon-left="Trash"
-                                    />
-
-                                    <AppButton
-                                        @click.stop="goToEdit(dream.slug)"
-                                        size="sm"
-                                        variant="primary"
-                                        :disabled="isDeleting(dream.id)"
-                                        :icon-left="Edit2Icon"
-                                    />
-                                </div>
-                            </div>
-                        </div>
-                    </TransitionGroup>
-
-                    <p v-else class="text-text-mute mt-4 text-sm">Нет снов за этот день</p>
-                </div>
-
                 <!-- Состояние за день -->
-                <div class="border-border-muted mt-6 border-t pt-4">
-                    <div class="mb-8 flex items-center justify-between">
-                        <h4 class="text-text-soft text-sm font-medium">Состояние за день</h4>
+                <div class="border-border-strong border-b pb-8">
+                    <div class="my-8 flex items-center justify-between">
+                        <h4 class="text-text-soft font-medium">Состояние за день</h4>
 
                         <AppButton
                             v-if="isAllowedDay"
@@ -114,7 +36,9 @@
                     </div>
 
                     <div v-if="dayState" class="flex flex-col gap-4">
-                        <div class="flex items-center justify-evenly gap-4 overflow-auto pb-2">
+                        <div
+                            class="border-border-primary flex items-center justify-evenly gap-4 overflow-auto rounded-md border px-2 py-4 md:rounded-lg"
+                        >
                             <AppRating
                                 v-if="dayState.mood !== undefined && dayState.mood > 0"
                                 label="Настроение"
@@ -154,6 +78,84 @@
                     </div>
 
                     <p v-else class="text-text-mute mt-4! text-sm">Нет состояния за этот день</p>
+                </div>
+
+                <!-- Сны за день -->
+                <div class="mt-8">
+                    <div class="mb-8 flex items-center justify-between">
+                        <h4 class="text-text-soft font-medium">Сны</h4>
+
+                        <AppButton
+                            v-if="isAllowedDay"
+                            @click="goToAddDream(date)"
+                            size="sm"
+                            variant="primary"
+                            :icon-left="PlusIcon"
+                        />
+                    </div>
+
+                    <!-- Используем TransitionGroup вместо обычного div -->
+                    <TransitionGroup
+                        v-if="dayDreams.length > 0"
+                        name="list"
+                        tag="div"
+                        class="flex flex-col gap-4"
+                    >
+                        <div
+                            v-for="dream in dayDreams"
+                            :key="dream.id"
+                            @click="isDeleting(dream.id) ? '' : goToDreamDetail(dream.slug)"
+                            class="bg-bg-secondary/50 border-border-primary cursor-pointer rounded-lg border px-4 py-6 transition duration-200"
+                            :class="{ 'opacity-50': isDeleting(dream.id) }"
+                        >
+                            <div
+                                class="relative flex flex-col items-center justify-between gap-6 sm:flex-row sm:gap-4"
+                            >
+                                <AppRating
+                                    class="bg-accent/40 rounded-md p-1.5"
+                                    v-if="dream.quality !== undefined && dream.quality > 0"
+                                    :value="dream.quality"
+                                />
+
+                                <div class="flex flex-col items-center gap-2 sm:items-stretch">
+                                    <h4
+                                        v-if="dream.title"
+                                        class="text-text-soft inline-block rounded-full py-0.5 text-xs"
+                                    >
+                                        {{ dream.title }}
+                                    </h4>
+
+                                    <p class="text-text-primary text-center sm:text-start">
+                                        {{ dream.description || 'Без описания' }}
+                                    </p>
+                                </div>
+
+                                <div
+                                    class="flex min-w-1/5 flex-row-reverse items-center justify-end gap-2 sm:flex-row"
+                                >
+                                    <AppButton
+                                        @click.stop="
+                                            handleDelete(dream.id, dream.date, dream.title)
+                                        "
+                                        size="sm"
+                                        variant="danger"
+                                        :disabled="isDeleting(dream.id)"
+                                        :icon-left="Trash"
+                                    />
+
+                                    <AppButton
+                                        @click.stop="goToEdit(dream.slug)"
+                                        size="sm"
+                                        variant="primary"
+                                        :disabled="isDeleting(dream.id)"
+                                        :icon-left="Edit2Icon"
+                                    />
+                                </div>
+                            </div>
+                        </div>
+                    </TransitionGroup>
+
+                    <p v-else class="text-text-mute mt-4 text-sm">Нет снов за этот день</p>
                 </div>
             </div>
         </div>

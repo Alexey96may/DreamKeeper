@@ -131,7 +131,7 @@
         <label
             v-if="label"
             :id="`${groupId}-label`"
-            class="text-text-soft mb-2.5 flex items-center gap-2 text-xs font-medium sm:gap-3"
+            class="text-text-soft mb-2.5 flex items-center gap-2 text-sm font-medium"
         >
             <AppTooltip v-if="hint" :content="hint" />
             <span>{{ label }}</span>
@@ -146,7 +146,7 @@
             :role="multiple ? 'group' : 'radiogroup'"
             :aria-labelledby="label ? `${groupId}-label` : undefined"
             :aria-describedby="ariaDescribedBy"
-            class="flex gap-2 overflow-x-auto pb-2.5"
+            class="flex gap-2 overflow-x-auto p-0.5 pb-2.5"
         >
             <template v-for="cat in options" :key="String(cat.value)">
                 <AppChip

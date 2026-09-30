@@ -21,7 +21,7 @@
 
 <template>
     <article
-        class="bg-bg-secondary/40 border-border/40 relative rounded-lg border p-3.5"
+        class="bg-bg-secondary/40 border-border-primary relative rounded-lg border p-3.5"
         :class="{ 'bg-success-bg/50': interpretation.isAccurate }"
         :aria-label="`Интерпретация по тегу: ${interpretation.tag}`"
     >
@@ -38,7 +38,7 @@
             />
         </div>
 
-        <header class="z-10 pt-4 sm:pt-0">
+        <header class="z-10 mb-2.5 pt-4 sm:pt-0">
             <div class="absolute top-0 right-2 translate-y-[-50%]">
                 <AppTag :aria-label="`Источник интерпретации: ${interpretation.source.title}`">
                     <span class="w-full grow align-middle text-xs">{{
@@ -53,7 +53,7 @@
             </h4>
         </header>
 
-        <p class="text-text-mute relative z-10 mt-1.5 leading-relaxed">
+        <p class="text-text-mute relative z-10 mt-1.5 overflow-hidden leading-relaxed">
             {{ interpretation.meaning }}
         </p>
     </article>
