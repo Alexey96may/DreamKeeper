@@ -103,7 +103,12 @@
                                 @click="goToDreamDetail(dream.slug)"
                                 class="text-text-primary hover:text-accent-hover flex cursor-pointer items-center gap-1.5 transition-colors"
                             >
-                                <AppRating v-if="dream.quality" :value="dream.quality" :max="10" />
+                                <AppRating
+                                    v-if="dream.quality"
+                                    :small="true"
+                                    :value="dream.quality"
+                                    :max="10"
+                                />
 
                                 <span class="truncate font-medium">
                                     {{ dream.title || 'Без названия' }}

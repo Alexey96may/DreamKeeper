@@ -4,6 +4,7 @@
             label?: string;
             value: number | string;
             max?: number;
+            small?: boolean;
             isFiltering?: boolean;
             isInFilter?: boolean;
         }>(),
@@ -11,6 +12,7 @@
             max: 10,
             isFiltering: false,
             isInFilter: false,
+            small: false,
         },
     );
 
@@ -29,6 +31,7 @@
             type="button"
             class="focus-visible:ring-accent/50 inline-flex w-fit cursor-auto items-baseline gap-1 rounded-md border bg-transparent text-xs font-bold transition-all duration-200 hover:text-inherit focus-visible:ring-2 focus-visible:outline-none sm:text-sm md:rounded-lg lg:text-lg"
             :class="[
+                small ? 'text-xs!' : '',
                 isFiltering
                     ? 'border-accent bg-accent/20 text-accent hover:text-accent! cursor-pointer px-2 py-0.5 shadow-sm md:px-2.5 md:py-1'
                     : isInFilter

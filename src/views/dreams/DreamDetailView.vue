@@ -215,7 +215,7 @@
                     <h2
                         class="text-text-primary border-border-muted border-b pb-2 font-semibold tracking-wider"
                     >
-                        Феномены и особые события
+                        Феномены и особые события {{ dream.phenomena?.length }}
                     </h2>
 
                     <div
@@ -290,7 +290,7 @@
                         </AppTag>
 
                         <AppTag
-                            v-if="dream.perspective"
+                            v-if="dream.perspective && dream.perspective !== 'irrelevant'"
                             :is-in-filter="filterStore.filters.isActive"
                             @click="filterStore.toggleArrayFilter('perspective', dream.perspective)"
                             :is-pressed="
@@ -440,7 +440,6 @@
                 </footer>
             </article>
 
-            <!-- Пустое состояние -->
             <div v-else role="status" aria-live="polite" class="dream-card p-8 text-center">
                 <p class="text-text-mute">Сон не найден</p>
             </div>
@@ -451,7 +450,7 @@
 </template>
 
 <script setup lang="ts">
-    import { computed, onMounted } from 'vue';
+    import { computed, onMounted, watchEffect } from 'vue';
     import { useSleepStore } from '@/stores/modules/dream';
     import { useDreamFilterStore } from '@/stores/modules/dreamFilter';
     import {
@@ -510,6 +509,14 @@
     const dream = computed(() => {
         if (!props.slug) return null;
         return sleepStore.sleeps.find((s) => s.slug === props.slug) || null;
+    });
+
+    watchEffect(() => {
+        if (dream.value?.title) {
+            document.title = `${dream.value.title} — Dream Keeper`;
+        } else {
+            document.title = 'Сон не найден — Dream Keeper';
+        }
     });
 
     // Обработка PreSleepContext (с учётом PascalCase из интерфейса)

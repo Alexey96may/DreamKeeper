@@ -78,13 +78,26 @@
                         <div v-if="filterStore.matchingCount > 0" key="list" class="space-y-2.5">
                             <TransitionGroup name="card-list">
                                 <DreamSearchCard
-                                    v-for="dream in filterStore.filteredDreams"
+                                    v-for="dream in visibleDreams"
                                     :key="dream.id"
                                     :dream="dream"
                                     :is-selected="dream.slug === actualDreamSlug"
                                     @select="goToDreamDetail(dream.slug)"
                                 />
                             </TransitionGroup>
+
+                            <!-- Элемент-наблюдатель для триггера бесконечного скролла -->
+                            <div ref="loadMoreTrigger" class="py-4 text-center">
+                                <span v-if="hasMore" class="text-text-muted animate-pulse text-xs">
+                                    Загрузка следующих снов...
+                                </span>
+                                <span
+                                    v-else-if="visibleDreams.length > 0"
+                                    class="text-text-muted text-xs"
+                                >
+                                    Все сны загружены
+                                </span>
+                            </div>
                         </div>
 
                         <p v-else key="empty" class="text-text-mute py-8 text-center text-sm">
@@ -105,7 +118,7 @@
 </template>
 
 <script setup lang="ts">
-    import { ref, computed, onMounted, onUnmounted, nextTick } from 'vue';
+    import { ref, computed, onMounted, onUnmounted, nextTick, watch } from 'vue';
     import AppModal from '@/components/sections/AppModal.vue';
     import SearchDreamFilter from '@/views/dreams/partials/SearchDreamFilter.vue';
     import { useRoute } from 'vue-router';
@@ -123,8 +136,37 @@
     const { goBack, goToDreamDetail } = useNavigation();
 
     const isModalOpen = ref(false);
-
     const searchInput = ref<HTMLInputElement | null>(null);
+
+    // --- Логика бесконечного скролла ---
+    const pageSize = 15;
+    const displayLimit = ref(pageSize);
+    const loadMoreTrigger = ref<HTMLElement | null>(null);
+    let observer: IntersectionObserver | null = null;
+
+    // Срез отфильтрованных снов по текущему лимиту пагинации
+    const visibleDreams = computed(() => {
+        return filterStore.filteredDreams.slice(0, displayLimit.value);
+    });
+
+    const hasMore = computed(() => {
+        return displayLimit.value < filterStore.filteredDreams.length;
+    });
+
+    // Сбрасываем лимит при изменении фильтров или поискового запроса
+    watch(
+        () => filterStore.filteredDreams,
+        () => {
+            displayLimit.value = pageSize;
+        },
+        { deep: true },
+    );
+
+    const loadMore = () => {
+        if (hasMore.value) {
+            displayLimit.value += pageSize;
+        }
+    };
 
     onMounted(async () => {
         if (sleepStore.sleeps.length === 0) {
@@ -135,10 +177,33 @@
         nextTick(() => {
             searchInput.value?.focus();
         });
+
+        // Настраиваем IntersectionObserver для отслеживания конца списка
+        observer = new IntersectionObserver(
+            (entries) => {
+                if (entries[0].isIntersecting) {
+                    loadMore();
+                }
+            },
+            { rootMargin: '200px' },
+        );
+
+        if (loadMoreTrigger.value) {
+            observer.observe(loadMoreTrigger.value);
+        }
     });
 
-    onUnmounted(async () => {
+    watch(loadMoreTrigger, (newVal) => {
+        if (newVal && observer) {
+            observer.observe(newVal);
+        }
+    });
+
+    onUnmounted(() => {
         filterStore.toggleActive(false);
+        if (observer) {
+            observer.disconnect();
+        }
     });
 
     const actualDreamSlug = computed(() => {

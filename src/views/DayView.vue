@@ -80,10 +80,10 @@
                     <p v-else class="text-text-mute mt-4! text-sm">Нет состояния за этот день</p>
                 </div>
 
-                <!-- Сны за день -->
+                <!-- Сны за день с пагинацией (бесконечным скроллом) -->
                 <div class="mt-8">
                     <div class="mb-8 flex items-center justify-between">
-                        <h4 class="text-text-soft font-medium">Сны</h4>
+                        <h4 class="text-text-soft font-medium">Сны ({{ dayDreams.length }})</h4>
 
                         <AppButton
                             v-if="isAllowedDay"
@@ -94,66 +94,73 @@
                         />
                     </div>
 
-                    <!-- Используем TransitionGroup вместо обычного div -->
-                    <TransitionGroup
-                        v-if="dayDreams.length > 0"
-                        name="list"
-                        tag="div"
-                        class="flex flex-col gap-4"
-                    >
-                        <div
-                            v-for="dream in dayDreams"
-                            :key="dream.id"
-                            @click="isDeleting(dream.id) ? '' : goToDreamDetail(dream.slug)"
-                            class="bg-bg-secondary/50 border-border-primary cursor-pointer rounded-lg border px-4 py-6 transition duration-200"
-                            :class="{ 'opacity-50': isDeleting(dream.id) }"
+                    <div v-if="dayDreams.length > 0" class="space-y-4">
+                        <TransitionGroup
+                            name="list"
+                            tag="div"
+                            class="relative flex flex-col gap-4 overflow-hidden"
                         >
                             <div
-                                class="relative flex flex-col items-center justify-between gap-6 sm:flex-row sm:gap-4"
+                                v-for="dream in visibleDreams"
+                                :key="dream.id"
+                                @click="isDeleting(dream.id) ? '' : goToDreamDetail(dream.slug)"
+                                class="bg-bg-secondary/50 border-border-primary cursor-pointer rounded-lg border px-4 py-6 transition duration-200"
+                                :class="{ 'pointer-events-none opacity-50': isDeleting(dream.id) }"
                             >
-                                <AppRating
-                                    class="bg-accent/40 rounded-md p-1.5"
-                                    v-if="dream.quality !== undefined && dream.quality > 0"
-                                    :value="dream.quality"
-                                />
-
-                                <div class="flex flex-col items-center gap-2 sm:items-stretch">
-                                    <h4
-                                        v-if="dream.title"
-                                        class="text-text-soft inline-block rounded-full py-0.5 text-xs"
-                                    >
-                                        {{ dream.title }}
-                                    </h4>
-
-                                    <p class="text-text-primary text-center sm:text-start">
-                                        {{ dream.description || 'Без описания' }}
-                                    </p>
-                                </div>
-
                                 <div
-                                    class="flex min-w-1/5 flex-row-reverse items-center justify-end gap-2 sm:flex-row"
+                                    class="relative flex flex-col items-center justify-between gap-6 sm:flex-row sm:gap-4"
                                 >
-                                    <AppButton
-                                        @click.stop="
-                                            handleDelete(dream.id, dream.date, dream.title)
-                                        "
-                                        size="sm"
-                                        variant="danger"
-                                        :disabled="isDeleting(dream.id)"
-                                        :icon-left="Trash"
+                                    <AppRating
+                                        class="bg-accent/40 rounded-md p-1.5"
+                                        v-if="dream.quality !== undefined && dream.quality > 0"
+                                        :value="dream.quality"
                                     />
 
-                                    <AppButton
-                                        @click.stop="goToEdit(dream.slug)"
-                                        size="sm"
-                                        variant="primary"
-                                        :disabled="isDeleting(dream.id)"
-                                        :icon-left="Edit2Icon"
-                                    />
+                                    <div class="flex flex-col items-center gap-2 sm:items-stretch">
+                                        <h4
+                                            v-if="dream.title"
+                                            class="text-text-soft inline-block rounded-full py-0.5 text-xs"
+                                        >
+                                            {{ dream.title }}
+                                        </h4>
+
+                                        <p class="text-text-primary text-center sm:text-start">
+                                            {{ dream.description || 'Без описания' }}
+                                        </p>
+                                    </div>
+
+                                    <div
+                                        class="flex min-w-1/5 flex-row-reverse items-center justify-end gap-2 sm:flex-row"
+                                    >
+                                        <AppButton
+                                            @click.stop="
+                                                handleDelete(dream.id, dream.date, dream.title)
+                                            "
+                                            size="sm"
+                                            variant="danger"
+                                            :disabled="isDeleting(dream.id)"
+                                            :icon-left="Trash"
+                                        />
+
+                                        <AppButton
+                                            @click.stop="goToEdit(dream.slug)"
+                                            size="sm"
+                                            variant="primary"
+                                            :disabled="isDeleting(dream.id)"
+                                            :icon-left="Edit2Icon"
+                                        />
+                                    </div>
                                 </div>
                             </div>
+                        </TransitionGroup>
+
+                        <!-- Триггер бесконечного скролла -->
+                        <div ref="loadMoreTrigger" class="py-4 text-center">
+                            <span v-if="hasMore" class="text-text-muted animate-pulse text-xs">
+                                Загрузка следующих снов...
+                            </span>
                         </div>
-                    </TransitionGroup>
+                    </div>
 
                     <p v-else class="text-text-mute mt-4 text-sm">Нет снов за этот день</p>
                 </div>
@@ -171,7 +178,7 @@
 </template>
 
 <script setup lang="ts">
-    import { computed, onMounted, ref } from 'vue';
+    import { computed, onMounted, onUnmounted, ref, watch } from 'vue';
     import { useSleepStore } from '@/stores/modules/dream';
     import { useUserStateStore } from '@/stores/modules/userState';
     import { MoveLeft, PlusIcon, Edit2Icon, Trash } from 'lucide-vue-next';
@@ -193,9 +200,38 @@
 
     const { goBack, goToDreamDetail, goToAddDream, goToEdit } = useNavigation();
 
-    // --- Computed ---
     const dayDreams = computed(() => sleepStore.getDreamsByDate(props.date));
     const dayState = computed(() => userStateStore.getStateByDate(props.date));
+
+    // --- Логика пагинации (бесконечного скролла) для снов за день ---
+    const pageSize = 5; // Порции можно сделать поменьше (например, по 5), так как это конкретный день
+    const displayLimit = ref(pageSize);
+    const loadMoreTrigger = ref<HTMLElement | null>(null);
+    let observer: IntersectionObserver | null = null;
+
+    const visibleDreams = computed(() => {
+        return dayDreams.value.slice(0, displayLimit.value);
+    });
+
+    const hasMore = computed(() => {
+        return displayLimit.value < dayDreams.value.length;
+    });
+
+    // Сбрасываем лимит при изменении общего списка снов (например, при удалении/добавлении)
+    watch(
+        () => dayDreams.value.length,
+        () => {
+            if (displayLimit.value > dayDreams.value.length && displayLimit.value > pageSize) {
+                displayLimit.value = Math.max(pageSize, dayDreams.value.length);
+            }
+        },
+    );
+
+    const loadMore = () => {
+        if (hasMore.value) {
+            displayLimit.value += pageSize;
+        }
+    };
 
     const isAllowedDay = computed(() => {
         return isPastOrPresentDay(props.date);
@@ -205,11 +241,9 @@
 
     const formattedDate = computed(() => {
         const d = new Date(props.date);
-
         if (isNaN(d.getTime())) {
             router.replace({ name: 'not-found' });
         }
-
         return d.toLocaleDateString('ru-RU', {
             day: 'numeric',
             month: 'long',
@@ -218,13 +252,11 @@
     });
 
     const weekday = computed(() => {
-        const d = new Date(props.date);
-
-        if (isNaN(d.getTime())) {
+        const validDate = new Date(props.date);
+        if (isNaN(validDate.getTime())) {
             router.replace({ name: 'not-found' });
         }
-
-        return d.toLocaleDateString('ru-RU', { weekday: 'long' });
+        return validDate.toLocaleDateString('ru-RU', { weekday: 'long' });
     });
 
     const isModalOpen = ref(false);
@@ -232,6 +264,32 @@
     onMounted(async () => {
         if (sleepStore.sleeps.length === 0) await sleepStore.init();
         if (userStateStore.states.length === 0) await userStateStore.init();
+
+        // Настраиваем IntersectionObserver для подгрузки снов за день
+        observer = new IntersectionObserver(
+            (entries) => {
+                if (entries[0].isIntersecting) {
+                    loadMore();
+                }
+            },
+            { rootMargin: '100px' },
+        );
+
+        if (loadMoreTrigger.value) {
+            observer.observe(loadMoreTrigger.value);
+        }
+    });
+
+    watch(loadMoreTrigger, (newVal) => {
+        if (newVal && observer) {
+            observer.observe(newVal);
+        }
+    });
+
+    onUnmounted(() => {
+        if (observer) {
+            observer.disconnect();
+        }
     });
 </script>
 
@@ -250,12 +308,11 @@
             transform: translateY(0);
         }
     }
-    /* Плавное перемещение карточек при пересчете элементов списка (например, при удалении) */
+
     .list-move {
         transition: transform 0.3s ease;
     }
 
-    /* Анимация появления и исчезновения элементов */
     .list-enter-active,
     .list-leave-active {
         transition: all 0.3s ease;
@@ -267,7 +324,6 @@
         transform: translateY(-10px);
     }
 
-    /* Важно для корректного сдвига остальных элементов при удалении конкретной карточки */
     .list-leave-active {
         position: absolute;
         width: 100%;
