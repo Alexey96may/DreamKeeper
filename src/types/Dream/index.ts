@@ -95,6 +95,10 @@ export interface Dream {
     objects?: string[];
     emotions?: string[];
 
+    // --- Чужие сны ---
+    isAlien?: boolean;
+    authorName?: string;
+
     preSleepContext?: string;
     personalNotes?: string;
 

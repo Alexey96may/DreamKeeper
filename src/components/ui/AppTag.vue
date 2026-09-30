@@ -90,7 +90,7 @@
         :disabled="isDisabled"
         :aria-pressed="role ? undefined : isPressed"
         :aria-checked="ariaChecked"
-        class="relative inline-flex items-center gap-1.5 rounded-lg border px-3 py-1.5 text-xs font-medium text-nowrap transition-all duration-200 disabled:cursor-not-allowed disabled:opacity-50"
+        class="relative inline-flex cursor-auto items-center gap-1.5 rounded-lg border px-3 py-1.5 text-xs font-medium text-nowrap transition-all duration-200 disabled:cursor-not-allowed disabled:opacity-50"
         :class="[
             isPressed
                 ? 'border-accent bg-accent/20 focus:ring-accent/50 text-accent cursor-pointer font-semibold shadow-sm focus:ring-2 focus:outline-none'

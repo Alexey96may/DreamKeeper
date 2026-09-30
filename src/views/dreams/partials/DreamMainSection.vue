@@ -24,6 +24,36 @@
             />
         </div>
 
+        <div class="flex w-full flex-col justify-between gap-3">
+            <AppCheckbox
+                :model-value="props.isAlien"
+                @update:model-value="
+                    (val) => {
+                        if (typeof val === 'boolean') {
+                            onIsAlienChange(val);
+                        }
+                    }
+                "
+                label="Чужой сон"
+                accent-color="bg-dream-prophetic border-dream-prophetic"
+                hint="Отметьте, если сон вам рассказали."
+                :error-message="sleepStore.validationErrors.isAlien"
+                @change="sleepStore.clearError('isAlien')"
+            />
+
+            <Transition name="expand">
+                <AppTextInput
+                    v-show="props.isAlien"
+                    :model-value="props.authorName"
+                    @update:model-value="onAuthorNameChange"
+                    label="Имя автора сна"
+                    placeholder="Например: Иван Иванов"
+                    :error-message="sleepStore.validationErrors.authorName"
+                    @input="sleepStore.clearError('authorName')"
+                />
+            </Transition>
+        </div>
+
         <AppTextInput
             :model-value="props.title"
             @update:model-value="onTitleChange"
@@ -55,6 +85,7 @@
     import AppTextInput from '@/components/ui/AppTextInput.vue';
     import { TIME_OF_DAY_OPTIONS } from '@/constants/Dream';
     import AppTextarea from '@/components/ui/AppTextarea.vue';
+    import AppCheckbox from '@/components/ui/AppCheckbox.vue';
     import type { TimeOfDay, Dream } from '@/types/Dream';
 
     const sleepStore = useSleepStore();
@@ -64,6 +95,8 @@
         description?: Dream['description'];
         date?: Dream['date'];
         timeOfDay?: TimeOfDay;
+        isAlien?: boolean;
+        authorName?: string;
     }
 
     const props = withDefaults(defineProps<Props>(), {
@@ -71,6 +104,8 @@
         title: '',
         description: '',
         date: '',
+        isAlien: false,
+        authorName: '',
     });
 
     const thisDay = ref(new Date());
@@ -80,10 +115,38 @@
         'update:description': [value: Dream['description']];
         'update:date': [value: Dream['date']];
         'update:timeOfDay': [value: TimeOfDay];
+        'update:isAlien': [value: Dream['isAlien']];
+        'update:authorName': [value: Dream['authorName']];
     }>();
 
     const onDateChange = (val: Dream['date'] | null) => emit('update:date', val ?? '');
     const onTimeOfDayChange = (val: TimeOfDay) => emit('update:timeOfDay', val);
     const onTitleChange = (val: Dream['title']) => emit('update:title', val);
     const onDescriptionChange = (val: Dream['description']) => emit('update:description', val);
+
+    const onIsAlienChange = (val: Dream['isAlien']) => {
+        emit('update:isAlien', val);
+    };
+    const onAuthorNameChange = (val: Dream['authorName']) => emit('update:authorName', val);
 </script>
+
+<style scoped>
+    .expand-enter-active,
+    .expand-leave-active {
+        transition: all 0.3s ease;
+        max-height: 500px;
+        opacity: 1;
+        overflow: hidden;
+    }
+
+    .expand-enter-from,
+    .expand-leave-to {
+        max-height: 0;
+        opacity: 0;
+        padding-top: 0;
+        padding-bottom: 0;
+        margin-top: 0;
+        margin-bottom: 0;
+        border-width: 0;
+    }
+</style>

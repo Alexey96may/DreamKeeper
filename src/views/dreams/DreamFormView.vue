@@ -38,6 +38,8 @@
                             v-model:description="form.description"
                             v-model:date="form.date"
                             v-model:time-of-day="form.timeOfDay"
+                            v-model:is-alien="form.isAlien"
+                            v-model:author-name="form.authorName"
                         />
 
                         <DreamCategorySection
@@ -185,6 +187,9 @@
         clarity: 7,
         moodAfter: 5,
 
+        isAlien: false,
+        authorName: '',
+
         timeOfDay: 'night',
         visualStyle: 'color',
         perspective: 'irrelevant',
@@ -254,6 +259,9 @@
                 objects: [...(existingDream.objects || [])],
                 emotions: [...(existingDream.emotions || [])],
 
+                isAlien: existingDream.isAlien || false,
+                authorName: existingDream.authorName || '',
+
                 interpretations: JSON.parse(JSON.stringify(existingDream.interpretations || [])),
                 personalNotes: existingDream.personalNotes || '',
                 relatedDreams: JSON.parse(JSON.stringify(existingDream.relatedDreams || [])),
@@ -309,6 +317,42 @@
             }
         }
     };
+
+    onMounted(() => {
+        if (route.name === 'dream-import-shared') {
+            try {
+                // Ищем параметр #data в хеше ссылки
+                const hash = window.location.hash;
+                const match = hash.match(/#data=(.+)/);
+
+                if (match && match[1]) {
+                    const base64Str = match[1];
+                    // Декодируем Base64 обратно в JSON с поддержкой UTF-8
+                    const jsonString = decodeURIComponent(
+                        atob(base64Str)
+                            .split('')
+                            .map((c) => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
+                            .join(''),
+                    );
+
+                    const sharedDreamData = JSON.parse(jsonString);
+
+                    // Заполняем реактивные поля формы данными из ссылки
+                    // (зависит от того, как у вас названы переменные формы, например formData или напрямую поля)
+                    Object.assign(form, {
+                        ...sharedDreamData,
+                        authorName: [], // Очищаем или оставляем пустым, чтобы пользователь заполнил своего автора
+                    });
+
+                    // Уведомляем пользователя
+                    // toast.info('Сон успешно импортирован! Укажите автора сновидения.');
+                }
+            } catch (e) {
+                console.error('Ошибка импорта сна по ссылке:', e);
+                // toast.error('Ссылка повреждена или устарела');
+            }
+        }
+    });
 </script>
 
 <style scoped>

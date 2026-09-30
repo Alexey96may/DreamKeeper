@@ -323,3 +323,24 @@
         emit('update:categoryDetails', details);
     };
 </script>
+
+<style scoped>
+    .expand-enter-active,
+    .expand-leave-active {
+        transition: all 0.3s ease;
+        max-height: 500px;
+        opacity: 1;
+        overflow: hidden;
+    }
+
+    .expand-enter-from,
+    .expand-leave-to {
+        max-height: 0;
+        opacity: 0;
+        padding-top: 0;
+        padding-bottom: 0;
+        margin-top: 0;
+        margin-bottom: 0;
+        border-width: 0;
+    }
+</style>

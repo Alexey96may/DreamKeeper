@@ -44,6 +44,8 @@ export interface DreamFilterState {
     locations: string[];
     objects: string[];
     emotions: string[];
+    authorNames: string[];
+    isAlien: boolean;
     isFavorite: boolean;
     isPinned: boolean;
     isArchived: boolean;
@@ -70,7 +72,8 @@ type ArrayFilterKey =
     | 'characters'
     | 'locations'
     | 'objects'
-    | 'emotions';
+    | 'emotions'
+    | 'authorNames';
 
 type BooleanFilterKeys = {
     [K in keyof DreamFilterState]-?: NonNullable<DreamFilterState[K]> extends boolean ? K : never;
@@ -104,6 +107,8 @@ const getDefaultFilters = (): DreamFilterState => ({
     locations: [],
     objects: [],
     emotions: [],
+    authorNames: [],
+    isAlien: false,
     isFavorite: false,
     isPinned: false,
     isArchived: false,
@@ -256,7 +261,14 @@ export const useDreamFilterStore = defineStore('dreamFilter', () => {
                 const hasEmo = filters.value.emotions.every((e) => dream.emotions?.includes(e));
                 if (!hasEmo) return false;
             }
+            if (filters.value.authorNames.length > 0 && filters.value.isAlien) {
+                const hasName = filters.value.authorNames.some((e) => {
+                    return dream.authorName?.trim().toLocaleLowerCase() === e.toLocaleLowerCase();
+                });
+                if (!hasName) return false;
+            }
 
+            if (filters.value.isAlien && !!dream.isAlien !== filters.value.isAlien) return false;
             if (filters.value.isFavorite && !!dream.isFavorite !== filters.value.isFavorite)
                 return false;
             if (filters.value.isPinned && !!dream.isPinned !== filters.value.isPinned) return false;
@@ -345,6 +357,7 @@ export const useDreamFilterStore = defineStore('dreamFilter', () => {
             locations: 'Место',
             objects: 'Объект',
             emotions: 'Эмоция',
+            authorNames: 'Автор',
         };
 
         // Словары для маппинга ключей в названия из конфига
@@ -363,18 +376,20 @@ export const useDreamFilterStore = defineStore('dreamFilter', () => {
             const mapObj = mapsRecord[key];
 
             items.forEach((item) => {
-                // Достаем красивый label из мапы, если он там есть, иначе оставляем само значение
                 const humanLabel = mapObj && mapObj[item]?.label ? mapObj[item].label : item;
 
-                tags.push({
-                    key,
-                    subKey: item,
-                    label: `${arrayLabels[key]}: ${humanLabel}`,
-                });
+                if (!(key === 'authorNames' && !filters.value.isAlien)) {
+                    tags.push({
+                        key,
+                        subKey: item,
+                        label: `${arrayLabels[key]}: ${humanLabel}`,
+                    });
+                }
             });
         });
 
         // 5. Флаги (булевы)
+        if (filters.value.isAlien) tags.push({ key: 'isAlien', label: 'Чужой сон' });
         if (filters.value.isFavorite) tags.push({ key: 'isFavorite', label: 'Избранные' });
         if (filters.value.isPinned) tags.push({ key: 'isPinned', label: 'Закрепленные' });
         if (filters.value.isArchived) tags.push({ key: 'isArchived', label: 'В архиве' });
@@ -400,6 +415,7 @@ export const useDreamFilterStore = defineStore('dreamFilter', () => {
             'locations',
             'objects',
             'emotions',
+            'authorNames',
         ];
 
         // 1. Если это удаление конкретного элемента из массива
@@ -443,6 +459,10 @@ export const useDreamFilterStore = defineStore('dreamFilter', () => {
             case 'minMoodAfter':
                 filters.value.minMoodAfter = undefined;
                 break;
+            case 'isAlien':
+                filters.value.isAlien = false;
+                filters.value.authorNames = [];
+                break;
             case 'isFavorite':
                 filters.value.isFavorite = false;
                 break;
@@ -472,6 +492,7 @@ export const useDreamFilterStore = defineStore('dreamFilter', () => {
             case 'locations':
             case 'objects':
             case 'emotions':
+            case 'authorNames':
                 filters.value[key] = [];
                 break;
         }
@@ -492,6 +513,7 @@ export const useDreamFilterStore = defineStore('dreamFilter', () => {
         filters.value.isActive = true;
         const targetArray = filters.value[id] as string[];
         const index = targetArray.indexOf(value);
+
         if (index > -1) {
             targetArray.splice(index, 1);
         } else {

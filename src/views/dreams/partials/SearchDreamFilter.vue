@@ -196,6 +196,30 @@
             label="Сбылся ли сон?"
         />
 
+        <div class="flex flex-col gap-2">
+            <AppCheckbox
+                :model-value="filterStore.filters.isAlien"
+                @update:model-value="
+                    (val) => {
+                        if (!val) {
+                            filterStore.filters.authorNames = [];
+                        }
+                        filterStore.toggleBooleanFilter('isAlien');
+                    }
+                "
+                label="Чужой ли сон?"
+            />
+
+            <AppMultiSelect
+                v-if="filterStore.filters.isAlien"
+                id="form-authorNames"
+                v-model="filterStore.filters.authorNames"
+                label="Авторы снов"
+                :options="allAuthors"
+                placeholder="Выберите человека"
+            />
+        </div>
+
         <div class="border-border-muted/40 flex flex-wrap justify-start gap-3 border-t pt-2">
             <AppCheckbox
                 :model-value="filterStore.filters.isFavorite"
@@ -291,6 +315,16 @@
         return Array.from(set);
     });
 
+    const allAuthors = computed(() => {
+        const set = new Set<string>();
+        sleepStore.sleeps.forEach((d) => {
+            if (d.authorName?.trim() && d.isAlien) {
+                set.add(d.authorName);
+            }
+        });
+        return Array.from(set);
+    });
+
     const allLocations = computed(() => {
         const set = new Set<string>();
         sleepStore.sleeps.forEach((d) => d.locations?.forEach((c) => set.add(c)));
@@ -314,6 +348,7 @@
             filterStore.filters.minClarity ||
             filterStore.filters.minMoodAfter ||
             filterStore.filters.characters.length > 0 ||
+            filterStore.filters.authorNames.length > 0 ||
             filterStore.filters.locations.length > 0 ||
             filterStore.filters.objects.length > 0 ||
             filterStore.filters.emotions.length > 0 ||
@@ -328,6 +363,7 @@
             filterStore.filters.isFavorite ||
             filterStore.filters.isPinned ||
             filterStore.filters.isArchived ||
+            filterStore.filters.isAlien ||
             filterStore.filters.isDeleted ||
             filterStore.filters.isDraft ||
             filterStore.filters.isPrivate

@@ -225,6 +225,10 @@ export const useSleepStore = defineStore('sleep', () => {
         if (prophetic && !prophetic.isFulfilled && prophetic.fulfilledDate) {
             prophetic.fulfilledDate = '';
         }
+        const isAlienDream = dreamData.isAlien;
+        if (!isAlienDream) {
+            dreamData.authorName = '';
+        }
 
         const validation = v.safeParse(DreamWriteSchema, dreamData);
 
@@ -270,6 +274,10 @@ export const useSleepStore = defineStore('sleep', () => {
         if (prophetic && !prophetic.isFulfilled && prophetic.fulfilledDate) {
             prophetic.fulfilledDate = '';
         }
+        const isAlienDream = dreamData.isAlien;
+        if (!isAlienDream) {
+            dreamData.authorName = '';
+        }
 
         const validation = v.safeParse(DreamUpdateSchema, dreamData);
 
@@ -288,11 +296,7 @@ export const useSleepStore = defineStore('sleep', () => {
                 if (index !== -1) {
                     sleeps.value[index] = updatedDream;
                 }
-                // Синхронизируем личные интерпретации при обновлении
-                const res1 = await syncPersonalInterpretations(
-                    validation.output.interpretations || [],
-                );
-                console.log(res1);
+                await syncPersonalInterpretations(validation.output.interpretations || []);
                 return updatedDream;
             }
 

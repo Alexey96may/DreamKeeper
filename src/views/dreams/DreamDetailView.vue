@@ -159,10 +159,39 @@
                     </p>
                 </section>
 
+                <!-- Author -->
+                <section v-if="dream.isAlien" class="flex flex-col gap-4">
+                    <h2
+                        class="text-accent border-border-muted border-b pb-2 font-semibold tracking-wider"
+                    >
+                        Автор
+                    </h2>
+
+                    <AppTag
+                        :is-in-filter="filterStore.filters.isActive"
+                        class="self-start"
+                        @click="
+                            () => {
+                                filterStore.toggleBooleanFilter('isAlien');
+                                filterStore.toggleArrayFilter(
+                                    'authorNames',
+                                    dream?.authorName ?? 'Неизвестный',
+                                );
+                            }
+                        "
+                        :is-pressed="
+                            filterStore.filters.authorNames.includes(
+                                dream.authorName ?? 'Неизвестный',
+                            )
+                        "
+                        >{{ dream.authorName }}
+                    </AppTag>
+                </section>
+
                 <!-- 4. Основное описание сна -->
                 <section v-if="dream.description" class="flex flex-col gap-2">
                     <h2
-                        class="text-text-primary border-border-muted border-b pb-2 font-semibold tracking-wider"
+                        class="text-accent border-border-muted border-b pb-2 font-semibold tracking-wider"
                     >
                         Описание
                     </h2>
@@ -174,7 +203,7 @@
                 <!-- 5.(Lucid, Nightmare, Prophetic) -->
                 <section v-if="hasCategoryDetails" class="flex flex-col gap-4">
                     <h2
-                        class="text-text-primary border-border-muted border-b pb-2 font-semibold tracking-wider"
+                        class="text-accent border-border-muted border-b pb-2 font-semibold tracking-wider"
                     >
                         Категории сна
                     </h2>
@@ -211,11 +240,14 @@
                 </section>
 
                 <!-- 6. Особые явления (Phenomena) и их детали -->
-                <section v-if="dream.phenomena?.length" class="flex flex-col gap-4">
+                <section
+                    v-if="dream.phenomena?.length && dream.phenomenaDetails"
+                    class="flex flex-col gap-4"
+                >
                     <h2
-                        class="text-text-primary border-border-muted border-b pb-2 font-semibold tracking-wider"
+                        class="text-accent border-border-muted border-b pb-2 font-semibold tracking-wider"
                     >
-                        Феномены и особые события {{ dream.phenomena?.length }}
+                        Феномены и особые события
                     </h2>
 
                     <div
@@ -272,7 +304,7 @@
                 <!-- 7. Восприятие и Стиль (Визуал, Перспектива, Роли, Ощущения) -->
                 <section v-if="hasPerceptionDetails" class="flex flex-col gap-6">
                     <h2
-                        class="text-text-primary border-border-muted border-b pb-2 font-semibold tracking-wider"
+                        class="text-accent border-border-muted border-b pb-2 font-semibold tracking-wider"
                     >
                         Восприятие
                     </h2>
@@ -337,7 +369,7 @@
                 <!-- 8. Аналитика (Персонажи, Локации, Предметы, Эмоции) -->
                 <section v-if="hasAnalytics" class="flex flex-col gap-4">
                     <h2
-                        class="text-text-primary border-border-muted border-b pb-2 font-semibold tracking-wider"
+                        class="text-accent border-border-muted border-b pb-2 font-semibold tracking-wider"
                     >
                         Аналитические элементы
                     </h2>
@@ -359,7 +391,7 @@
                 <!-- 9. Интерпретация / Сонник -->
                 <section v-if="interpretationsWithSource.length" class="flex flex-col gap-8">
                     <h2
-                        class="text-text-primary border-border-muted border-b pb-2 font-semibold tracking-wider"
+                        class="text-accent border-border-muted border-b pb-2 font-semibold tracking-wider"
                     >
                         Интерпретации
                     </h2>
@@ -376,7 +408,7 @@
                 <!-- 11. Связанные сны -->
                 <section v-if="dream.relatedDreams?.length" class="flex flex-col gap-4">
                     <h2
-                        class="text-text-primary border-border-muted border-b pb-2 font-semibold tracking-wider"
+                        class="text-accenty border-border-muted border-b pb-2 font-semibold tracking-wider"
                     >
                         Связанные сны
                     </h2>
@@ -387,7 +419,7 @@
                 <!-- 10. Личные заметки -->
                 <section v-if="dream.personalNotes" class="flex flex-col gap-4">
                     <h2
-                        class="text-text-primary border-border-muted border-b pb-2 font-semibold tracking-wider"
+                        class="text-accent border-border-muted border-b pb-2 font-semibold tracking-wider"
                     >
                         Личные заметки
                     </h2>
@@ -397,6 +429,17 @@
                         “{{ dream.personalNotes }}”
                     </p>
                 </section>
+
+                <div class="flex justify-end">
+                    <AppButton
+                        @click="isShared = !isShared"
+                        size="xs"
+                        variant="primary"
+                        :disabled="isDeleting(dream.id)"
+                    >
+                        Поделиться сном
+                    </AppButton>
+                </div>
 
                 <!-- Нижняя панель: Метаданные и Кнопки управления -->
                 <footer
@@ -445,12 +488,14 @@
             </div>
 
             <DreamFilterApplyBar :dream-slug="slug" />
+
+            <ShareDreamModal v-if="dream" v-model="isShared" :dream="dream" />
         </div>
     </div>
 </template>
 
 <script setup lang="ts">
-    import { computed, onMounted, watchEffect } from 'vue';
+    import { computed, onMounted, watchEffect, ref } from 'vue';
     import { useSleepStore } from '@/stores/modules/dream';
     import { useDreamFilterStore } from '@/stores/modules/dreamFilter';
     import {
@@ -468,6 +513,7 @@
     import AppTag from '@/components/ui/AppTag.vue';
     import DreamInterpretationCard from '@/components/cards/DreamInterpretationCard.vue';
     import DreamRelatedCard from '@/components/cards/DreamRelatedCard.vue';
+    import ShareDreamModal from '@/components/ui/ShareDreamModal.vue';
     import DreamElementsCard from '@/components/cards/DreamElementsCard.vue';
     import DreamCategoryDetailsCard from '@/components/cards/DreamCategoryDetailsCard.vue';
     import DreamPhenomenonCard from '@/components/cards/DreamPhenomenonCard.vue';
@@ -495,6 +541,8 @@
     const sleepStore = useSleepStore();
     const sourceStore = useInterpretationSourceStore();
     const filterStore = useDreamFilterStore();
+
+    const isShared = ref(false);
 
     // Переключение фильтра по клику на тег
     const toggleAnaliticsFilter = (id: AnaliticsIds, tag: string) => {

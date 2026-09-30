@@ -426,6 +426,16 @@ const DreamBaseObject = v.object({
     objects: v.optional(v.array(v.pipe(v.string('Предмет должен быть строкой'), v.trim()))),
     emotions: v.optional(v.array(v.pipe(v.string('Эмоция должна быть строкой'), v.trim()))),
 
+    isAlien: v.optional(v.boolean('Флаг должен быть булевым значением')),
+    authorName: v.optional(
+        v.pipe(
+            v.string('Имя автора должно быть строкой'),
+            v.trim(),
+            v.minLength(3, 'Имя автора должно быть не короче 3 символов'),
+            v.maxLength(50, 'Заголовок должно быть не длиннее 50 символов'),
+        ),
+    ),
+
     interpretations: v.optional(
         v.array(DreamInterpretationRefSchema, 'Интерпретации должны быть массивом'),
     ),

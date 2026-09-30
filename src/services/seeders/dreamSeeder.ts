@@ -58,6 +58,16 @@ export const generateDreamsSeed = (count: number): DreamWrite[] => {
         'Хранитель архива',
     ];
 
+    const alienAuthorsPool = [
+        'Зоны Пятого Сектора',
+        'Наблюдатель Сириуса',
+        'Контакт из туманности',
+        'Внешний разум',
+        'Мать',
+        'Брат',
+        'Президент',
+    ];
+
     const locationsPool = [
         'Заброшенный город',
         'Бесконечный коридор',
@@ -109,7 +119,7 @@ export const generateDreamsSeed = (count: number): DreamWrite[] => {
         'camera_operator',
         'disembodied',
     ];
-    const allSensations: SensoryAspect[] = [
+    const allSensory: SensoryAspect[] = [
         'sounds',
         'smells',
         'tactile',
@@ -172,6 +182,9 @@ export const generateDreamsSeed = (count: number): DreamWrite[] => {
 
             const phenomena = getRandomSubarray(allPhenomena, 1);
 
+            const isAlien = Math.random() < 0.15;
+            const authorName = isAlien ? getRandomItem(alienAuthorsPool) : undefined;
+
             const dream: DreamWrite = {
                 date: targetDate,
                 title,
@@ -207,11 +220,13 @@ export const generateDreamsSeed = (count: number): DreamWrite[] => {
                 visualStyle: getRandomItem(visualStyles),
                 perspective: getRandomItem(perspectives),
                 roles: getRandomSubarray(allRoles, 2),
-                sensations: getRandomSubarray(allSensations, 3),
+                sensations: getRandomSubarray(allSensory, 3),
                 characters: getRandomSubarray(charactersPool, 2),
                 locations: getRandomSubarray(locationsPool, 2),
                 objects: getRandomSubarray(objectsPool, 2),
                 emotions: getRandomSubarray(emotionsPool, 3),
+                isAlien,
+                authorName,
                 preSleepContext: getRandomItem(contextsPool),
                 isFavorite: Math.random() > 0.7,
                 isPinned: Math.random() > 0.9,
@@ -249,11 +264,13 @@ export const generateDreamsSeed = (count: number): DreamWrite[] => {
             visualStyle: 'color',
             perspective: 'first_person',
             roles: ['protagonist'],
-            sensations: ['sounds'],
+            sensations: ['sounds'], // Исправлено здесь тоже
             characters: [],
             locations: ['Неизвестное место'],
             objects: [],
             emotions: ['Спокойствие'],
+            isAlien: false,
+            authorName: undefined,
             isFavorite: false,
             isPinned: false,
             isArchived: false,
