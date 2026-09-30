@@ -4,6 +4,18 @@
             Назад
         </AppButton>
 
+        <div
+            v-if="isImportMode"
+            class="border-border-primary bg-bg-elevated text-text-primary mb-6 rounded-lg border p-4 lg:rounded-xl"
+        >
+            <div>
+                <h4 class="text-text-primary mb-2 font-semibold">Импорт сновидения</h4>
+                <p class="text-text-secondary text-sm">
+                    Данные сна загружены! Проверьте поля и сохраните сон в свой дневник.
+                </p>
+            </div>
+        </div>
+
         <h1
             class="border-border-muted text-text-primary mb-4 border-t py-6 text-xl font-bold sm:text-2xl"
         >
@@ -318,38 +330,61 @@
         }
     };
 
+    const isImportMode = ref(false);
+
+    const populateForm = (dreamData: Partial<DreamWrite> = {}, isImport = false) => {
+        form.value = {
+            date: dreamData.date || new Date().toISOString().split('T')[0],
+            title: dreamData.title || '',
+            description: dreamData.description || '',
+            categories: [...(dreamData.categories || [])],
+            categoryDetails: JSON.parse(JSON.stringify(dreamData.categoryDetails || {})),
+            phenomena: [...(dreamData.phenomena || [])],
+            phenomenaDetails: JSON.parse(JSON.stringify(dreamData.phenomenaDetails || {})),
+
+            quality: dreamData.quality ?? 0,
+            clarity: dreamData.clarity ?? 0,
+            moodAfter: dreamData.moodAfter ?? 0,
+
+            timeOfDay: dreamData.timeOfDay || 'night',
+            visualStyle: dreamData.visualStyle || 'color',
+            perspective: dreamData.perspective || 'irrelevant',
+            roles: [...(dreamData.roles || ['protagonist'])],
+            sensations: [...(dreamData.sensations || [])],
+
+            characters: [...(dreamData.characters || [])],
+            locations: [...(dreamData.locations || [])],
+            objects: [...(dreamData.objects || [])],
+            emotions: [...(dreamData.emotions || [])],
+
+            isAlien: isImport ? true : dreamData.isAlien || false,
+            authorName: dreamData.authorName || '',
+
+            interpretations: JSON.parse(JSON.stringify(dreamData.interpretations || [])),
+            personalNotes: dreamData.personalNotes || '',
+            relatedDreams: JSON.parse(JSON.stringify(dreamData.relatedDreams || [])),
+            preSleepContext: dreamData.preSleepContext || '',
+
+            isFavorite: dreamData.isFavorite ?? false,
+            isPinned: dreamData.isPinned ?? false,
+            isArchived: dreamData.isArchived ?? false,
+            isDraft: dreamData.isDraft ?? false,
+            isPrivate: dreamData.isPrivate ?? true,
+        };
+    };
+
     onMounted(() => {
-        if (route.name === 'dream-import-shared') {
+        const historyState = history.state as { importData?: string };
+
+        if (historyState?.importData) {
             try {
-                // Ищем параметр #data в хеше ссылки
-                const hash = window.location.hash;
-                const match = hash.match(/#data=(.+)/);
+                const sharedDream = JSON.parse(historyState.importData);
+                populateForm(sharedDream, true);
 
-                if (match && match[1]) {
-                    const base64Str = match[1];
-                    // Декодируем Base64 обратно в JSON с поддержкой UTF-8
-                    const jsonString = decodeURIComponent(
-                        atob(base64Str)
-                            .split('')
-                            .map((c) => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
-                            .join(''),
-                    );
-
-                    const sharedDreamData = JSON.parse(jsonString);
-
-                    // Заполняем реактивные поля формы данными из ссылки
-                    // (зависит от того, как у вас названы переменные формы, например formData или напрямую поля)
-                    Object.assign(form, {
-                        ...sharedDreamData,
-                        authorName: [], // Очищаем или оставляем пустым, чтобы пользователь заполнил своего автора
-                    });
-
-                    // Уведомляем пользователя
-                    // toast.info('Сон успешно импортирован! Укажите автора сновидения.');
-                }
+                isImportMode.value = true;
+                return;
             } catch (e) {
-                console.error('Ошибка импорта сна по ссылке:', e);
-                // toast.error('Ссылка повреждена или устарела');
+                console.error('Ошибка при разборе импорта из state:', e);
             }
         }
     });

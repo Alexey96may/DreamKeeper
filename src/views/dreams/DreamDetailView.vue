@@ -15,6 +15,21 @@
             </AppButton>
 
             <div
+                v-if="isSharedView"
+                class="border-border-primary/30 bg-bg-elevated mb-6 flex flex-col gap-6 rounded-lg border p-4 sm:flex-row sm:items-center sm:justify-between sm:gap-1.5 lg:rounded-xl"
+            >
+                <div class="flex flex-col gap-2">
+                    <h3 class="text-text-primary font-semibold">С вами поделились сновидением!</h3>
+                    <p class="text-text-secondary text-sm">
+                        Ознакомьтесь с деталями сна и сохраните в свой дневник.
+                    </p>
+                </div>
+                <AppButton @click="saveSharedDreamToDiary" variant="primary">
+                    Сохранить себе
+                </AppButton>
+            </div>
+
+            <div
                 v-if="sleepStore.loading && !dream"
                 role="status"
                 aria-live="polite"
@@ -430,9 +445,9 @@
                     </p>
                 </section>
 
-                <div class="flex justify-end">
+                <div class="flex justify-end" v-if="!isSharedView">
                     <AppButton
-                        @click="isShared = !isShared"
+                        @click="isSharing = !isSharing"
                         size="xs"
                         variant="primary"
                         :disabled="isDeleting(dream.id)"
@@ -461,7 +476,7 @@
                     </div>
 
                     <!-- Кнопки управления -->
-                    <div class="flex items-center justify-between">
+                    <div class="flex items-center justify-between" v-if="!isSharedView">
                         <AppButton
                             @click="handleDelete(dream.id, dream.date, dream.title)"
                             size="xs"
@@ -489,13 +504,14 @@
 
             <DreamFilterApplyBar :dream-slug="slug" />
 
-            <ShareDreamModal v-if="dream" v-model="isShared" :dream="dream" />
+            <ShareDreamModal v-if="dream" v-model="isSharing" :dream="dream" />
         </div>
     </div>
 </template>
 
 <script setup lang="ts">
     import { computed, onMounted, watchEffect, ref } from 'vue';
+    import { useRoute, useRouter } from 'vue-router';
     import { useSleepStore } from '@/stores/modules/dream';
     import { useDreamFilterStore } from '@/stores/modules/dreamFilter';
     import {
@@ -524,7 +540,7 @@
     import { useNavigation } from '@/composables/routing/useNavigation';
     import { useInterpretationSourceStore } from '@/stores/modules/useInterpretationSourceStore';
 
-    import type { DreamElementsObject, AnaliticsIds } from '@/types/Dream';
+    import type { DreamElementsObject, AnaliticsIds, Dream } from '@/types/Dream';
 
     import {
         TIME_OF_DAY_MAP,
@@ -542,7 +558,13 @@
     const sourceStore = useInterpretationSourceStore();
     const filterStore = useDreamFilterStore();
 
-    const isShared = ref(false);
+    const isSharing = ref(false);
+
+    const sharedDream = ref<Dream | null>(null);
+    const isSharedView = ref(false);
+
+    const route = useRoute();
+    const router = useRouter();
 
     // Переключение фильтра по клику на тег
     const toggleAnaliticsFilter = (id: AnaliticsIds, tag: string) => {
@@ -555,7 +577,9 @@
 
     // Преобразуем строковый route param в number согласно интерфейсу Dream
     const dream = computed(() => {
+        if (isSharedView.value) return sharedDream.value ?? null;
         if (!props.slug) return null;
+
         return sleepStore.sleeps.find((s) => s.slug === props.slug) || null;
     });
 
@@ -691,10 +715,41 @@
     });
 
     onMounted(() => {
+        if (route.name === 'dream-import-shared' || window.location.hash.includes('#data=')) {
+            try {
+                const hash = window.location.hash;
+                const match = hash.match(/#data=(.+)/);
+
+                if (match && match[1]) {
+                    const base64Str = match[1];
+                    const jsonString = decodeURIComponent(
+                        atob(base64Str)
+                            .split('')
+                            .map((c) => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
+                            .join(''),
+                    );
+
+                    sharedDream.value = JSON.parse(jsonString);
+                    isSharedView.value = true;
+                }
+            } catch (e) {
+                console.error('Ошибка при расшифровке импортированного сна:', e);
+            }
+        }
+
         if (sourceStore.sources.length === 0) {
             sourceStore.init();
         }
 
         filterStore.resetFilters();
     });
+
+    const saveSharedDreamToDiary = () => {
+        if (!sharedDream.value) return;
+
+        router.push({
+            name: 'dream-create',
+            state: { importData: JSON.stringify(sharedDream.value) },
+        });
+    };
 </script>

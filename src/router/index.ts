@@ -48,10 +48,9 @@ const router = createRouter({
         {
             path: '/dream/share/import',
             name: 'dream-import-shared',
-            component: () => import('../views/dreams/DreamFormView.vue'),
+            component: () => import('../views/dreams/DreamDetailView.vue'),
             meta: {
-                title: 'Импорт сна — Dream Keeper',
-                description: 'Импортируйте разделенное сновидение в свой дневник снов.',
+                title: 'Просмотр чужого сна — Dream Keeper',
             },
         },
         {
