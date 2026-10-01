@@ -5,6 +5,7 @@
         </AppButton>
 
         <div
+            v-scroll-reveal
             v-if="isImportMode"
             class="border-border-primary bg-bg-elevated text-text-primary mb-6 rounded-lg border p-4 lg:rounded-xl"
         >
@@ -17,12 +18,13 @@
         </div>
 
         <h1
+            v-scroll-reveal
             class="border-border-muted text-text-primary mb-4 border-t py-6 text-xl font-bold sm:text-2xl"
         >
             {{ isEditMode ? 'Редактировать сон ' : 'Записать новый сон' }}
         </h1>
 
-        <form @submit.prevent="handleSubmit" class="space-y-6">
+        <form v-scroll-reveal @submit.prevent="handleSubmit" class="space-y-6">
             <div class="border-border-muted flex w-full overflow-x-auto overflow-y-hidden border-b">
                 <button
                     v-for="tab in tabs"

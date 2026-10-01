@@ -5,7 +5,7 @@
                 <span>Назад</span>
             </AppButton>
 
-            <div class="mt-6 space-y-6">
+            <div v-scroll-reveal class="mt-6 space-y-6">
                 <div>
                     <h1 class="text-text-primary font-bold">Поиск и фильтрация снов</h1>
                 </div>

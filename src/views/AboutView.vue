@@ -53,7 +53,7 @@
         <!-- Главный контейнер через flex flex-col gap-16 -->
         <div class="container mx-auto flex flex-col gap-16">
             <!-- Hero Section -->
-            <section class="flex flex-col items-center gap-2 text-center">
+            <section v-scroll-reveal class="flex flex-col items-center gap-2 text-center">
                 <div
                     class="bg-accent-soft/50 text-accent mb-2 inline-flex items-center justify-center rounded-2xl p-3"
                 >
@@ -73,6 +73,7 @@
 
             <!-- Core Concept / Philosophy -->
             <section
+                v-scroll-reveal
                 class="bg-bg-secondary border-border flex flex-col gap-4 rounded-2xl border p-8 shadow-sm"
             >
                 <h2 class="text-text-primary font-bold">Суть платформы</h2>
@@ -88,7 +89,7 @@
             </section>
 
             <!-- How to Use -->
-            <section class="flex flex-col gap-8">
+            <section v-scroll-reveal class="flex flex-col gap-8">
                 <div class="flex flex-col gap-2 text-center">
                     <h2 class="text-text-primary font-bold">Как использовать сервис</h2>
                     <p class="text-text-soft">Три простых шага к осознанному ведению дневника</p>
@@ -96,8 +97,10 @@
 
                 <div class="grid grid-cols-1 gap-6 md:grid-cols-3">
                     <article
-                        v-for="step in steps"
+                        v-for="(step, index) in steps"
                         :key="step.number"
+                        v-scroll-reveal
+                        :style="{ transitionDelay: `${index * 150}ms` }"
                         class="bg-bg-secondary border-border relative flex flex-col justify-between rounded-xl border p-6"
                     >
                         <div class="flex flex-col gap-3">
@@ -114,13 +117,15 @@
             </section>
 
             <!-- Features Grid -->
-            <section class="flex flex-col gap-8">
+            <section v-scroll-reveal class="flex flex-col gap-8">
                 <h2 class="text-text-primary text-center font-bold">Возможности</h2>
 
                 <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
                     <div
-                        v-for="feature in features"
+                        v-for="(feature, index) in features"
                         :key="feature.title"
+                        v-scroll-reveal
+                        :style="{ transitionDelay: `${(index % 2) * 150}ms` }"
                         class="bg-bg-secondary border-border flex flex-col gap-3 rounded-xl border p-6"
                     >
                         <div class="bg-accent-soft/30 text-accent w-fit rounded-lg p-2.5">
@@ -140,6 +145,7 @@
 
             <!-- Call to Action -->
             <section
+                v-scroll-reveal
                 class="bg-bg-secondary border-border flex flex-col items-center gap-6 rounded-2xl border p-10 text-center shadow-sm"
             >
                 <div class="flex flex-col gap-2">

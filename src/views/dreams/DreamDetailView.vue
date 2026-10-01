@@ -15,6 +15,7 @@
             </AppButton>
 
             <div
+                v-scroll-reveal
                 v-if="isSharedView"
                 class="border-border-primary/30 bg-bg-elevated mb-6 flex flex-col gap-6 rounded-lg border p-4 sm:flex-row sm:items-center sm:justify-between sm:gap-1.5 lg:rounded-xl"
             >
@@ -30,6 +31,7 @@
             </div>
 
             <div
+                v-scroll-reveal
                 v-if="sleepStore.loading && !dream"
                 role="status"
                 aria-live="polite"
@@ -40,6 +42,7 @@
 
             <!-- Карточка сна -->
             <article
+                v-scroll-reveal
                 v-else-if="dream"
                 class="dream-card relative space-y-8 p-6 pt-8 sm:p-8 sm:pt-10"
                 aria-labelledby="dream-title"

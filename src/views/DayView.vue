@@ -11,7 +11,7 @@
                 Назад к календарю
             </AppButton>
 
-            <div class="dream-card fade-in p-6">
+            <div v-scroll-reveal class="dream-card fade-in p-6">
                 <div class="border-border-strong border-b pb-3">
                     <h3 class="text-text-primary text-xl font-semibold">
                         {{ formattedDate }}

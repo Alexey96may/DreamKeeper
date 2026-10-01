@@ -21,7 +21,10 @@
                 </template>
             </AppTitle>
 
-            <div class="dream-card mx-auto flex justify-center p-0 lg:w-full lg:px-14 lg:py-8">
+            <div
+                v-scroll-reveal
+                class="dream-card mx-auto flex justify-center p-0 lg:w-full lg:px-14 lg:py-8"
+            >
                 <Calendar
                     ref="calendar"
                     locale="ru"
@@ -60,9 +63,9 @@
                 </Calendar>
             </div>
 
-            <StatsGrid :items="statsData" />
+            <StatsGrid v-scroll-reveal :items="statsData" />
 
-            <ExpectedDreamsSection />
+            <ExpectedDreamsSection v-scroll-reveal />
         </div>
 
         <Teleport to="body">
