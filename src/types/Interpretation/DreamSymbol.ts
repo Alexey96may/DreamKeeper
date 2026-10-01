@@ -1,10 +1,22 @@
 export type SymbolCategory =
-    | 'character' // Люди, персонажи, существа ("учитель", "волк", "старик")
-    | 'location' // Локации, места, помещения ("школа", "море", "пещера")
-    | 'object' // Предметы, артефакты, инструменты ("часы", "калебас", "ключ")
-    | 'action' // Действия, процессы ("полет", "падение", "погоня")
-    | 'nature' // Природные явления, стихии ("гроза", "затмение", "огонь")
-    | 'abstract'; // Абстракции, состояния, знаки ("цифра 7", "геометрия")
+    | 'character'
+    | 'location'
+    | 'object'
+    | 'action'
+    | 'nature'
+    | 'animal'
+    | 'body'
+    | 'place'
+    | 'person'
+    | 'archetype'
+    | 'phenomenon'
+    | 'abstract'
+    | 'emotion'
+    | 'food'
+    | 'transport'
+    | 'ritual'
+    | 'color'
+    | 'number';
 
 export interface DreamSymbol {
     tag: string; // Primary Key (уникальный слаг, например: 'voda')
