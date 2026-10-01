@@ -7,7 +7,13 @@ import type {
     Perspective,
     ParticipantRole,
     SensoryAspect,
+    DreamInterpretationRef,
+    RelatedDreamRef,
+    DreamRelationType,
 } from '@/types/Dream';
+import type { InterpretationWrite } from '@/services/schemas/interpretation.schema';
+
+import { initialInterpretationsSeed } from './interpretationsSeed';
 
 export const generateDreamsSeed = (count: number): DreamWrite[] => {
     const titlePools: Record<string, string[]> = {
@@ -17,6 +23,11 @@ export const generateDreamsSeed = (count: number): DreamWrite[] => {
             'Создание предметов силой мысли',
             'Осознанное погружение в океанские глубины',
             'Архитектура сновидения: перестройка улиц',
+            'Проход сквозь зеркальные стены замка',
+            'Дыхание под водой среди биолюминесцентных кораллов',
+            'Контроль над временем на вершине часовой башни',
+            'Превращение в птицу над ночным каньоном',
+            'Рисование светом в полной темноте космоса',
         ],
         nightmare: [
             'Лабиринт бесконечных коридоров',
@@ -24,6 +35,11 @@ export const generateDreamsSeed = (count: number): DreamWrite[] => {
             'Внезапное падение с горного пика',
             'Холодный липкий страх в темной комнате',
             'Отрезанный путь к спасению',
+            'Звуки шагов за запертой дверью',
+            'Потеря контроля над тормозами падающего поезда',
+            'Отражение в зеркале живет своей пугающей жизнью',
+            'Бесконечный подъем по крутой винтовой лестнице без конца',
+            'Невозможность сдвинуться с места под тяжелым взглядом',
         ],
         prophetic: [
             'Диалог у старого маяка на закате',
@@ -31,6 +47,11 @@ export const generateDreamsSeed = (count: number): DreamWrite[] => {
             'Странное предзнаменование в старой книге',
             'Письмо из будущего на незнакомом языке',
             'Эхо разговора в пустом амфитеатре',
+            'Внезапное осознание момента из реальной жизни',
+            'Силуэт в окне поезда, уносящегося в сумерки',
+            'Случайно услышанная фраза, меняющая ход событий',
+            'Сгорающая фотография с неизвестным лицом',
+            'Старинные карманные часы, остановившиеся ровно в полночь',
         ],
         default: [
             'Странное путешествие сквозь туман',
@@ -38,6 +59,11 @@ export const generateDreamsSeed = (count: number): DreamWrite[] => {
             'Забытые голоса за старой стеной',
             'Медленное движение по зеркальной глади',
             'Отражения в оконном стекле поезда',
+            'Прогулка по осеннему парку с падающими листьями',
+            'Поиск потерянного ключа в старом доме',
+            'Беседа со старым другом на заброшенном причале',
+            'Наблюдение за медленным движением облаков над горами',
+            'Тихий вечер в библиотеке с пахнущими пылью фолиантами',
         ],
     };
 
@@ -46,6 +72,8 @@ export const generateDreamsSeed = (count: number): DreamWrite[] => {
         'Вокруг царила странная тишина, прерываемая лишь редкими глухими звуками. Попытки повлиять на происходящее давали неожиданные и яркие результаты.',
         'Плотный воздух и насыщенные цветовые переливы создавали ощущение полной реальности происходящего, стирая грань между сном и бодрствованием.',
         'Каждая деталь обстановки казалась наполненной глубоким скрытым смыслом. Окружающие предметы реагировали на каждое прикосновение.',
+        'Ощущение леденящего одиночества сменялось вспышками яркого света. Тени казались живыми и следовали за каждым движением.',
+        'Всё происходило как в замедленной съемке. Звуки доносились словно из-под толщи воды, а контуры предметов расплывались при попытке сфокусироваться.',
     ];
 
     const charactersPool = [
@@ -56,6 +84,7 @@ export const generateDreamsSeed = (count: number): DreamWrite[] => {
         'Силуэт в дверном проеме',
         'Группа исследователей',
         'Хранитель архива',
+        'Девочка со старинной игрушкой',
     ];
 
     const alienAuthorsPool = [
@@ -65,7 +94,7 @@ export const generateDreamsSeed = (count: number): DreamWrite[] => {
         'Внешний разум',
         'Мать',
         'Брат',
-        'Президент',
+        'Архитектор пустоты',
     ];
 
     const locationsPool = [
@@ -108,6 +137,35 @@ export const generateDreamsSeed = (count: number): DreamWrite[] => {
         'Лег спать с легкой головной болью и мыслями о проекте.',
     ];
 
+    const relationTypesPool: DreamRelationType[] = [
+        'recurring_instance',
+        'continuation',
+        'prequel',
+        'similar_theme',
+        'same_location',
+        'reference',
+    ];
+
+    // Маппинг ключевых слов для автоматической привязки интерпретаций из сонника
+    const keywordToTagMap: Record<string, string> = {
+        вод: 'voda',
+        океан: 'voda',
+        огонь: 'ogon',
+        пламень: 'ogon',
+        змей: 'zmeya',
+        дом: 'dom',
+        здан: 'dom',
+        зеркал: 'zerkalo',
+        полет: 'polet',
+        летел: 'polet',
+        дорог: 'doroga',
+        путь: 'doroga',
+        станци: 'doroga',
+        смерть: 'smerth',
+        гибель: 'smerth',
+        ключ: 'klyuch',
+    };
+
     const timesOfDay: TimeOfDay[] = ['night', 'morning', 'day', 'evening'];
     const visualStyles: VisualStyle[] = ['color', 'vivid', 'monochrome', 'blurred', 'dark'];
     const perspectives: Perspective[] = ['first_person', 'third_person', 'shifting'];
@@ -141,10 +199,47 @@ export const generateDreamsSeed = (count: number): DreamWrite[] => {
     ];
 
     const getRandomItem = <T>(arr: T[]): T => arr[Math.floor(Math.random() * arr.length)];
+
     const getRandomSubarray = <T>(arr: T[], max: number = 2): T[] => {
         const count = Math.floor(Math.random() * (max + 1));
         const shuffled = [...arr].sort(() => 0.5 - Math.random());
         return shuffled.slice(0, count);
+    };
+
+    // Функция подбора интерпретаций на основе текста заголовка/описания
+    const generateInterpretationsForDream = (text: string): DreamInterpretationRef[] => {
+        const lowerText = text.toLowerCase();
+        const matchedTags = new Set<string>();
+
+        for (const [keyword, tag] of Object.entries(keywordToTagMap)) {
+            if (lowerText.includes(keyword)) {
+                matchedTags.add(tag);
+            }
+        }
+
+        if (matchedTags.size === 0 && Math.random() > 0.6) {
+            // Если явных совпадений нет, с некоторой вероятностью даем случайную базовую интерпретацию
+            matchedTags.add(getRandomItem(Object.values(keywordToTagMap)));
+        }
+
+        const results: DreamInterpretationRef[] = [];
+        matchedTags.forEach((tag) => {
+            const possibleInterps: (InterpretationWrite & { id: string })[] =
+                initialInterpretationsSeed.filter((item) => item.symbolTag === tag);
+            if (possibleInterps.length > 0) {
+                const interp = getRandomItem(possibleInterps);
+                results.push({
+                    id: crypto.randomUUID(),
+                    interpretationId: interp.id,
+                    tag: interp.symbolTag,
+                    meaning: getRandomItem(interp.meanings),
+                    sourceId: interp.sourceId,
+                    isAccurate: Math.random() > 0.5 ? true : null,
+                });
+            }
+        });
+
+        return results;
     };
 
     const results: DreamWrite[] = [];
@@ -180,15 +275,34 @@ export const generateDreamsSeed = (count: number): DreamWrite[] => {
             }
             usedTitles.add(title);
 
+            const description = getRandomItem(descriptionTemplates);
             const phenomena = getRandomSubarray(allPhenomena, 1);
-
             const isAlien = Math.random() < 0.15;
-            const authorName = isAlien ? getRandomItem(alienAuthorsPool) : undefined;
+            const authorName = isAlien ? getRandomItem(alienAuthorsPool) : '';
 
-            const dream: DreamWrite = {
+            const relatedDreams: RelatedDreamRef[] = [];
+            if (results.length > 0 && Math.random() > 0.6) {
+                const existingIndex = Math.floor(Math.random() * results.length);
+                relatedDreams.push({
+                    dreamId: existingIndex + 1, // Индекс как условный ID в IndexedDB
+                    relationType: getRandomItem(relationTypesPool),
+                    note: Math.random() > 0.5 ? 'Перекликается с прошлым образом' : undefined,
+                });
+            } else if (Math.random() > 0.85) {
+                relatedDreams.push({
+                    dreamId: undefined,
+                    relationType: 'recurring_instance',
+                    note: 'Повторяющийся сюжет из прошлых лет',
+                });
+            }
+
+            const dream: DreamWrite & {
+                interpretations?: DreamInterpretationRef[];
+                relatedDreams?: RelatedDreamRef[];
+            } = {
                 date: targetDate,
                 title,
-                description: getRandomItem(descriptionTemplates),
+                description,
                 categories,
                 categoryDetails: categories.includes('lucid')
                     ? {
@@ -228,6 +342,8 @@ export const generateDreamsSeed = (count: number): DreamWrite[] => {
                 isAlien,
                 authorName,
                 preSleepContext: getRandomItem(contextsPool),
+                interpretations: generateInterpretationsForDream(`${title} ${description}`),
+                relatedDreams: relatedDreams.length > 0 ? relatedDreams : undefined,
                 isFavorite: Math.random() > 0.7,
                 isPinned: Math.random() > 0.9,
                 isArchived: false,
@@ -264,13 +380,14 @@ export const generateDreamsSeed = (count: number): DreamWrite[] => {
             visualStyle: 'color',
             perspective: 'first_person',
             roles: ['protagonist'],
-            sensations: ['sounds'], // Исправлено здесь тоже
+            sensations: ['sounds'],
             characters: [],
             locations: ['Неизвестное место'],
             objects: [],
             emotions: ['Спокойствие'],
             isAlien: false,
-            authorName: undefined,
+            authorName: '',
+            interpretations: generateInterpretationsForDream(title),
             isFavorite: false,
             isPinned: false,
             isArchived: false,

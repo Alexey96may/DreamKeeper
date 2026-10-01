@@ -11,7 +11,7 @@ import {
 
 import { ServiceFactory } from '@/services/factories/ServiceFactory';
 import { InterpretationRepository } from '@/services/repositories/InterpretationRepository';
-import { initialInterpretationsSeed } from '@/services/seeders/interpretationsSeed';
+import { allInterpretationsSeed } from '@/services/seeders/interpretationsSeed';
 
 export const useInterpretationStore = defineStore('interpretation', () => {
     // ===== STATE =====
@@ -63,7 +63,11 @@ export const useInterpretationStore = defineStore('interpretation', () => {
             if (existing.length === 0) {
                 const now = new Date().toISOString();
 
-                for (const seed of initialInterpretationsSeed) {
+                const uniqueSeeds = Array.from(
+                    new Map(allInterpretationsSeed.map((seed) => [seed.id, seed])).values(),
+                );
+
+                for (const seed of uniqueSeeds) {
                     await repository.value.create({
                         ...seed,
                         createdAt: now,

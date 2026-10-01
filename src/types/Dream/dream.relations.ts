@@ -2,6 +2,7 @@ import type { InterprSource } from '@/types/Interpretation/Source';
 import type { Dream } from '@/types/Dream';
 
 export interface DreamInterpretationRef {
+    id?: string;
     interpretationId?: string; // ID из таблицы interpretations в IndexedDB
     tag: string; // Тег для быстрого поиска ("часы")
     meaning: string; // Зафиксированный текст (чтобы если сонник отредактируют, контекст сна не поплыл)

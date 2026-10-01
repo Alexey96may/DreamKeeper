@@ -88,19 +88,9 @@ export const useSleepStore = defineStore('sleep', () => {
         const total = monthDreams.length;
         const avgQuality = monthDreams.reduce((acc, s) => acc + (s.quality || 0), 0) / total;
 
-        const types = monthDreams.reduce(
-            (acc, s) => {
-                const type = s?.type || 'normal';
-                acc[type] = (acc[type] || 0) + 1;
-                return acc;
-            },
-            {} as Record<string, number>,
-        );
-
         return {
             total,
             avgQuality: Number(avgQuality.toFixed(1)),
-            types,
             dreams: monthDreams,
         };
     };

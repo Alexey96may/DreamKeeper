@@ -270,6 +270,7 @@ export const DreamPhenomenaDetailsSchema = v.object({
 // ==========================================
 
 export const DreamInterpretationRefSchema = v.object({
+    id: v.optional(v.string('ID должен быть строкой')),
     interpretationId: v.optional(v.string('ID интерпретации должен быть строкой')),
     tag: v.pipe(
         v.string('Тег должен быть строкой'),

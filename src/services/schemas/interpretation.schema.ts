@@ -25,3 +25,4 @@ export const InterpretationSchema = v.object({
 
 export type InterpretationWrite = v.InferOutput<typeof InterpretationWriteSchema>;
 export type InterpretationUpdate = v.InferOutput<typeof InterpretationUpdateSchema>;
+export type Interpretation = v.InferOutput<typeof InterpretationSchema>;

@@ -1,4 +1,6 @@
 import type { InterpretationWrite } from '@/services/schemas/interpretation.schema';
+import { freudInterpretationsSeed } from '@/services/seeders/interpretations/freud.seed';
+import { vangaInterpretationsSeed } from '@/services/seeders/interpretations/vanga.seed';
 
 export const initialInterpretationsSeed: (InterpretationWrite & { id: string })[] = [
     // ==========================================
@@ -29,18 +31,6 @@ export const initialInterpretationsSeed: (InterpretationWrite & { id: string })[
         isVerified: true,
     },
     {
-        id: 'interp-voda-freud-general',
-        symbolTag: 'voda',
-        sourceId: 'freud',
-        aspectId: null,
-        meanings: [
-            'Символизирует зачатие, процесс рождения и сексуальное влечение.',
-            'Погружение в воду или купание отражает подсознательное желание иметь детей или вернуться в материнскую утробу.',
-        ],
-        isCustom: false,
-        isVerified: true,
-    },
-    {
         id: 'interp-voda-jung-stream',
         symbolTag: 'voda',
         sourceId: 'jung',
@@ -49,15 +39,6 @@ export const initialInterpretationsSeed: (InterpretationWrite & { id: string })[
             'Бурный поток символизирует вторжение неосознанных психических сил, угрожающих захлестнуть Эго.',
             'Необходимость пройти через очищающий катарсис и принять свои скрытые эмоции.',
         ],
-        isCustom: false,
-        isVerified: true,
-    },
-    {
-        id: 'interp-voda-vanga-clean',
-        symbolTag: 'voda',
-        sourceId: 'vanga',
-        aspectId: 'voda-chistaya',
-        meanings: ['Знамение обновления, прощения прошлых грехов и душевного очищения.'],
         isCustom: false,
         isVerified: true,
     },
@@ -84,47 +65,12 @@ export const initialInterpretationsSeed: (InterpretationWrite & { id: string })[
         isVerified: true,
     },
     {
-        id: 'interp-ogon-freud-general',
-        symbolTag: 'ogon',
-        sourceId: 'freud',
-        aspectId: null,
-        meanings: ['Символ вырывающейся из-под контроля пылкой страсти и полового влечения.'],
-        isCustom: false,
-        isVerified: true,
-    },
-    {
         id: 'interp-ogon-jung-fire',
         symbolTag: 'ogon',
         sourceId: 'jung',
         aspectId: 'ogon-pozhar',
         meanings: [
             'Огонь как сила трансмутации: уничтожение устаревших установок для высвобождения новой психической энергии.',
-        ],
-        isCustom: false,
-        isVerified: true,
-    },
-    {
-        id: 'interp-ogon-vanga-fire',
-        symbolTag: 'ogon',
-        sourceId: 'vanga',
-        aspectId: 'ogon-pozhar',
-        meanings: [
-            'Предупреждение о суровых испытаниях, конфликтах или кардинальных переменах в жизни.',
-        ],
-        isCustom: false,
-        isVerified: true,
-    },
-
-    // ==========================================
-    // ЗМЕЯ (zmeya)
-    // ==========================================
-    {
-        id: 'interp-zmeya-freud-general',
-        symbolTag: 'zmeya',
-        sourceId: 'freud',
-        aspectId: null,
-        meanings: [
-            'Фаллический символ. Олицетворяет сексуальную силу, страх перед интимностью или искушение.',
         ],
         isCustom: false,
         isVerified: true,
@@ -174,17 +120,6 @@ export const initialInterpretationsSeed: (InterpretationWrite & { id: string })[
         aspectId: 'dom-novyj',
         meanings: [
             'Отражает перестройку жизненных приоритетов, стремление к безопасности и перемены в самовосприятии.',
-        ],
-        isCustom: false,
-        isVerified: true,
-    },
-    {
-        id: 'interp-dom-freud-secret-room',
-        symbolTag: 'dom',
-        sourceId: 'freud',
-        aspectId: 'dom-tawnaya-komnata',
-        meanings: [
-            'Скрытые сексуальные фантазии или вытесненные воспоминания, к которым начинает открываться доступ.',
         ],
         isCustom: false,
         isVerified: true,
@@ -291,18 +226,6 @@ export const initialInterpretationsSeed: (InterpretationWrite & { id: string })[
         isCustom: false,
         isVerified: true,
     },
-    {
-        id: 'interp-smerth-vanga-general',
-        symbolTag: 'smerth',
-        sourceId: 'vanga',
-        aspectId: null,
-        meanings: [
-            'Знамение долгой жизни для того, кто приснился мёртвым, либо знак кардинальной трансформации судьбы.',
-        ],
-        isCustom: false,
-        isVerified: true,
-    },
-
     // ==========================================
     // КЛЮЧ (klyuch)
     // ==========================================
@@ -317,15 +240,10 @@ export const initialInterpretationsSeed: (InterpretationWrite & { id: string })[
         isCustom: false,
         isVerified: true,
     },
-    {
-        id: 'interp-klyuch-freud-general',
-        symbolTag: 'klyuch',
-        sourceId: 'freud',
-        aspectId: null,
-        meanings: [
-            'Мужской фаллический символ. Поиск ключа к замку отражает желание решить психосексуальный конфликт.',
-        ],
-        isCustom: false,
-        isVerified: true,
-    },
 ];
+
+export const allInterpretationsSeed = [
+    ...initialInterpretationsSeed,
+    ...freudInterpretationsSeed,
+    ...vangaInterpretationsSeed,
+] as (InterpretationWrite & { id: string })[];

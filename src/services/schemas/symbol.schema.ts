@@ -1,7 +1,26 @@
 import * as v from 'valibot';
 
 export const SymbolCategorySchema = v.picklist(
-    ['character', 'location', 'object', 'action', 'nature', 'abstract'],
+    [
+        'character',
+        'location',
+        'object',
+        'action',
+        'nature',
+        'animal',
+        'body',
+        'place',
+        'person',
+        'archetype',
+        'phenomenon',
+        'abstract',
+        'emotion',
+        'food',
+        'transport',
+        'ritual',
+        'color',
+        'number',
+    ],
     'Укажите корректную категорию',
 );
 

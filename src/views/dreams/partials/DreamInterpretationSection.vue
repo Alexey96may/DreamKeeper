@@ -24,7 +24,7 @@
                 <!-- CARD -->
                 <div
                     v-for="(interp, idx) in list"
-                    :key="interp.tag + idx"
+                    :key="interp.id"
                     class="border-border-muted/60 bg-bg-secondary/50 relative flex flex-col gap-3 rounded-lg border p-4 transition-all sm:flex-row sm:items-start"
                 >
                     <div class="relative grid flex-1 grid-cols-1 gap-3">
@@ -224,16 +224,19 @@
         activeField.value = 'meaning';
         searchTagQuery.value = getSymbolTitle(currentTag);
         activeSymbol.value = symbolStore.getSymbolByTag(currentTag) || null;
+
         searchMeaningQuery.value = currentMeaning || '';
     };
 
     const handleSymbolInput = (index: number, val: string) => {
         searchTagQuery.value = val;
+
         updateField(index, 'tag', val);
     };
 
     const suggestedSymbols = computed(() => {
         const query = searchTagQuery.value.trim().toLowerCase();
+
         if (!query) return [];
 
         return symbolStore.searchSymbols(query).slice(0, 8);
@@ -268,8 +271,6 @@
             }
             return item;
         });
-
-        console.log(updated);
 
         emit('update:interpretations', updated);
 
@@ -309,7 +310,7 @@
     const addInterpretation = () => {
         emit('update:interpretations', [
             ...props.interpretations,
-            { tag: '', meaning: '', sourceId: 'mine', isAccurate: null },
+            { id: crypto.randomUUID(), tag: '', meaning: '', sourceId: 'mine', isAccurate: null },
         ]);
     };
 

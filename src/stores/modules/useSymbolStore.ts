@@ -6,9 +6,9 @@ import type { DreamSymbol, SymbolCategory } from '@/types/Interpretation/DreamSy
 
 import { ServiceFactory } from '@/services/factories/ServiceFactory';
 import { DreamSymbolRepository } from '@/services/repositories/DreamSymbolRepository';
-import { initialSymbolsSeed } from '@/services/seeders/initialSymbolsSeed';
+import { symbolsSeed } from '@/services/seeders/initialSymbolsSeed';
 import {
-    SymbolWrite,
+    type SymbolWrite,
     SymbolWriteSchema,
     SymbolUpdateSchema,
 } from '@/services/schemas/symbol.schema';
@@ -59,7 +59,11 @@ export const useSymbolStore = defineStore('symbol', () => {
             if (existing.length === 0) {
                 const now = new Date().toISOString();
 
-                for (const seed of initialSymbolsSeed) {
+                const uniqueSeeds = Array.from(
+                    new Map(symbolsSeed.map((seed) => [seed.tag, seed])).values(),
+                );
+
+                for (const seed of uniqueSeeds) {
                     await repository.value.create({
                         ...seed,
                         createdAt: now,
@@ -98,7 +102,6 @@ export const useSymbolStore = defineStore('symbol', () => {
         }
 
         try {
-            // Гарантируем наличие tag
             const payload = {
                 ...validation.output,
                 tag: validation.output.tag || slugify(validation.output.title),
