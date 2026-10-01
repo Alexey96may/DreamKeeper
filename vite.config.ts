@@ -14,14 +14,14 @@ export default defineConfig({
         tailwindcss(),
         VitePWA({
             registerType: 'autoUpdate',
+            workbox: {
+                globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2}'],
+            },
             manifest: {
                 name: 'Dream Keeper',
                 short_name: 'DreamKeeper',
                 description: 'Хранитель сновидений и толкований',
                 theme_color: '#1e1e2e',
-                workbox: {
-                    globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2}'],
-                },
                 background_color: '#1e1e2e',
                 display: 'standalone',
                 icons: [
