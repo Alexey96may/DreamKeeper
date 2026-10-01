@@ -75,34 +75,53 @@
                     </p>
 
                     <Transition name="fade" mode="out-in">
-                        <div v-if="filterStore.matchingCount > 0" key="list" class="space-y-2.5">
-                            <TransitionGroup name="card-list">
-                                <DreamSearchCard
-                                    v-for="dream in visibleDreams"
-                                    :key="dream.id"
-                                    :dream="dream"
-                                    :is-selected="dream.slug === actualDreamSlug"
-                                    @select="goToDreamDetail(dream.slug)"
-                                />
-                            </TransitionGroup>
-
-                            <!-- Элемент-наблюдатель для триггера бесконечного скролла -->
-                            <div ref="loadMoreTrigger" class="py-4 text-center">
-                                <span v-if="hasMore" class="text-text-muted animate-pulse text-xs">
-                                    Загрузка следующих снов...
-                                </span>
-                                <span
-                                    v-else-if="visibleDreams.length > 0"
-                                    class="text-text-muted text-xs"
-                                >
-                                    Все сны загружены
-                                </span>
+                        <!-- Скелетоны  -->
+                        <template v-if="filterStore.loading">
+                            <div key="skeleton" class="space-y-2.5">
+                                <DreamSearchCardSkeleton v-for="n in 3" :key="n" />
                             </div>
-                        </div>
+                        </template>
 
-                        <p v-else key="empty" class="text-text-mute py-8 text-center text-sm">
-                            По вашему запросу ничего не найдено
-                        </p>
+                        <!-- Список или заглушка -->
+                        <template v-else>
+                            <div
+                                v-if="filterStore.matchingCount > 0"
+                                key="list"
+                                class="space-y-2.5"
+                            >
+                                <TransitionGroup name="card-list">
+                                    <DreamSearchCard
+                                        v-for="dream in visibleDreams"
+                                        :key="dream.id"
+                                        :dream="dream"
+                                        :is-selected="dream.slug === actualDreamSlug"
+                                        @select="goToDreamDetail(dream.slug)"
+                                    />
+                                </TransitionGroup>
+
+                                <!-- Элемент-наблюдатель для триггера бесконечного скролла -->
+                                <div ref="loadMoreTrigger" class="py-4 text-center">
+                                    <Transition name="fade" mode="out-in">
+                                        <span
+                                            v-if="hasMore"
+                                            class="text-text-muted animate-pulse text-xs"
+                                        >
+                                            Загрузка следующих снов...
+                                        </span>
+                                        <span
+                                            v-else-if="visibleDreams.length > 0"
+                                            class="text-text-muted text-xs"
+                                        >
+                                            Все сны загружены
+                                        </span>
+                                    </Transition>
+                                </div>
+                            </div>
+
+                            <p v-else key="empty" class="text-text-muted py-8 text-center text-sm">
+                                По вашему запросу ничего не найдено
+                            </p>
+                        </template>
                     </Transition>
                 </div>
             </div>
@@ -125,6 +144,7 @@
     import { useSleepStore } from '@/stores/modules/dream';
     import { useDreamFilterStore } from '@/stores/modules/dreamFilter';
     import DreamSearchCard from '@/components/cards/DreamSearchCard.vue';
+    import DreamSearchCardSkeleton from '@/components/skeletons/DreamSearchCardSkeleton.vue';
     import { MoveLeft, Filter } from 'lucide-vue-next';
     import AppButton from '@/components/ui/AppButton.vue';
     import { useNavigation } from '@/composables/routing/useNavigation';

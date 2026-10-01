@@ -94,75 +94,49 @@
                         />
                     </div>
 
-                    <div v-if="dayDreams.length > 0" class="space-y-4">
-                        <TransitionGroup
-                            name="list"
-                            tag="div"
-                            class="relative flex flex-col gap-4 overflow-hidden"
-                        >
-                            <div
-                                v-for="dream in visibleDreams"
-                                :key="dream.id"
-                                @click="isDeleting(dream.id) ? '' : goToDreamDetail(dream.slug)"
-                                class="bg-bg-secondary/50 border-border-primary cursor-pointer rounded-lg border px-4 py-6 transition duration-200"
-                                :class="{ 'pointer-events-none opacity-50': isDeleting(dream.id) }"
-                            >
-                                <div
-                                    class="relative flex flex-col items-center justify-between gap-6 sm:flex-row sm:gap-4"
-                                >
-                                    <AppRating
-                                        class="bg-accent/40 rounded-md p-1.5"
-                                        v-if="dream.quality !== undefined && dream.quality > 0"
-                                        :value="dream.quality"
-                                    />
+                    <Transition name="fade" mode="out-in">
+                        <div v-if="isLoading" class="space-y-4">
+                            <DreamDailyCardSkeleton v-for="i in 3" :key="i" />
+                        </div>
 
-                                    <div class="flex flex-col items-center gap-2 sm:items-stretch">
-                                        <h4
-                                            v-if="dream.title"
-                                            class="text-text-soft inline-block rounded-full py-0.5 text-xs"
-                                        >
-                                            {{ dream.title }}
-                                        </h4>
-
-                                        <p class="text-text-primary text-center sm:text-start">
-                                            {{ dream.description || 'Без описания' }}
-                                        </p>
-                                    </div>
-
-                                    <div
-                                        class="flex min-w-1/5 flex-row-reverse items-center justify-end gap-2 sm:flex-row"
+                        <div v-else>
+                            <Transition name="fade" mode="out-in">
+                                <div v-if="dayDreams.length > 0" class="space-y-4">
+                                    <TransitionGroup
+                                        name="list"
+                                        tag="div"
+                                        class="relative flex flex-col gap-4 overflow-hidden"
                                     >
-                                        <AppButton
-                                            @click.stop="
+                                        <DreamDailyCard
+                                            v-for="dream in visibleDreams"
+                                            :key="dream.id"
+                                            :dream="dream"
+                                            :is-deleting="isDeleting(dream.id)"
+                                            @click="goToDreamDetail(dream.slug)"
+                                            @edit="goToEdit(dream.slug)"
+                                            @delete="
                                                 handleDelete(dream.id, dream.date, dream.title)
                                             "
-                                            size="sm"
-                                            variant="danger"
-                                            :disabled="isDeleting(dream.id)"
-                                            :icon-left="Trash"
                                         />
+                                    </TransitionGroup>
 
-                                        <AppButton
-                                            @click.stop="goToEdit(dream.slug)"
-                                            size="sm"
-                                            variant="primary"
-                                            :disabled="isDeleting(dream.id)"
-                                            :icon-left="Edit2Icon"
-                                        />
+                                    <!-- Триггер бесконечного скролла -->
+                                    <div ref="loadMoreTrigger" class="py-4 text-center">
+                                        <span
+                                            v-if="hasMore"
+                                            class="text-text-muted animate-pulse text-xs"
+                                        >
+                                            Загрузка следующих снов...
+                                        </span>
                                     </div>
                                 </div>
-                            </div>
-                        </TransitionGroup>
 
-                        <!-- Триггер бесконечного скролла -->
-                        <div ref="loadMoreTrigger" class="py-4 text-center">
-                            <span v-if="hasMore" class="text-text-muted animate-pulse text-xs">
-                                Загрузка следующих снов...
-                            </span>
+                                <p v-else class="text-text-mute mt-4 text-sm">
+                                    Нет снов за этот день
+                                </p>
+                            </Transition>
                         </div>
-                    </div>
-
-                    <p v-else class="text-text-mute mt-4 text-sm">Нет снов за этот день</p>
+                    </Transition>
                 </div>
             </div>
         </div>
@@ -181,8 +155,10 @@
     import { computed, onMounted, onUnmounted, ref, watch } from 'vue';
     import { useSleepStore } from '@/stores/modules/dream';
     import { useUserStateStore } from '@/stores/modules/userState';
-    import { MoveLeft, PlusIcon, Edit2Icon, Trash } from 'lucide-vue-next';
+    import { MoveLeft, PlusIcon, Edit2Icon } from 'lucide-vue-next';
     import AppRating from '@/components/ui/AppRating.vue';
+    import DreamDailyCard from '@/components/cards/DreamDailyCard.vue';
+    import DreamDailyCardSkeleton from '@/components/skeletons/DreamDailyCardSkeleton.vue';
     import AppButton from '@/components/ui/AppButton.vue';
     import UserStateForm from '@/components/sections/UserStateForm.vue';
     import { useCrud } from '@/composables/crud';
@@ -202,6 +178,8 @@
 
     const dayDreams = computed(() => sleepStore.getDreamsByDate(props.date));
     const dayState = computed(() => userStateStore.getStateByDate(props.date));
+
+    const isLoading = computed(() => sleepStore.loading && sleepStore.sleeps.length === 0);
 
     // --- Логика пагинации (бесконечного скролла) для снов за день ---
     const pageSize = 5; // Порции можно сделать поменьше (например, по 5), так как это конкретный день
@@ -294,6 +272,24 @@
 </script>
 
 <style scoped>
+    .fade-enter-active,
+    .fade-leave-active,
+    .fade-slide-enter-active,
+    .fade-slide-leave-active {
+        transition: all 0.25s ease;
+    }
+
+    .fade-enter-from,
+    .fade-leave-to {
+        opacity: 0;
+    }
+
+    .fade-slide-enter-from,
+    .fade-slide-leave-to {
+        opacity: 0;
+        transform: translateY(-8px);
+    }
+
     .fade-in {
         animation: fadeIn 0.3s ease forwards;
     }

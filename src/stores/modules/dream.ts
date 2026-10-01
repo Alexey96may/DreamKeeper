@@ -40,12 +40,14 @@ export const useSleepStore = defineStore('sleep', () => {
         );
     };
 
-    const getDreamsExpectedByDate = (): Dream[] => {
-        return sleeps.value.filter((sleep: Dream) => {
-            if (!sleep.categoryDetails?.prophetic?.expectedByDate) return false;
+    const getDreamsExpectedByDate = (limit: number = 5): Dream[] => {
+        return sleeps.value
+            .filter((sleep: Dream) => {
+                if (!sleep.categoryDetails?.prophetic?.expectedByDate) return false;
 
-            return isPastOrPresentDay(sleep.categoryDetails.prophetic.expectedByDate);
-        });
+                return isPastOrPresentDay(sleep.categoryDetails.prophetic.expectedByDate);
+            })
+            .slice(0, limit);
     };
 
     const getDreamsByMonth = (year: number, month: number): Dream[] => {
@@ -186,6 +188,10 @@ export const useSleepStore = defineStore('sleep', () => {
             }
 
             sleeps.value = allDreams;
+
+            sleeps.value.sort(
+                (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+            );
         } catch (err) {
             error.value = err instanceof Error ? err.message : 'Ошибка инициализации';
             console.error('Ошибка инициализации стора снов:', err);

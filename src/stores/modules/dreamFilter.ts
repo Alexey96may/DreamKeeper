@@ -134,6 +134,9 @@ export const useDreamFilterStore = defineStore('dreamFilter', () => {
 
     const filters = ref<DreamFilterState>(loadFiltersFromStorage());
 
+    // Проксируем состояние загрузки из sleepStore (или можно завести свой ref, если нужно)
+    const loading = computed(() => sleepStore.loading);
+
     watch(
         filters,
         (newFilters) => {
@@ -291,7 +294,6 @@ export const useDreamFilterStore = defineStore('dreamFilter', () => {
 
         const tags: ActiveFilterTag[] = [];
 
-        // 1. Поиск
         if (filters.value.searchQuery.trim()) {
             tags.push({
                 key: 'searchQuery',
@@ -299,7 +301,6 @@ export const useDreamFilterStore = defineStore('dreamFilter', () => {
             });
         }
 
-        // 2. Даты
         if (filters.value.dateFrom) {
             tags.push({
                 key: 'dateFrom',
@@ -313,7 +314,6 @@ export const useDreamFilterStore = defineStore('dreamFilter', () => {
             });
         }
 
-        // 3. Числовые показатели и ползунки
         if (filters.value.minLucidControl !== undefined) {
             tags.push({
                 key: 'minLucidControl',
@@ -360,7 +360,6 @@ export const useDreamFilterStore = defineStore('dreamFilter', () => {
             authorNames: 'Автор',
         };
 
-        // Словары для маппинга ключей в названия из конфига
         const mapsRecord: Partial<Record<ArrayFilterKey, Record<string, { label: string }>>> = {
             categories: DREAM_CATEGORY_MAP,
             events: DREAM_PHENOMENON_MAP,
@@ -388,7 +387,6 @@ export const useDreamFilterStore = defineStore('dreamFilter', () => {
             });
         });
 
-        // 5. Флаги (булевы)
         if (filters.value.isAlien) tags.push({ key: 'isAlien', label: 'Чужой сон' });
         if (filters.value.isFavorite) tags.push({ key: 'isFavorite', label: 'Избранные' });
         if (filters.value.isPinned) tags.push({ key: 'isPinned', label: 'Закрепленные' });
@@ -402,7 +400,6 @@ export const useDreamFilterStore = defineStore('dreamFilter', () => {
     const removeFilterTag = (tag: ActiveFilterTag) => {
         const { key, subKey } = tag;
 
-        // Список ключей, которые являются массивами строк
         const arrayKeys: Array<ArrayFilterKey> = [
             'categories',
             'events',
@@ -418,10 +415,7 @@ export const useDreamFilterStore = defineStore('dreamFilter', () => {
             'authorNames',
         ];
 
-        // 1. Если это удаление конкретного элемента из массива
         if (subKey !== undefined && (arrayKeys as string[]).includes(key)) {
-            // Явно указываем TypeScript, что в данном контексте key — это ключ массива,
-            // а targetArray гарантированно является массивом строк (string[])
             const targetArray = filters.value[key as ArrayFilterKey] as string[];
             const index = targetArray.indexOf(subKey);
             if (index > -1) {
@@ -430,7 +424,6 @@ export const useDreamFilterStore = defineStore('dreamFilter', () => {
             return;
         }
 
-        // 2. Сброс полей целиком по их ключу
         switch (key) {
             case 'searchQuery':
                 filters.value.searchQuery = '';
@@ -547,6 +540,7 @@ export const useDreamFilterStore = defineStore('dreamFilter', () => {
 
     return {
         filters,
+        loading,
         filteredDreams,
         matchingCount,
         activeFilterTags,

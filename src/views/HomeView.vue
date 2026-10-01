@@ -136,7 +136,7 @@
         </Teleport>
 
         <AppModal v-model="isModalOpen" :close-on-overlay="true" title="Параметры Календаря">
-            <AppCheckbox v-model="hasDots" label="Показывать Точки" />
+            <AppCheckbox v-model="hasDots" label="Показывать Сны" />
             <AppCheckbox v-model="hasHighlight" label="Показывать Настроение" />
             <AppCheckbox v-model="isWeeklyMod" label="Режим по неделям" />
         </AppModal>
@@ -206,6 +206,12 @@
                 if (!map.has(dateStr)) map.set(dateStr, []);
                 map.get(dateStr)!.push(dream);
             }
+        });
+
+        map.forEach((dreams) => {
+            dreams.sort(
+                (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+            );
         });
         return map;
     });

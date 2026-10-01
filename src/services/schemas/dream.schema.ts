@@ -428,12 +428,15 @@ const DreamBaseObject = v.object({
 
     isAlien: v.optional(v.boolean('Флаг должен быть булевым значением')),
     authorName: v.optional(
-        v.pipe(
-            v.string('Имя автора должно быть строкой'),
-            v.trim(),
-            v.minLength(3, 'Имя автора должно быть не короче 3 символов'),
-            v.maxLength(50, 'Заголовок должно быть не длиннее 50 символов'),
-        ),
+        v.union([
+            v.pipe(
+                v.string('Имя автора должно быть строкой'),
+                v.trim(),
+                v.minLength(3, 'Имя автора должно быть не короче 3 символов'),
+                v.maxLength(50, 'Имя автора должно быть не длиннее 50 символов'),
+            ),
+            v.literal(''),
+        ]),
     ),
 
     interpretations: v.optional(
