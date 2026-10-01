@@ -1,1 +1,21 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#b99b39" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-moon preview-icon"><path fill="#FFD54F" d="M20.985 12.486a9 9 0 1 1-9.473-9.472c.405-.022.617.46.402.803a6 6 0 0 0 8.268 8.268c.344-.215.825-.004.803.401"/></svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <!-- Градиент луны -->
+    <linearGradient id="moonGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ffe66d" />
+      <stop offset="100%" stop-color="#f4c430" />
+    </linearGradient>
+    
+    <!-- Тень для объема -->
+    <filter id="shadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="8" stdDeviation="12" flood-color="#000" flood-opacity="0.4"/>
+    </filter>
+  </defs>
+
+
+  <path d="M 310 90 
+           A 170 170 0 1 0 422 362 
+           A 205 205 0 1 1 310 90 Z" 
+        fill="url(#moonGrad)" 
+        filter="url(#shadow)" />
+</svg>
