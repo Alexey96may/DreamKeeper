@@ -22,14 +22,16 @@
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const { id, createdAt, updatedAt, ...cleanDream } = props.dream;
 
-        const payload = {
-            ...cleanDream,
-            authorName: authorName.value.trim(),
-        };
+        if (!cleanDream.isAlien) cleanDream.isAlien = true;
 
         if (authorName.value.trim()) {
             cleanDream.authorName = authorName.value.trim();
         }
+
+        const payload = {
+            ...cleanDream,
+            authorName: authorName.value.trim(),
+        };
 
         const jsonString = JSON.stringify(payload);
         const base64Data = btoa(

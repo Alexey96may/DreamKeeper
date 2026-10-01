@@ -21,7 +21,7 @@
                 <div class="flex flex-col gap-2">
                     <h3 class="text-text-primary font-semibold">С вами поделились сновидением!</h3>
                     <p class="text-text-secondary text-sm">
-                        Ознакомьтесь с деталями сна и сохраните в свой дневник.
+                        Ознакомьтесь с деталями сна и сохраните его в свой дневник.
                     </p>
                 </div>
                 <AppButton @click="saveSharedDreamToDiary" variant="primary">
@@ -458,16 +458,14 @@
 
                 <!-- Нижняя панель: Метаданные и Кнопки управления -->
                 <footer
-                    class="border-border/35 text-text-muted mt-6 flex flex-col gap-4 border-t pt-4 text-[11px]"
+                    class="border-border/35 text-text-muted mt-6 flex flex-col gap-6 border-t pt-4 text-[11px]"
                 >
                     <!-- Даты создания/изменения -->
-                    <div class="flex flex-wrap items-center gap-x-3 gap-y-1">
+                    <div class="flex flex-col gap-y-1">
                         <div v-if="dream.createdAt" class="flex items-center gap-1">
                             <span class="opacity-75">Создано:</span>
                             <AppSmartTime :date="dream.createdAt" />
                         </div>
-
-                        <span v-if="dream.createdAt && dream.updatedAt" class="opacity-60">•</span>
 
                         <div v-if="dream.updatedAt" class="flex items-center gap-1">
                             <span class="opacity-75">Изменено:</span>
@@ -475,7 +473,6 @@
                         </div>
                     </div>
 
-                    <!-- Кнопки управления -->
                     <div class="flex items-center justify-between" v-if="!isSharedView">
                         <AppButton
                             @click="handleDelete(dream.id, dream.date, dream.title)"
