@@ -27,6 +27,7 @@
                     locale="ru"
                     :key="calendarKey"
                     :attributes="calendarAttributes"
+                    :initial-page="initialPage"
                     :view="isWeeklyMod ? 'weekly' : 'monthly'"
                     :first-day-of-week="2"
                     :max-date="new Date()"
@@ -186,6 +187,15 @@
     const calendarKey = computed(
         () => `${sleepStore.sleeps.length}-${userStateStore.states.length}`,
     );
+
+    const initialPage = computed(() => {
+        const thisDate = new Date();
+
+        return {
+            month: thisDate.getMonth() + 1,
+            year: thisDate.getFullYear(),
+        };
+    });
 
     // Карты данных для быстрого доступа
     const sleepsByDateMap = computed(() => {
