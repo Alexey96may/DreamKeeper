@@ -82,12 +82,10 @@ export const useUserStateStore = defineStore('userState', () => {
             let allStates = await repository.value.getAll();
 
             if (allStates.length === 0) {
-                // Запускаем все вставки параллельно (или используем bulkAdd, если поддерживается)
                 await Promise.all(
                     userStatesSeed.map((seedData) => repository.value!.create(seedData)),
                 );
 
-                // Запрашиваем итоговый массив
                 allStates = await repository.value.getAll();
             }
 

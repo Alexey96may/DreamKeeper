@@ -119,7 +119,10 @@
                             </div>
 
                             <p v-else key="empty" class="text-text-muted py-8 text-center text-sm">
-                                По вашему запросу ничего не найдено
+                                <span v-if="sleepStore.sleeps.length"
+                                    >По вашему запросу ничего не найдено</span
+                                >
+                                <span v-else>У вас ещё нет сновидений</span>
                             </p>
                         </template>
                     </Transition>
