@@ -14,9 +14,14 @@ export default defineConfig({
         tailwindcss(),
         VitePWA({
             registerType: 'autoUpdate',
+            devOptions: {
+                enabled: true,
+            },
             workbox: {
                 globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2}'],
             },
+            scope: '/DreamKeeper/',
+            start_url: '/DreamKeeper/',
             manifest: {
                 name: 'Dream Keeper',
                 short_name: 'DreamKeeper',

@@ -1,0 +1,1 @@
+if('serviceWorker' in navigator) navigator.serviceWorker.register('/DreamKeeper/dev-sw.js?dev-sw', { scope: '/DreamKeeper/', type: 'classic' })
