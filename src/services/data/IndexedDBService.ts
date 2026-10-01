@@ -132,6 +132,11 @@ export class IndexedDBService implements IDataService {
         }
     }
 
+    async clear(store: StoreName): Promise<void> {
+        const db = await this.getDB();
+        await db.clear(store);
+    }
+
     // ===== Helper =====
     private async getDB(): Promise<IDBPDatabase<DreamKeeperDB>> {
         if (!this.dbPromise) {

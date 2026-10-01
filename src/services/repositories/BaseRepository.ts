@@ -21,6 +21,10 @@ export abstract class BaseRepository<
         return this.dataService.getAll<T>(this.storeName);
     }
 
+    async clearAll(): Promise<void> {
+        await this.dataService.clear(this.storeName);
+    }
+
     async getById(keyValue: T[K]): Promise<T | undefined> {
         return this.dataService.get<T>(this.storeName, keyValue);
     }

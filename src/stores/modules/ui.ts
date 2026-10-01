@@ -10,11 +10,21 @@ export type ActiveThemeMode = Exclude<ThemeMode, 'system'>;
 
 export const useUIStore = defineStore('ui', () => {
     // ===== STATE =====
+    const TEST_MODE_EXIT_KEY = 'dream_keeper_test_mode_exited';
+
     const theme = ref<ThemeMode>(
         (localStorage.getItem('dreamkeeper-theme') as ThemeMode) || 'system',
     );
 
     const isSystemDark = ref<boolean>(window.matchMedia('(prefers-color-scheme: dark)').matches);
+
+    const isTestModeExited = ref<boolean>(localStorage.getItem(TEST_MODE_EXIT_KEY) === 'true');
+    const hasExitedTestMode = computed(() => isTestModeExited.value);
+
+    const completeTestMode = () => {
+        isTestModeExited.value = true;
+        localStorage.setItem(TEST_MODE_EXIT_KEY, 'true');
+    };
 
     const sidebarOpen = ref<boolean>(false);
     const isLoading = ref<boolean>(false);
@@ -119,6 +129,8 @@ export const useUIStore = defineStore('ui', () => {
         sidebarOpen,
         isLoading,
         toasts,
+        isTestModeExited,
+        hasExitedTestMode,
 
         // Actions
         setTheme,
@@ -129,5 +141,6 @@ export const useUIStore = defineStore('ui', () => {
         initTheme,
         toggleSidebar,
         setLoading,
+        completeTestMode,
     };
 });

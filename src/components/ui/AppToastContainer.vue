@@ -1,6 +1,6 @@
 <template>
     <div
-        class="pointer-events-none fixed inset-0 bottom-5 z-55 flex w-full flex-col-reverse gap-2.5 px-4 sm:inset-auto sm:right-5 sm:bottom-5 sm:max-w-95"
+        class="pointer-events-none fixed inset-0 bottom-4 z-55 flex w-full flex-col-reverse gap-2.5 px-4 sm:inset-auto sm:right-5 sm:bottom-5 sm:max-w-95"
     >
         <TransitionGroup
             enter-active-class="transition duration-300 ease-out"
@@ -39,7 +39,7 @@
                             v-if="toast.actionLabel"
                             @click="handleAction(toast)"
                             size="xs"
-                            variant="secondary"
+                            :variant="getButtonVariant(toast.type)"
                             >{{ toast.actionLabel }}</AppButton
                         >
 
@@ -47,7 +47,7 @@
                             v-if="!toast.showProgress"
                             @click="toastStore.removeToast(toast.id)"
                             size="xs"
-                            variant="danger"
+                            :variant="getButtonVariant(toast.type)"
                             :icon-left="X"
                         />
                     </div>
@@ -71,6 +71,8 @@
     import AppButton from '@/components/ui/AppButton.vue';
     import type { Toast } from '@/types/Notification';
 
+    type ButtonVariant = 'primary' | 'secondary' | 'danger' | 'outline' | 'ghost' | 'add' | 'back';
+
     const toastStore = useUIStore();
 
     const typeConfig = {
@@ -80,6 +82,7 @@
             bgClass: 'bg-success-bg',
             borderClass: 'border-success-border/30',
             progressClass: 'bg-accent',
+            buttonVariant: 'primary' as ButtonVariant,
         },
         error: {
             icon: AlertCircle,
@@ -87,6 +90,7 @@
             bgClass: 'bg-danger-bg',
             borderClass: 'border-danger-border/30',
             progressClass: 'bg-accent',
+            buttonVariant: 'danger' as ButtonVariant,
         },
         warning: {
             icon: AlertTriangle,
@@ -94,6 +98,7 @@
             bgClass: 'bg-warning-bg',
             borderClass: 'border-warning-border/30',
             progressClass: 'bg-accent',
+            buttonVariant: 'secondary' as ButtonVariant,
         },
         info: {
             icon: Info,
@@ -101,11 +106,16 @@
             bgClass: 'bg-info-bg',
             borderClass: 'border-info-border/30',
             progressClass: 'bg-accent',
+            buttonVariant: 'secondary' as ButtonVariant,
         },
     };
 
     const getConfig = (type: Toast['type'] = 'info') => {
         return typeConfig[type || 'info'];
+    };
+
+    const getButtonVariant = (type: Toast['type'] = 'info'): ButtonVariant => {
+        return getConfig(type).buttonVariant;
     };
 
     const handleAction = (toast: Toast) => {

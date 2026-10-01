@@ -6,6 +6,7 @@ import { DreamWriteSchema, DreamUpdateSchema } from '@/services/schemas/dream.sc
 import type { Dream, DreamWrite, DreamInterpretationRef } from '@/types/Dream';
 import type { DreamSymbol } from '@/types/Interpretation/DreamSymbol';
 import type { Interpretation } from '@/types/Interpretation/Interpretation';
+import { useUIStore } from '@/stores/modules/ui';
 
 import { ServiceFactory } from '@/services/factories/ServiceFactory';
 import { DreamRepository } from '@/services/repositories/DreamRepository';
@@ -170,7 +171,9 @@ export const useSleepStore = defineStore('sleep', () => {
 
             let allDreams = await repository.value.getAll();
 
-            if (allDreams.length === 0) {
+            const uiStore = useUIStore();
+
+            if (allDreams.length === 0 && !uiStore.isTestModeExited) {
                 await Promise.all(
                     generateDreamsSeed(300).map((seedData) => repository.value!.create(seedData)),
                 );
@@ -358,6 +361,12 @@ export const useSleepStore = defineStore('sleep', () => {
         }
     };
 
+    const clearAllDreams = async () => {
+        if (!repository.value) return;
+        await repository.value.clearAll();
+        sleeps.value = [];
+    };
+
     return {
         sleeps,
         loading,
@@ -380,5 +389,6 @@ export const useSleepStore = defineStore('sleep', () => {
         updateDream,
         deleteDream,
         clearError,
+        clearAllDreams,
     };
 });

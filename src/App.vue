@@ -1,9 +1,11 @@
 <script setup lang="ts">
-    import { computed, onMounted, defineAsyncComponent } from 'vue';
+    import { computed, onMounted, defineAsyncComponent, ref } from 'vue';
     import { RouterView } from 'vue-router';
     import TheHeader from '@/components/sections/TheHeader.vue';
     import AppToastContainer from '@/components/ui/AppToastContainer.vue';
     import { useUIStore, type ActiveThemeMode } from '@/stores/modules/ui';
+    import AppButton from '@/components/ui/AppButton.vue';
+    import { SquareArrowRightExit } from 'lucide-vue-next';
     import { useSleepStore } from '@/stores/modules/dream';
     import { useUserStateStore } from '@/stores/modules/userState';
     import { useAspectStore } from '@/stores/modules/useAspectStore';
@@ -46,6 +48,45 @@
     };
 
     const currentBgComponent = computed(() => themeBackgrounds[uiStore.resolvedTheme] || null);
+
+    const isCancelled = ref(true);
+
+    const handleExitTestMode = async () => {
+        isCancelled.value = false;
+        const duration = 10000;
+
+        const timer = setTimeout(async () => {
+            if (isCancelled.value) return;
+
+            try {
+                await sleepStore.clearAllDreams();
+                await userStateStore.clearAllStates();
+                uiStore.completeTestMode();
+
+                uiStore.addToast({
+                    message: 'Тестовый режим завершен. База очищена от снов и состояний.',
+                    type: 'success',
+                });
+            } catch {
+                uiStore.addToast({
+                    message: 'Ошибка при очистке данных.',
+                    type: 'error',
+                });
+            }
+        }, duration);
+
+        uiStore.addToast({
+            message: 'Все тестовые сны и состояния будут удалены.',
+            type: 'warning',
+            showProgress: true,
+            duration,
+            actionLabel: 'Отменить',
+            onAction: () => {
+                isCancelled.value = true;
+                clearTimeout(timer);
+            },
+        });
+    };
 </script>
 
 <template>
@@ -58,5 +99,32 @@
         </main>
 
         <AppToastContainer />
+
+        <Transition name="fade" mode="out-in">
+            <div v-if="!uiStore.hasExitedTestMode" class="fixed bottom-4 left-2">
+                <AppButton
+                    @click="handleExitTestMode"
+                    size="md"
+                    :disabled="!isCancelled"
+                    :class="{ pulse: isCancelled }"
+                    variant="danger"
+                    title="Параметры календаря"
+                    :icon-left="SquareArrowRightExit"
+                    >Завершить тестовый режим
+                </AppButton>
+            </div>
+        </Transition>
     </div>
 </template>
+
+<style scoped>
+    .fade-enter-active,
+    .fade-leave-active {
+        transition: all 0.25s ease;
+    }
+
+    .fade-enter-from,
+    .fade-leave-to {
+        opacity: 0;
+    }
+</style>

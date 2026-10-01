@@ -106,7 +106,7 @@
         :aria-disabled="isDisabled || undefined"
         :aria-busy="isLoading || undefined"
         :aria-label="ariaLabel"
-        class="group focus-visible:ring-accent/50 inline-grid grid-flow-col items-center justify-center border font-medium transition-all duration-150 select-none focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-1 disabled:cursor-not-allowed disabled:opacity-50"
+        class="group focus-visible:ring-accent/50 inline-grid grid-flow-col items-center justify-center border font-medium transition-all duration-150 select-none focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-1 disabled:cursor-not-allowed disabled:opacity-60"
         :class="[variantClasses[variant], sizeClasses[size], fullWidth ? 'w-full' : '']"
         @click="handleClick"
     >

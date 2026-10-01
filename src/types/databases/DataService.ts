@@ -11,4 +11,5 @@ export interface IDataService {
     put<T>(store: StoreName, data: T): Promise<string | number>;
     delete(store: StoreName, id: string | number): Promise<void>;
     getByIndex<T>(store: StoreName, index: string, value: string | number): Promise<T[]>;
+    clear(store: StoreName): Promise<void>;
 }

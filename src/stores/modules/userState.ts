@@ -10,6 +10,7 @@ import { ServiceFactory } from '@/services/factories/ServiceFactory';
 import { userStatesSeed } from '@/services/seeders/userStatesSeeder';
 import { UserStateRepository } from '@/services/repositories/UserStateRepository';
 import { UserStateWriteSchema, UserStateUpdateSchema } from '@/services/schemas/userState.schema';
+import { useUIStore } from '@/stores/modules/ui';
 
 export const useUserStateStore = defineStore('userState', () => {
     // ===== STATE =====
@@ -81,7 +82,9 @@ export const useUserStateStore = defineStore('userState', () => {
 
             let allStates = await repository.value.getAll();
 
-            if (allStates.length === 0) {
+            const uiStore = useUIStore();
+
+            if (allStates.length === 0 && !uiStore.isTestModeExited) {
                 await Promise.all(
                     userStatesSeed.map((seedData) => repository.value!.create(seedData)),
                 );
@@ -247,6 +250,12 @@ export const useUserStateStore = defineStore('userState', () => {
         return fieldErrors;
     };
 
+    const clearAllStates = async () => {
+        if (!repository.value) return;
+        await repository.value.clearAll();
+        states.value = [];
+    };
+
     return {
         // State
         states,
@@ -271,5 +280,6 @@ export const useUserStateStore = defineStore('userState', () => {
         updateState,
         deleteState,
         clearError,
+        clearAllStates,
     };
 });
