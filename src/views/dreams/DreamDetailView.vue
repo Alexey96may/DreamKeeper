@@ -175,7 +175,7 @@
                 </section>
 
                 <!-- Author -->
-                <section v-if="dream.isAlien" class="flex flex-col gap-4">
+                <section v-if="dream.isAlien && dream.authorName" class="flex flex-col gap-4">
                     <h2
                         class="text-accent border-border-muted border-b pb-2 font-semibold tracking-wider"
                     >
