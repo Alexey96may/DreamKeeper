@@ -67,31 +67,6 @@
         emit('close');
     };
 
-    const handleOverlayClick = () => {
-        if (props.closeOnOverlay) {
-            close();
-        }
-    };
-
-    // Focus Trap & Scroll Lock logic
-    watch(
-        () => props.modelValue,
-        async (isOpen) => {
-            if (isOpen) {
-                previousActiveElement = document.activeElement as HTMLElement;
-                document.body.style.overflow = 'hidden';
-
-                await nextTick();
-                modalRef.value?.focus();
-                setupFocusTrap();
-            } else {
-                document.body.style.overflow = '';
-                cleanupFocusTrap();
-                previousActiveElement?.focus();
-            }
-        },
-    );
-
     let handleKeydown: (e: KeyboardEvent) => void;
 
     const setupFocusTrap = () => {
@@ -138,6 +113,32 @@
             document.removeEventListener('keydown', handleKeydown);
         }
     };
+
+    const handleOverlayClick = () => {
+        if (props.closeOnOverlay) {
+            close();
+        }
+    };
+
+    // Focus Trap & Scroll Lock logic
+    watch(
+        () => props.modelValue,
+        async (isOpen) => {
+            if (isOpen) {
+                previousActiveElement = document.activeElement as HTMLElement;
+                document.body.style.overflow = 'hidden';
+
+                await nextTick();
+                modalRef.value?.focus();
+                setupFocusTrap();
+            } else {
+                document.body.style.overflow = '';
+                cleanupFocusTrap();
+                previousActiveElement?.focus();
+            }
+        },
+        { immediate: true },
+    );
 
     onUnmounted(() => {
         document.body.style.overflow = '';

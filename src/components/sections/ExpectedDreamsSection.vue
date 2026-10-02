@@ -33,7 +33,6 @@
                 </li>
             </div>
 
-            <!-- 2. Пустое состояние -->
             <div
                 v-else-if="!expectedDreams.length"
                 key="empty"
@@ -46,7 +45,6 @@
                 </p>
             </div>
 
-            <!-- 3. Основной список с анимацией элементов -->
             <TransitionGroup
                 tag="ul"
                 name="list"

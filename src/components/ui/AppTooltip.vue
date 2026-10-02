@@ -33,13 +33,12 @@
     const triggerRef = ref<HTMLElement | null>(null);
     const popoverRef = ref<HTMLElement | null>(null);
 
-    //  Teleport
     const popoverStyle = ref({
         top: '0px',
         left: '0px',
     });
 
-    const arrowOffset = ref(0); // Смещение стрелки, если поповер сместился к краю
+    const arrowOffset = ref(0);
 
     const tooltipId = useId();
 
@@ -47,7 +46,6 @@
         if (!triggerRef.value) return;
         const triggerRect = triggerRef.value.getBoundingClientRect();
 
-        // Базовые координаты: центр триггера по горизонтали, сверху от триггера
         const spacing = 8;
         const top = triggerRect.top + window.scrollY - spacing;
         const triggerCenterX = triggerRect.left + triggerRect.width / 2;

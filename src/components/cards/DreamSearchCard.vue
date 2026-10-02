@@ -1,11 +1,11 @@
 <!--
 /**
- * @file DreamCard.vue
+ * @file DreamSearchCard .vue
  * @description Accessible search result card component for displaying individual dream entries.
  * Features keyboard navigation (Enter/Space), screen reader support via aria-labels, and active state styling.
  *
  * @example
- * <DreamCard
+ * <DreamSearchCard
  *     v-for="dream in filteredDreams"
  *     :key="dream.id"
  *     :dream="dream"
