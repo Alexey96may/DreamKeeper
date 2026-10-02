@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { formatToLocalDateStr, isPastOrPresentDay } from './date';
+import { formatToLocalDateStr, isPastOrPresentDay, sanitizeDateString } from './date';
 
 describe('formatToLocalDateStr', () => {
     afterEach(() => {
@@ -73,5 +73,25 @@ describe('isPastOrPresentDay', () => {
 
         expect(isPastOrPresentDay(morningToday)).toBe(true);
         expect(isPastOrPresentDay(nightToday)).toBe(true);
+    });
+});
+
+describe('sanitizeDateString', () => {
+    it('extracts date part from full ISO string with timestamp and timezone', () => {
+        const input = '2026-06-01T14:30:00.000Z';
+        const result = sanitizeDateString(input);
+        expect(result).toBe('2026-06-01');
+    });
+
+    it('returns the same string if it is already a date-only format', () => {
+        const input = '2026-06-01';
+        const result = sanitizeDateString(input);
+        expect(result).toBe('2026-06-01');
+    });
+
+    it('handles empty string gracefully', () => {
+        const input = '';
+        const result = sanitizeDateString(input);
+        expect(result).toBe('');
     });
 });
