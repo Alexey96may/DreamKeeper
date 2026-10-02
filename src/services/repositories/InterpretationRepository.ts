@@ -17,7 +17,7 @@ export class InterpretationRepository extends BaseRepository<
         return this.getByIndex('symbolId', symbolId);
     }
 
-    async getBySourceId(sourceId: number): Promise<Interpretation[]> {
+    async getBySourceId(sourceId: number | string): Promise<Interpretation[]> {
         return this.getByIndex('sourceId', sourceId);
     }
 

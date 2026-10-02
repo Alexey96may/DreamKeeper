@@ -30,7 +30,6 @@ export const InterprSourceWriteSchema = v.object({
     visibility: v.optional(SourceVisibilitySchema, 'private'),
     isEditable: v.optional(v.boolean(), true),
 
-    // Оставляем без дефолтов вторым аргументом, чтобы сделать их optional в типе
     editorIds: v.optional(v.array(v.string())),
     readerIds: v.optional(v.array(v.string())),
     interpretationsCount: v.optional(v.number()),

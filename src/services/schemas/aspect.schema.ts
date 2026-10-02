@@ -1,7 +1,7 @@
 import * as v from 'valibot';
 
 export const AspectWriteSchema = v.object({
-    id: v.optional(v.pipe(v.string(), v.trim())), // Опционален при записи, если генерируется автоматически
+    id: v.optional(v.pipe(v.string(), v.trim())),
     symbolTag: v.pipe(v.string(), v.minLength(1, 'Тег символа обязателен')),
     title: v.pipe(v.string(), v.trim(), v.minLength(1, 'Название контекста обязательно')),
     description: v.optional(v.pipe(v.string(), v.trim())),

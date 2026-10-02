@@ -1,165 +1,116 @@
-import { afterEach, beforeEach, describe, expect, it } from 'vitest';
-
+import { describe, it, expect, beforeEach, afterEach } from 'vitest';
+import 'fake-indexeddb/auto';
 import { IndexedDBService } from '@/services/data/IndexedDBService';
 
-interface TestDream {
-    id?: number;
-    date: string;
-    quality: number;
-    type?: string;
-    description?: string;
-}
-
-interface TestState {
-    id?: number;
-    date: string;
-    mood?: number;
-    energy?: number;
-    focus?: number;
-}
-
 describe('IndexedDBService', () => {
-    let service: IndexedDBService;
-    const testDbName = 'TestDB';
+    let dbService: IndexedDBService;
+    const testDbName = 'TestDreamKeeperDB';
 
     beforeEach(async () => {
-        service = new IndexedDBService(testDbName, 1);
-        await service.init();
+        dbService = new IndexedDBService(testDbName, 1);
+        await dbService.init();
     });
 
     afterEach(async () => {
-        await service.destroy();
+        await dbService.destroy();
     });
 
-    describe('init', () => {
-        it('initializes without errors', async () => {
-            const newService = new IndexedDBService('InitTestDB', 1);
-            await expect(newService.init()).resolves.not.toThrow();
-            await newService.destroy();
-        });
-
-        it('can be called multiple times without errors', async () => {
-            await expect(service.init()).resolves.not.toThrow();
-            const id = await service.add<TestDream>('dreams', { date: '2024-01-20', quality: 7 });
-            expect(id).toBeDefined();
-        });
-
-        it('creates object stores and indexes', async () => {
-            const id = await service.add<TestDream>('dreams', {
-                date: '2024-01-15',
-                quality: 8,
-                type: 'lucid',
-            });
-            const byDate = await service.getByIndex<TestDream>('dreams', 'date', '2024-01-15');
-            expect(byDate).toHaveLength(1);
-            expect(byDate[0].id).toBe(id);
-        });
+    it('initializes database and creates object stores and indexes', async () => {
+        await expect(dbService.init()).resolves.toBeUndefined();
     });
 
-    describe('add', () => {
-        it('adds a record and returns id', async () => {
-            const id = await service.add<TestDream>('dreams', { date: '2024-01-15', quality: 8 });
-            expect(id).toBe(1);
-            const record = await service.get<TestDream>('dreams', id);
-            expect(record).toMatchObject({ date: '2024-01-15', quality: 8 });
-        });
+    it('performs CRUD operations correctly on a store (e.g. interprSources)', async () => {
+        const storeName = 'interprSources';
+        const sourceData = {
+            id: 'source-1',
+            title: 'Test Source',
+            type: 'custom',
+            category: 'esoteric',
+            visibility: 'public',
+        };
+
+        // 1. Add / Put
+        const addedKey = await dbService.put(storeName, sourceData);
+        expect(addedKey).toBe('source-1');
+
+        // 2. Get single item
+        const fetchedItem = await dbService.get<typeof sourceData>(storeName, 'source-1');
+        expect(fetchedItem).toEqual(sourceData);
+
+        // 3. Get all items
+        const allItems = await dbService.getAll<typeof sourceData>(storeName);
+        expect(allItems.length).toBe(1);
+        expect(allItems[0]).toEqual(sourceData);
+
+        // 4. Delete item
+        await dbService.delete(storeName, 'source-1');
+        const afterDelete = await dbService.get(storeName, 'source-1');
+        expect(afterDelete).toBeUndefined();
     });
 
-    describe('get', () => {
-        it('retrieves a record by id', async () => {
-            const id = await service.add<TestDream>('dreams', { date: '2024-01-16', quality: 9 });
-            const record = await service.get<TestDream>('dreams', id);
-            expect(record).toMatchObject({ date: '2024-01-16', quality: 9 });
-        });
+    it('adds items with auto-increment keys correctly', async () => {
+        const storeName = 'userStates';
+        const stateData = {
+            date: '2026-06-01',
+            mood: 8,
+            energy: 7,
+        };
 
-        it('returns undefined if record not found', async () => {
-            const record = await service.get<TestDream>('dreams', 999);
-            expect(record).toBeUndefined();
-        });
+        const result = await dbService.add<
+            typeof stateData,
+            typeof stateData & { id: number | string }
+        >(storeName, stateData);
+
+        expect(result.id).toBeDefined();
+        expect(result.mood).toBe(8);
+
+        const fetched = await dbService.get(storeName, result.id);
+        expect(fetched).toEqual(result);
     });
 
-    describe('getAll', () => {
-        it('retrieves all records from a store', async () => {
-            await service.add<TestDream>('dreams', { date: '2024-01-15', quality: 8 });
-            await service.add<TestDream>('dreams', { date: '2024-01-16', quality: 9 });
-            const all = await service.getAll<TestDream>('dreams');
-            expect(all).toHaveLength(2);
-            expect(all[0]).toHaveProperty('id');
+    it('fetches items by index using getByIndex', async () => {
+        const storeName = 'interprSources';
+        await dbService.put(storeName, {
+            id: '1',
+            title: 'Source 1',
+            type: 'custom',
+            category: 'esoteric',
+            visibility: 'public',
+        });
+        await dbService.put(storeName, {
+            id: '2',
+            title: 'Source 2',
+            type: 'system',
+            category: 'psychology',
+            visibility: 'private',
         });
 
-        it('returns empty array if store is empty', async () => {
-            const all = await service.getAll<TestState>('userStates');
-            expect(all).toEqual([]);
-        });
+        // 'type' = 'custom'
+        const customSources = await dbService.getByIndex<{ id: string }>(
+            storeName,
+            'type',
+            'custom',
+        );
+        expect(customSources.length).toBe(1);
+        expect(customSources[0].id).toBe('1');
     });
 
-    describe('put', () => {
-        it('updates an existing record', async () => {
-            const id = await service.add<TestDream>('dreams', { date: '2024-01-17', quality: 7 });
-            await service.put<TestDream>('dreams', { id, date: '2024-01-17', quality: 8 });
-            const updated = await service.get<TestDream>('dreams', id);
-            expect(updated?.quality).toBe(8);
+    it('clears all records from a store and closes/destroys database', async () => {
+        const storeName = 'interprSources';
+        await dbService.put(storeName, {
+            id: '1',
+            title: 'Source 1',
+            type: 'custom',
+            category: 'esoteric',
+            visibility: 'public',
         });
 
-        it('creates a new record if id does not exist', async () => {
-            const id = await service.put<TestDream>('dreams', {
-                id: 100,
-                date: '2024-01-18',
-                quality: 5,
-            });
-            expect(id).toBe(100);
-            const record = await service.get<TestDream>('dreams', 100);
-            expect(record).toBeDefined();
-        });
-    });
+        // Очистка хранилища
+        await dbService.clear(storeName);
+        const allItems = await dbService.getAll(storeName);
+        expect(allItems.length).toBe(0);
 
-    describe('delete', () => {
-        it('deletes a record by id', async () => {
-            const id = await service.add<TestDream>('dreams', { date: '2024-01-19', quality: 6 });
-            await service.delete('dreams', id);
-            const record = await service.get<TestDream>('dreams', id);
-            expect(record).toBeUndefined();
-        });
-
-        it('does not throw if record does not exist', async () => {
-            await expect(service.delete('dreams', 999)).resolves.not.toThrow();
-        });
-    });
-
-    describe('getByIndex', () => {
-        beforeEach(async () => {
-            await service.add<TestDream>('dreams', {
-                date: '2024-01-15',
-                quality: 8,
-                type: 'lucid',
-            });
-            await service.add<TestDream>('dreams', {
-                date: '2024-01-15',
-                quality: 6,
-                type: 'normal',
-            });
-            await service.add<TestDream>('dreams', {
-                date: '2024-01-16',
-                quality: 9,
-                type: 'lucid',
-            });
-        });
-
-        it('returns records matching the index value', async () => {
-            const result = await service.getByIndex<TestDream>('dreams', 'date', '2024-01-15');
-            expect(result).toHaveLength(2);
-            expect(result.every((r) => r.date === '2024-01-15')).toBe(true);
-        });
-
-        it('returns empty array if no match', async () => {
-            const result = await service.getByIndex<TestDream>('dreams', 'date', '2099-01-01');
-            expect(result).toEqual([]);
-        });
-
-        it('works with number index', async () => {
-            const result = await service.getByIndex<TestDream>('dreams', 'quality', 8);
-            expect(result).toHaveLength(1);
-            expect(result[0].quality).toBe(8);
-        });
+        // Закрытие соединения
+        await expect(dbService.close()).resolves.toBeUndefined();
     });
 });

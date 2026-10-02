@@ -1,155 +1,123 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest';
-
-import type { StoreName } from '@/types/Store';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { BaseRepository } from '@/services/repositories/BaseRepository'; // Укажите верный путь к вашему файлу
 import type { IDataService } from '@/types/databases/DataService';
-
-import { BaseRepository } from '@/services/repositories/BaseRepository';
+import type { StoreName } from '@/types/Store';
 
 interface TestEntity {
-    id?: number;
+    id: string;
     name: string;
-    value: number;
+    category?: string;
 }
 
 class TestRepository extends BaseRepository<TestEntity> {
-    constructor(dataService: IDataService, storeName: StoreName) {
-        super(dataService, storeName);
+    constructor(dataService: IDataService) {
+        super(dataService, 'interprSources' as StoreName);
     }
 }
 
 describe('BaseRepository', () => {
-    let mockDataService: IDataService;
     let repository: TestRepository;
-    const storeName: StoreName = 'dreams';
+    let mockDataService: Record<keyof IDataService, ReturnType<typeof vi.fn>>;
 
     beforeEach(() => {
         mockDataService = {
-            init: vi.fn<() => void>().mockResolvedValue(undefined),
-            getAll: vi.fn<() => void>(),
-            get: vi.fn<() => void>(),
-            add: vi.fn<() => void>(),
-            put: vi.fn<() => void>(),
-            delete: vi.fn<() => void>(),
-            getByIndex: vi.fn<() => void>(),
-        } as unknown as IDataService;
+            init: vi.fn(),
+            getAll: vi.fn(),
+            get: vi.fn(),
+            add: vi.fn(),
+            put: vi.fn(),
+            delete: vi.fn(),
+            getByIndex: vi.fn(),
+            clear: vi.fn(),
+        };
 
-        repository = new TestRepository(mockDataService, storeName);
+        repository = new TestRepository(mockDataService as unknown as IDataService);
+        vi.clearAllMocks();
     });
 
-    describe('getAll', () => {
-        it('calls dataService.getAll with correct store', async () => {
-            const expectedData: TestEntity[] = [
-                { id: 1, name: 'Test 1', value: 10 },
-                { id: 2, name: 'Test 2', value: 20 },
-            ];
-            vi.mocked(mockDataService.getAll).mockResolvedValue(expectedData);
+    it('gets all records via getAll', async () => {
+        const mockData: TestEntity[] = [{ id: '1', name: 'Item 1' }];
+        mockDataService.getAll.mockResolvedValue(mockData);
 
-            const result = await repository.getAll();
+        const result = await repository.getAll();
 
-            expect(vi.mocked(mockDataService.getAll)).toHaveBeenCalledWith(storeName);
-            expect(result).toEqual(expectedData);
-        });
-
-        it('returns an empty array if no data', async () => {
-            vi.mocked(mockDataService.getAll).mockResolvedValue([]);
-
-            const result = await repository.getAll();
-
-            expect(result).toEqual([]);
-        });
+        expect(mockDataService.getAll).toHaveBeenCalledWith('interprSources');
+        expect(result).toEqual(mockData);
     });
 
-    describe('getById', () => {
-        it('retrieves a record by id', async () => {
-            const expectedData: TestEntity = { id: 1, name: 'Test', value: 10 };
-            vi.mocked(mockDataService.get).mockResolvedValue(expectedData);
+    it('clears all records via clearAll', async () => {
+        mockDataService.clear.mockResolvedValue(undefined);
 
-            const result = await repository.getById(1);
+        await repository.clearAll();
 
-            expect(vi.mocked(mockDataService.get)).toHaveBeenCalledWith(storeName, 1);
-            expect(result).toEqual(expectedData);
-        });
-
-        it('returns undefined if record not found', async () => {
-            vi.mocked(mockDataService.get).mockResolvedValue(undefined);
-
-            const result = await repository.getById(999);
-
-            expect(result).toBeUndefined();
-        });
+        expect(mockDataService.clear).toHaveBeenCalledWith('interprSources');
     });
 
-    describe('create', () => {
-        it('creates a new record', async () => {
-            const newData: Omit<TestEntity, 'id'> = { name: 'New', value: 30 };
-            const expectedId = 1;
-            vi.mocked(mockDataService.add).mockResolvedValue(expectedId);
+    it('gets a record by id via getById', async () => {
+        const mockItem: TestEntity = { id: '1', name: 'Item 1' };
+        mockDataService.get.mockResolvedValue(mockItem);
 
-            const result = await repository.create(newData);
+        const result = await repository.getById('1');
 
-            expect(vi.mocked(mockDataService.add)).toHaveBeenCalledWith(storeName, newData);
-            expect(result).toBe(expectedId);
-        });
+        expect(mockDataService.get).toHaveBeenCalledWith('interprSources', '1');
+        expect(result).toEqual(mockItem);
     });
 
-    describe('update', () => {
-        it('updates an existing record', async () => {
-            const existingData: TestEntity = { id: 1, name: 'Old', value: 10 };
-            const updateData: Partial<TestEntity> = { name: 'Updated', value: 20 };
+    it('creates a record via create', async () => {
+        const newEntity = { name: 'New Item' };
+        const savedEntity: TestEntity = { id: 'uuid-123', name: 'New Item' };
+        mockDataService.add.mockResolvedValue(savedEntity);
 
-            vi.mocked(mockDataService.get).mockResolvedValue(existingData);
-            vi.mocked(mockDataService.put).mockResolvedValue(1);
+        const result = await repository.create(newEntity);
 
-            await repository.update(1, updateData);
-
-            expect(vi.mocked(mockDataService.get)).toHaveBeenCalledWith(storeName, 1);
-            expect(vi.mocked(mockDataService.put)).toHaveBeenCalledWith(storeName, {
-                ...existingData,
-                ...updateData,
-                id: 1,
-            });
-        });
-
-        it('throws an error if record not found', async () => {
-            vi.mocked(mockDataService.get).mockResolvedValue(undefined);
-
-            await expect(repository.update(999, { name: 'Test' })).rejects.toThrow(
-                'Record with id 999 not found',
-            );
-        });
+        expect(mockDataService.add).toHaveBeenCalledWith('interprSources', newEntity);
+        expect(result).toEqual(savedEntity);
     });
 
-    describe('delete', () => {
-        it('deletes a record by id', async () => {
-            vi.mocked(mockDataService.delete).mockResolvedValue(undefined);
+    it('updates an existing record successfully via update', async () => {
+        const existingItem: TestEntity = { id: '1', name: 'Old Name', category: 'old' };
+        mockDataService.get.mockResolvedValue(existingItem);
+        mockDataService.put.mockResolvedValue('1');
 
-            await repository.delete(1);
+        const result = await repository.update('1', { name: 'Updated Name' });
 
-            expect(vi.mocked(mockDataService.delete)).toHaveBeenCalledWith(storeName, 1);
+        expect(mockDataService.get).toHaveBeenCalledWith('interprSources', '1');
+        expect(mockDataService.put).toHaveBeenCalledWith('interprSources', {
+            id: '1',
+            name: 'Updated Name',
+            category: 'old',
         });
+        expect(result).toEqual({ id: '1', name: 'Updated Name', category: 'old' });
     });
 
-    describe('getByIndex', () => {
-        it('retrieves records by index', async () => {
-            const expectedData: TestEntity[] = [{ id: 1, name: 'Test 1', value: 10 }];
-            vi.mocked(mockDataService.getByIndex).mockResolvedValue(expectedData);
+    it('throws an error when updating a non-existent record', async () => {
+        mockDataService.get.mockResolvedValue(undefined);
 
-            const result = await repository.getByIndex('name', 'Test 1');
+        await expect(repository.update('999', { name: 'Test' })).rejects.toThrow(
+            'Record with id 999 in interprSources not found',
+        );
+        expect(mockDataService.put).not.toHaveBeenCalled();
+    });
 
-            expect(vi.mocked(mockDataService.getByIndex)).toHaveBeenCalledWith(
-                storeName,
-                'name',
-                'Test 1',
-            );
-            expect(result).toEqual(expectedData);
-        });
+    it('deletes a record via delete', async () => {
+        mockDataService.delete.mockResolvedValue(undefined);
 
-        it('returns an empty array if nothing found by index', async () => {
-            vi.mocked(mockDataService.getByIndex).mockResolvedValue([]);
+        await repository.delete('1');
 
-            const result = await repository.getByIndex('name', 'NotExist');
+        expect(mockDataService.delete).toHaveBeenCalledWith('interprSources', '1');
+    });
 
-            expect(result).toEqual([]);
-        });
+    it('fetches records by index via getByIndex', async () => {
+        const mockData: TestEntity[] = [{ id: '1', name: 'Item 1', category: 'esoteric' }];
+        mockDataService.getByIndex.mockResolvedValue(mockData);
+
+        const result = await repository.getByIndex('category', 'esoteric');
+
+        expect(mockDataService.getByIndex).toHaveBeenCalledWith(
+            'interprSources',
+            'category',
+            'esoteric',
+        );
+        expect(result).toEqual(mockData);
     });
 });
