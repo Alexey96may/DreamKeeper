@@ -105,17 +105,19 @@
                             <AppSmartTime :date="dream.date" :date-format="'do MMMM yyyy'" />
                         </div>
 
-                        <div class="flex items-center gap-2 text-lg">
+                        <div
+                            v-if="dream.timeOfDay && dream.timeOfDay !== 'unknown'"
+                            class="flex items-center gap-2 text-lg"
+                        >
                             <AppTag
-                                v-if="dream.timeOfDay"
                                 @click="filterStore.toggleArrayFilter('timeOfDay', dream.timeOfDay)"
                                 :is-in-filter="filterStore.filters.isActive"
                                 :is-pressed="
                                     filterStore.filters.timeOfDay.includes(dream.timeOfDay)
                                 "
                                 :icon="TIME_OF_DAY_MAP[dream.timeOfDay].icon"
-                                :hint="TIME_OF_DAY_MAP[dream.timeOfDay].label"
-                            />
+                                >{{ TIME_OF_DAY_MAP[dream.timeOfDay].label }}</AppTag
+                            >
                         </div>
                     </div>
 
@@ -353,7 +355,7 @@
 
                     <!-- Роли -->
                     <div v-if="dream.roles?.length" class="flex flex-col gap-2">
-                        <h3 class="text-text-mute">Роль в сюжетe:</h3>
+                        <h3 class="text-text-muted">Роль в сюжетe:</h3>
                         <div class="flex w-full gap-2 overflow-x-auto pb-2">
                             <AppTag
                                 v-for="role in dream.roles"
@@ -369,7 +371,7 @@
 
                     <!-- Органы чувств -->
                     <div v-if="dream.sensations?.length" class="flex flex-col gap-2">
-                        <h3 class="text-text-mute">Сенсорные ощущения:</h3>
+                        <h3 class="text-text-muted">Сенсорные ощущения:</h3>
                         <div class="flex flex-wrap gap-2">
                             <AppTag
                                 v-for="sensation in dream.sensations"
@@ -448,17 +450,6 @@
                     </p>
                 </section>
 
-                <div class="flex justify-end" v-if="!isSharedView">
-                    <AppButton
-                        @click="isSharing = !isSharing"
-                        size="xs"
-                        variant="primary"
-                        :disabled="isDeleting(dream.id)"
-                    >
-                        Поделиться сном
-                    </AppButton>
-                </div>
-
                 <!-- Нижняя панель: Метаданные и Кнопки управления -->
                 <footer
                     class="border-border/35 text-text-muted mt-6 flex flex-col gap-6 border-t pt-4 text-[11px]"
@@ -482,24 +473,37 @@
                             size="xs"
                             variant="danger"
                             :disabled="isDeleting(dream.id)"
+                            :icon-left="Trash"
                         >
-                            <span>Удалить</span>
                         </AppButton>
 
-                        <AppButton
-                            @click="goToEdit(slug)"
-                            size="xs"
-                            variant="primary"
-                            :disabled="isDeleting(dream.id)"
-                        >
-                            <span>Редактировать</span>
-                        </AppButton>
+                        <div class="flex flex-wrap items-center gap-3">
+                            <div class="flex justify-end" v-if="!isSharedView">
+                                <AppButton
+                                    @click="isSharing = !isSharing"
+                                    size="xs"
+                                    variant="primary"
+                                    :disabled="isDeleting(dream.id)"
+                                    :icon-left="Share2"
+                                >
+                                </AppButton>
+                            </div>
+
+                            <AppButton
+                                @click="goToEdit(slug)"
+                                size="xs"
+                                variant="primary"
+                                :disabled="isDeleting(dream.id)"
+                                :icon-left="Edit2"
+                            >
+                            </AppButton>
+                        </div>
                     </div>
                 </footer>
             </article>
 
             <div v-else role="status" aria-live="polite" class="dream-card p-8 text-center">
-                <p class="text-text-mute">Сон не найден</p>
+                <p class="text-text-muted">Сон не найден</p>
             </div>
 
             <DreamFilterApplyBar :dream-slug="slug" />
@@ -524,6 +528,9 @@
         FileEdit,
         Archive,
         MoveLeft,
+        Share2,
+        Trash,
+        Edit2,
     } from 'lucide-vue-next';
     import AppButton from '@/components/ui/AppButton.vue';
     import AppTag from '@/components/ui/AppTag.vue';

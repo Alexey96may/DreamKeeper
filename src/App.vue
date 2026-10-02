@@ -101,11 +101,15 @@
         <AppToastContainer />
 
         <Transition name="fade" mode="out-in">
-            <div v-if="!uiStore.hasExitedTestMode" class="fixed bottom-4 left-2">
+            <div
+                v-if="!uiStore.hasExitedTestMode"
+                class="pointer-events-none fixed bottom-4 left-0 flex w-full justify-center"
+            >
                 <AppButton
                     @click="handleExitTestMode"
-                    size="md"
+                    size="sm"
                     :disabled="!isCancelled"
+                    class="pointer-events-auto"
                     :class="{ pulse: isCancelled }"
                     variant="danger"
                     title="Параметры календаря"
