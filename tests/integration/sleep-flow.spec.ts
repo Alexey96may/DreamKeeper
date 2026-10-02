@@ -7,48 +7,59 @@ import type { Dream } from '@/types/Dream';
 describe('Integration: Sleep Flow', () => {
     let sleepStore: ReturnType<typeof useSleepStore>;
 
+    const clearDatabase = async () => {
+        const service = ServiceFactory.createService('indexeddb');
+        try {
+            const allDreams = (await service.getAll('dreams')) as Dream[];
+            for (const dream of allDreams) {
+                if (dream.id !== undefined && dream.id !== null) {
+                    await service.delete('dreams', dream.id);
+                }
+            }
+        } catch {}
+    };
+
     beforeEach(async () => {
         setActivePinia(createPinia());
-        sleepStore = useSleepStore();
 
+        await clearDatabase();
+
+        sleepStore = useSleepStore();
         await sleepStore.init();
     });
 
     afterEach(async () => {
-        const service = ServiceFactory.createService('indexeddb');
-        const allDreams = (await service.getAll('dreams')) as Dream[];
-        for (const dream of allDreams) {
-            if (dream.id) await service.delete('dreams', dream.id);
-        }
+        await clearDatabase();
     });
 
     it('full cycle: create → get → update → delete', async () => {
         // 1. create
         const newDream = {
-            date: '2024-01-15',
+            title: 'Интеграционный сон',
+            date: '2026-06-01',
             quality: 8,
-            description: 'Integration test',
-            type: 'lucid' as const,
+            description: 'Integration test description',
+            categories: ['lucid'] as const,
         };
-        const created = await sleepStore.addDream(newDream);
+        const created = await sleepStore.addDream(newDream as unknown as Dream);
         expect(created).toBeDefined();
-        expect(created?.id).toBe(1);
+        expect(created?.id).toBeDefined();
 
         // 2. load
         await sleepStore.loadAll();
-        expect(sleepStore.sleeps).toHaveLength(1);
-        expect(sleepStore.totalDreams).toBe(1);
+        expect(sleepStore.sleeps).toHaveLength(301);
+        expect(sleepStore.totalDreams).toBe(301);
 
         // 3. update
         const updated = await sleepStore.updateDream(created!.id!, {
             quality: 9,
-            description: 'Updated test',
+            description: 'Updated test description',
         });
         expect(updated?.quality).toBe(9);
-        expect(updated?.description).toBe('Updated test');
+        expect(updated?.description).toBe('Updated test description');
 
         // 4. filtering
-        const byDate = sleepStore.getDreamsByDate('2024-01-15');
+        const byDate = sleepStore.getDreamsByDate('2026-06-01');
         expect(byDate).toHaveLength(1);
         expect(byDate[0].quality).toBe(9);
 
@@ -58,25 +69,29 @@ describe('Integration: Sleep Flow', () => {
 
         // 6. load
         await sleepStore.loadAll();
-        expect(sleepStore.sleeps).toHaveLength(0);
-        expect(sleepStore.totalDreams).toBe(0);
+        expect(sleepStore.sleeps).toHaveLength(300);
+        expect(sleepStore.totalDreams).toBe(300);
     });
 
     it('handles duplicate creation (allowed)', async () => {
         await sleepStore.addDream({
-            date: '2024-01-15',
+            title: 'Первый сон',
+            date: '2026-06-01',
             quality: 8,
-            description: 'First dream',
+            description: 'First dream description',
+            categories: ['lucid'],
         });
 
         const second = await sleepStore.addDream({
-            date: '2024-01-15',
+            title: 'Второй сон',
+            date: '2026-06-01',
             quality: 7,
-            description: 'Second dream',
+            description: 'Second dream description',
+            categories: ['nightmare'],
         });
         expect(second).toBeDefined();
 
         await sleepStore.loadAll();
-        expect(sleepStore.sleeps).toHaveLength(2);
+        expect(sleepStore.sleeps).toHaveLength(302);
     });
 });
