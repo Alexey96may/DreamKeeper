@@ -2,6 +2,8 @@
 
 > A modern, offline-first dream journal web application featuring a clean architecture, deep data privacy, and atmospheric visual themes.
 
+**🔗 [Live Demo / Try it online](https://alexey96may.github.io/DreamKeeper/)**
+
 ![Vue.js](https://img.shields.io/badge/Vue.js-3.4+-4FC08D?style=flat-square&logo=vue.js&logoColor=white)
 ![TypeScript](https://img.shields.io/badge/TypeScript-Ready-3178C6?style=flat-square&logo=typescript&logoColor=white)
 ![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3.4+-38BDF8?style=flat-square&logo=tailwindcss&logoColor=white)
@@ -61,3 +63,29 @@ Make sure you have Node.js (version 18+) installed on your machine.
     git clone [https://github.com/your-username/dream-keeper.git](https://github.com/your-username/dream-keeper.git)
     cd dream-keeper
     ```
+2. **Install dependencies:**
+
+    ```bash
+    npm install
+    ```
+
+3. **Run the development server:**
+
+    ```bash
+    npm run dev
+    ```
+
+4. **Open http://localhost:5173 in your browser.**
+
+## Future Roadmap & Ideas
+
+Here are some features and improvements planned for future releases:
+
+- [ ] **Mobile App & Capacitor Integration:** Packaging the PWA into a native Android application using Capacitor, adding native storage (SQLite) and local push notifications.
+- [ ] **AI-Powered Dream Interpreter:** Integration with local or cloud AI models to analyze dream symbols, emotional undertones, and archetypes.
+- [ ] **Social & Community Features (Backend API):** A server-side extension allowing users to share dreams anonymously, discuss interpretations, and crowdsource symbol definitions.
+- [ ] **Audio Voice Memos:** Ability to record and attach voice descriptions directly to a dream log.
+- [ ] **Expanded Symbol Dictionary:** Deep-dive databases for dream aspects, cultural symbols, and multi-source interpretations.
+- [ ] **Smart Dream Analytics & Reminders:** Push notifications and insights reminding users of past prophetic dreams, uncompleted drafts, or patterns from a year ago.
+- [ ] **Native SQLite & Media Storage:** Full migration of the local storage layer to SQLite for the native Android APK version, supporting offline photos and audio files.
+- [ ] **Advanced Swipes & Gestures:** Mobile gesture support (swipe to delete/edit cards, swipe between calendar months).
