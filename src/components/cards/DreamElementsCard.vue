@@ -28,7 +28,7 @@
             <li v-for="(tag, idx) in element.tags" :key="idx">
                 <AppTag
                     :is-pressed="tagsArr?.includes(tag) || element.id === tag"
-                    :is-in-filter="filterStore.filters.isActive"
+                    :is-in-filter="filterStore.draftFilters.isActive"
                     @click="emit('pick-up', element.id, tag)"
                 >
                     {{ tag }}

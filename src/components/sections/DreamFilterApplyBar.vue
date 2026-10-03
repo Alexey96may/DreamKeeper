@@ -15,7 +15,7 @@
             <!-- Переключаемый контент с анимацией выцветания/смещения -->
             <Transition name="fade-slide" mode="out-in">
                 <!-- Состояние 1: Фильтры активны -->
-                <div v-if="filterStore.filters.isActive" key="active" class="relative">
+                <div v-if="filterStore.draftFilters.isActive" key="active" class="relative">
                     <div
                         class="text-text-primary bg-bg-secondary border-border-primary absolute -top-4 -right-2 z-10 flex items-center gap-1 rounded-full border px-2 py-0.5 text-xs font-medium shadow-sm"
                         role="status"
@@ -27,7 +27,7 @@
 
                     <div class="flex gap-2">
                         <AppButton
-                            @click="filterStore.resetFilters"
+                            @click="handleCancel"
                             size="xs"
                             variant="primary"
                             aria-label="Сбросить выбранные фильтры"
@@ -81,12 +81,17 @@
     });
 
     const applyFiltersAndNavigate = () => {
+        filterStore.applyDraft();
         router.push({
             name: 'dream-search',
             query: {
                 actualDream: props.dreamSlug,
             },
         });
+    };
+
+    const handleCancel = () => {
+        filterStore.resetFilters();
     };
 </script>
 

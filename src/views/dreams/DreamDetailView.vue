@@ -62,43 +62,43 @@
                         >
                             <AppTag
                                 @click="filterStore.toggleBooleanFilter('isFavorite')"
-                                :is-pressed="filterStore.filters.isFavorite"
-                                :is-in-filter="filterStore.filters.isActive"
+                                :is-pressed="filterStore.draftFilters.isFavorite"
+                                :is-in-filter="filterStore.draftFilters.isActive"
                                 :icon="Star"
                                 v-if="dream.isFavorite"
                             />
                             <AppTag
                                 @click="filterStore.toggleBooleanFilter('isPinned')"
-                                :is-pressed="filterStore.filters.isPinned"
-                                :is-in-filter="filterStore.filters.isActive"
+                                :is-pressed="filterStore.draftFilters.isPinned"
+                                :is-in-filter="filterStore.draftFilters.isActive"
                                 :icon="Pin"
                                 v-if="dream.isPinned"
                             />
                             <AppTag
                                 @click="filterStore.toggleBooleanFilter('isDeleted')"
-                                :is-pressed="filterStore.filters.isDeleted"
-                                :is-in-filter="filterStore.filters.isActive"
+                                :is-pressed="filterStore.draftFilters.isDeleted"
+                                :is-in-filter="filterStore.draftFilters.isActive"
                                 :icon="Trash2"
                                 v-if="dream.isDeleted"
                             />
                             <AppTag
                                 @click="filterStore.toggleBooleanFilter('isDraft')"
-                                :is-pressed="filterStore.filters.isDraft"
-                                :is-in-filter="filterStore.filters.isActive"
+                                :is-pressed="filterStore.draftFilters.isDraft"
+                                :is-in-filter="filterStore.draftFilters.isActive"
                                 :icon="FileEdit"
                                 v-if="dream.isDraft"
                             />
                             <AppTag
                                 @click="filterStore.toggleBooleanFilter('isArchived')"
-                                :is-pressed="filterStore.filters.isArchived"
-                                :is-in-filter="filterStore.filters.isActive"
+                                :is-pressed="filterStore.draftFilters.isArchived"
+                                :is-in-filter="filterStore.draftFilters.isActive"
                                 :icon="Archive"
                                 v-if="dream.isArchived"
                             />
                             <AppTag
                                 @click="filterStore.toggleBooleanFilter('isPrivate')"
-                                :is-pressed="filterStore.filters.isPrivate"
-                                :is-in-filter="filterStore.filters.isActive"
+                                :is-pressed="filterStore.draftFilters.isPrivate"
+                                :is-in-filter="filterStore.draftFilters.isActive"
                                 :icon="Lock"
                                 v-if="dream.isPrivate"
                             />
@@ -118,9 +118,9 @@
                                     @click="
                                         filterStore.toggleArrayFilter('timeOfDay', dream.timeOfDay)
                                     "
-                                    :is-in-filter="filterStore.filters.isActive"
+                                    :is-in-filter="filterStore.draftFilters.isActive"
                                     :is-pressed="
-                                        filterStore.filters.timeOfDay.includes(dream.timeOfDay)
+                                        filterStore.draftFilters.timeOfDay.includes(dream.timeOfDay)
                                     "
                                     :icon="TIME_OF_DAY_MAP[dream.timeOfDay].icon"
                                     >{{ TIME_OF_DAY_MAP[dream.timeOfDay].label }}</AppTag
@@ -144,33 +144,37 @@
                                 v-if="dream.quality !== undefined && dream.quality > 0"
                                 label="Качество"
                                 :value="dream.quality"
-                                :is-in-filter="filterStore.filters.isActive"
+                                :is-in-filter="filterStore.draftFilters.isActive"
                                 @filter="
                                     filterStore.toggleNumberFilter('minQuality', dream.quality)
                                 "
-                                :isFiltering="filterStore.filters.minQuality === dream.quality"
+                                :isFiltering="filterStore.draftFilters.minQuality === dream.quality"
                             />
 
                             <AppRating
                                 v-if="dream.clarity !== undefined && dream.clarity > 0"
                                 label="Ясность"
                                 :value="dream.clarity"
-                                :is-in-filter="filterStore.filters.isActive"
+                                :is-in-filter="filterStore.draftFilters.isActive"
                                 @filter="
                                     filterStore.toggleNumberFilter('minClarity', dream.clarity)
                                 "
-                                :is-filtering="filterStore.filters.minClarity === dream.clarity"
+                                :is-filtering="
+                                    filterStore.draftFilters.minClarity === dream.clarity
+                                "
                             />
 
                             <AppRating
                                 v-if="dream.moodAfter !== undefined && dream.moodAfter > 0"
                                 label="Настроение после"
                                 :value="dream.moodAfter"
-                                :is-in-filter="filterStore.filters.isActive"
+                                :is-in-filter="filterStore.draftFilters.isActive"
                                 @filter="
                                     filterStore.toggleNumberFilter('minMoodAfter', dream.moodAfter)
                                 "
-                                :is-filtering="filterStore.filters.minMoodAfter === dream.moodAfter"
+                                :is-filtering="
+                                    filterStore.draftFilters.minMoodAfter === dream.moodAfter
+                                "
                             />
                         </div>
                     </section>
@@ -199,7 +203,7 @@
                         </h2>
 
                         <AppTag
-                            :is-in-filter="filterStore.filters.isActive"
+                            :is-in-filter="filterStore.draftFilters.isActive"
                             class="self-start"
                             @click="
                                 () => {
@@ -211,7 +215,7 @@
                                 }
                             "
                             :is-pressed="
-                                filterStore.filters.authorNames.includes(
+                                filterStore.draftFilters.authorNames.includes(
                                     dream.authorName ?? 'Неизвестный',
                                 )
                             "
@@ -242,8 +246,8 @@
                         <DreamCategoryDetailsCard
                             v-if="dream.categoryDetails?.lucid"
                             @click="filterStore.toggleArrayFilter('categories', 'lucid')"
-                            :is-in-filter="filterStore.filters.isActive"
-                            :is-pressed="filterStore.filters.categories.includes('lucid')"
+                            :is-in-filter="filterStore.draftFilters.isActive"
+                            :is-pressed="filterStore.draftFilters.categories.includes('lucid')"
                             type="lucid"
                             key="lucid"
                             :details="dream.categoryDetails.lucid"
@@ -252,8 +256,8 @@
                         <DreamCategoryDetailsCard
                             v-if="dream.categoryDetails?.nightmare"
                             @click="filterStore.toggleArrayFilter('categories', 'nightmare')"
-                            :is-in-filter="filterStore.filters.isActive"
-                            :is-pressed="filterStore.filters.categories.includes('nightmare')"
+                            :is-in-filter="filterStore.draftFilters.isActive"
+                            :is-pressed="filterStore.draftFilters.categories.includes('nightmare')"
                             type="nightmare"
                             key="nightmare"
                             :details="dream.categoryDetails.nightmare"
@@ -262,8 +266,8 @@
                         <DreamCategoryDetailsCard
                             v-if="dream.categoryDetails?.prophetic"
                             @click="filterStore.toggleArrayFilter('categories', 'prophetic')"
-                            :is-in-filter="filterStore.filters.isActive"
-                            :is-pressed="filterStore.filters.categories.includes('prophetic')"
+                            :is-in-filter="filterStore.draftFilters.isActive"
+                            :is-pressed="filterStore.draftFilters.categories.includes('prophetic')"
                             type="prophetic"
                             key="prophetic"
                             :details="dream.categoryDetails.prophetic"
@@ -290,8 +294,8 @@
                                 @click="filterStore.toggleArrayFilter('events', 'death')"
                                 type="death"
                                 :details="dream.phenomenaDetails"
-                                :is-in-filter="filterStore.filters.isActive"
-                                :is-pressed="filterStore.filters.events.includes('death')"
+                                :is-in-filter="filterStore.draftFilters.isActive"
+                                :is-pressed="filterStore.draftFilters.events.includes('death')"
                             />
 
                             <DreamPhenomenonCard
@@ -299,8 +303,8 @@
                                 @click="filterStore.toggleArrayFilter('events', 'flying')"
                                 type="flying"
                                 :details="dream.phenomenaDetails"
-                                :is-in-filter="filterStore.filters.isActive"
-                                :is-pressed="filterStore.filters.events.includes('flying')"
+                                :is-in-filter="filterStore.draftFilters.isActive"
+                                :is-pressed="filterStore.draftFilters.events.includes('flying')"
                             />
 
                             <DreamPhenomenonCard
@@ -308,8 +312,8 @@
                                 @click="filterStore.toggleArrayFilter('events', 'falling')"
                                 type="falling"
                                 :details="dream.phenomenaDetails"
-                                :is-in-filter="filterStore.filters.isActive"
-                                :is-pressed="filterStore.filters.events.includes('falling')"
+                                :is-in-filter="filterStore.draftFilters.isActive"
+                                :is-pressed="filterStore.draftFilters.events.includes('falling')"
                             />
 
                             <DreamPhenomenonCard
@@ -317,8 +321,8 @@
                                 @click="filterStore.toggleArrayFilter('events', 'paralysis')"
                                 type="paralysis"
                                 :details="dream.phenomenaDetails"
-                                :is-in-filter="filterStore.filters.isActive"
-                                :is-pressed="filterStore.filters.events.includes('paralysis')"
+                                :is-in-filter="filterStore.draftFilters.isActive"
+                                :is-pressed="filterStore.draftFilters.events.includes('paralysis')"
                             />
 
                             <DreamPhenomenonCard
@@ -326,8 +330,10 @@
                                 @click="filterStore.toggleArrayFilter('events', 'nested_dream')"
                                 type="nested_dream"
                                 :details="dream.phenomenaDetails"
-                                :is-in-filter="filterStore.filters.isActive"
-                                :is-pressed="filterStore.filters.events.includes('nested_dream')"
+                                :is-in-filter="filterStore.draftFilters.isActive"
+                                :is-pressed="
+                                    filterStore.draftFilters.events.includes('nested_dream')
+                                "
                             />
                         </div>
                     </section>
@@ -343,12 +349,12 @@
                         <div class="flex items-center gap-4 overflow-x-auto pb-2">
                             <AppTag
                                 v-if="dream.visualStyle"
-                                :is-in-filter="filterStore.filters.isActive"
+                                :is-in-filter="filterStore.draftFilters.isActive"
                                 @click="
                                     filterStore.toggleArrayFilter('visualStyle', dream.visualStyle)
                                 "
                                 :is-pressed="
-                                    filterStore.filters.visualStyle.includes(dream.visualStyle)
+                                    filterStore.draftFilters.visualStyle.includes(dream.visualStyle)
                                 "
                                 :icon="VISUAL_STYLE_MAP[dream.visualStyle].icon"
                                 >{{ VISUAL_STYLE_MAP[dream.visualStyle].label }}
@@ -356,12 +362,12 @@
 
                             <AppTag
                                 v-if="dream.perspective && dream.perspective !== 'irrelevant'"
-                                :is-in-filter="filterStore.filters.isActive"
+                                :is-in-filter="filterStore.draftFilters.isActive"
                                 @click="
                                     filterStore.toggleArrayFilter('perspective', dream.perspective)
                                 "
                                 :is-pressed="
-                                    filterStore.filters.perspective.includes(dream.perspective)
+                                    filterStore.draftFilters.perspective.includes(dream.perspective)
                                 "
                                 :icon="PERSPECTIVE_MAP[dream.perspective].icon"
                                 >{{ PERSPECTIVE_MAP[dream.perspective].label }}
@@ -375,9 +381,9 @@
                                 <AppTag
                                     v-for="role in dream.roles"
                                     :key="role"
-                                    :is-in-filter="filterStore.filters.isActive"
+                                    :is-in-filter="filterStore.draftFilters.isActive"
                                     @click="filterStore.toggleArrayFilter('roles', role)"
-                                    :is-pressed="filterStore.filters.roles.includes(role)"
+                                    :is-pressed="filterStore.draftFilters.roles.includes(role)"
                                 >
                                     {{ PARTICIPANT_ROLE_MAP[role].label }}
                                 </AppTag>
@@ -391,9 +397,11 @@
                                 <AppTag
                                     v-for="sensation in dream.sensations"
                                     :key="sensation"
-                                    :is-in-filter="filterStore.filters.isActive"
+                                    :is-in-filter="filterStore.draftFilters.isActive"
                                     @click="filterStore.toggleArrayFilter('sensations', sensation)"
-                                    :is-pressed="filterStore.filters.sensations.includes(sensation)"
+                                    :is-pressed="
+                                        filterStore.draftFilters.sensations.includes(sensation)
+                                    "
                                 >
                                     {{ SENSORY_ASPECT_MAP[sensation].label }}
                                 </AppTag>
@@ -416,7 +424,7 @@
                             <div v-for="element in analiticElements" :key="element.id">
                                 <DreamElementsCard
                                     @pick-up="toggleAnaliticsFilter"
-                                    :tags-arr="filterStore.filters[element.id] || null"
+                                    :tags-arr="filterStore.draftFilters[element.id] || null"
                                     :element="element"
                                 />
                             </div>
@@ -443,7 +451,7 @@
                     <!-- 11. Связанные сны -->
                     <section v-if="dream.relatedDreams?.length" class="flex flex-col gap-4">
                         <h2
-                            class="text-accenty border-border-muted border-b pb-2 font-semibold tracking-wider"
+                            class="text-accent border-border-muted border-b pb-2 font-semibold tracking-wider"
                         >
                             Связанные сны
                         </h2>
@@ -534,7 +542,7 @@
 </template>
 
 <script setup lang="ts">
-    import { computed, onMounted, watchEffect, ref } from 'vue';
+    import { computed, onMounted, watchEffect, ref, onUnmounted } from 'vue';
     import { useRoute, useRouter } from 'vue-router';
     import { useSleepStore } from '@/stores/modules/dream';
     import { useDreamFilterStore } from '@/stores/modules/dreamFilter';
@@ -768,7 +776,11 @@
             sourceStore.init();
         }
 
-        filterStore.resetFilters();
+        filterStore.initDraft(false);
+    });
+
+    onUnmounted(() => {
+        filterStore.discardDraft();
     });
 
     const saveSharedDreamToDiary = () => {

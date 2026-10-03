@@ -133,8 +133,10 @@ export const useDreamFilterStore = defineStore('dreamFilter', () => {
     const sleepStore = useSleepStore();
 
     const filters = ref<DreamFilterState>(loadFiltersFromStorage());
+    const draftFilters = ref<DreamFilterState>(getDefaultFilters());
 
-    // Проксируем состояние загрузки из sleepStore (или можно завести свой ref, если нужно)
+    const isDraftFiltersActive = ref<boolean>(false);
+
     const loading = computed(() => sleepStore.loading);
 
     watch(
@@ -150,137 +152,139 @@ export const useDreamFilterStore = defineStore('dreamFilter', () => {
     );
 
     const filteredDreams = computed(() => {
-        if (!filters.value.isActive) {
+        const activeFilters = isDraftFiltersActive.value ? draftFilters.value : filters.value;
+
+        if (!activeFilters.isActive) {
             return sleepStore.sleeps;
         }
 
         return sleepStore.sleeps.filter((dream) => {
-            if (filters.value.searchQuery.trim()) {
-                const query = filters.value.searchQuery.trim().toLowerCase();
+            if (activeFilters.searchQuery.trim()) {
+                const query = activeFilters.searchQuery.trim().toLowerCase();
                 const titleMatch = dream.title?.toLowerCase().includes(query) ?? false;
                 const descMatch = dream.description?.toLowerCase().includes(query) ?? false;
                 if (!titleMatch && !descMatch) return false;
             }
 
             if (
-                filters.value.dateFrom &&
-                sanitizeDateString(dream.date) < sanitizeDateString(filters.value.dateFrom)
+                activeFilters.dateFrom &&
+                sanitizeDateString(dream.date) < sanitizeDateString(activeFilters.dateFrom)
             )
                 return false;
 
             if (
-                filters.value.dateTo &&
-                sanitizeDateString(dream.date) > sanitizeDateString(filters.value.dateTo)
+                activeFilters.dateTo &&
+                sanitizeDateString(dream.date) > sanitizeDateString(activeFilters.dateTo)
             )
                 return false;
 
-            if (filters.value.categories.length > 0) {
-                const hasCategory = filters.value.categories.every((cat) =>
+            if (activeFilters.categories.length > 0) {
+                const hasCategory = activeFilters.categories.every((cat) =>
                     dream.categories?.includes(cat),
                 );
                 if (!hasCategory) return false;
             }
 
-            if (filters.value.events.length > 0) {
-                const hasCategory = filters.value.events.every((ev) =>
+            if (activeFilters.events.length > 0) {
+                const hasCategory = activeFilters.events.every((ev) =>
                     dream.phenomena?.includes(ev),
                 );
                 if (!hasCategory) return false;
             }
 
-            if (filters.value.minLucidControl !== undefined) {
+            if (activeFilters.minLucidControl !== undefined) {
                 const control = dream.categoryDetails?.lucid?.controlLevel ?? 0;
-                if (control < filters.value.minLucidControl) return false;
+                if (control < activeFilters.minLucidControl) return false;
             }
-            if (filters.value.maxNightmareFear !== undefined) {
+            if (activeFilters.maxNightmareFear !== undefined) {
                 const fear = dream.categoryDetails?.nightmare?.fearLevel ?? 10;
-                if (fear > filters.value.maxNightmareFear) return false;
+                if (fear > activeFilters.maxNightmareFear) return false;
             }
-            if (filters.value.propheticFulfilled !== undefined) {
+            if (activeFilters.propheticFulfilled !== undefined) {
                 const fulfilled = dream.categoryDetails?.prophetic?.isFulfilled ?? false;
-                if (fulfilled !== filters.value.propheticFulfilled) return false;
+                if (fulfilled !== activeFilters.propheticFulfilled) return false;
             }
 
             if (
-                filters.value.minQuality !== undefined &&
-                (dream.quality ?? 0) < filters.value.minQuality
+                activeFilters.minQuality !== undefined &&
+                (dream.quality ?? 0) < activeFilters.minQuality
             )
                 return false;
             if (
-                filters.value.minClarity !== undefined &&
-                (dream.clarity ?? 0) < filters.value.minClarity
+                activeFilters.minClarity !== undefined &&
+                (dream.clarity ?? 0) < activeFilters.minClarity
             )
                 return false;
             if (
-                filters.value.minMoodAfter !== undefined &&
-                (dream.moodAfter ?? 0) < filters.value.minMoodAfter
+                activeFilters.minMoodAfter !== undefined &&
+                (dream.moodAfter ?? 0) < activeFilters.minMoodAfter
             )
                 return false;
 
             if (
-                filters.value.timeOfDay.length > 0 &&
-                (!dream.timeOfDay || !filters.value.timeOfDay.includes(dream.timeOfDay))
+                activeFilters.timeOfDay.length > 0 &&
+                (!dream.timeOfDay || !activeFilters.timeOfDay.includes(dream.timeOfDay))
             )
                 return false;
 
             if (
-                filters.value.visualStyle.length > 0 &&
-                (!dream.visualStyle || !filters.value.visualStyle.includes(dream.visualStyle))
+                activeFilters.visualStyle.length > 0 &&
+                (!dream.visualStyle || !activeFilters.visualStyle.includes(dream.visualStyle))
             )
                 return false;
             if (
-                filters.value.perspective.length > 0 &&
-                (!dream.perspective || !filters.value.perspective.includes(dream.perspective))
+                activeFilters.perspective.length > 0 &&
+                (!dream.perspective || !activeFilters.perspective.includes(dream.perspective))
             )
                 return false;
 
-            if (filters.value.roles.length > 0) {
-                const hasRole = filters.value.roles.every((r) => dream.roles?.includes(r));
+            if (activeFilters.roles.length > 0) {
+                const hasRole = activeFilters.roles.every((r) => dream.roles?.includes(r));
                 if (!hasRole) return false;
             }
 
-            if (filters.value.sensations.length > 0) {
-                const hasSens = filters.value.sensations.every((s) =>
+            if (activeFilters.sensations.length > 0) {
+                const hasSens = activeFilters.sensations.every((s) =>
                     dream.sensations?.includes(s),
                 );
                 if (!hasSens) return false;
             }
 
-            if (filters.value.characters.length > 0) {
-                const hasChar = filters.value.characters.every((c) =>
+            if (activeFilters.characters.length > 0) {
+                const hasChar = activeFilters.characters.every((c) =>
                     dream.characters?.includes(c),
                 );
                 if (!hasChar) return false;
             }
-            if (filters.value.locations.length > 0) {
-                const hasLoc = filters.value.locations.every((l) => dream.locations?.includes(l));
+            if (activeFilters.locations.length > 0) {
+                const hasLoc = activeFilters.locations.every((l) => dream.locations?.includes(l));
                 if (!hasLoc) return false;
             }
-            if (filters.value.objects.length > 0) {
-                const hasObj = filters.value.objects.every((o) => dream.objects?.includes(o));
+            if (activeFilters.objects.length > 0) {
+                const hasObj = activeFilters.objects.every((o) => dream.objects?.includes(o));
                 if (!hasObj) return false;
             }
-            if (filters.value.emotions.length > 0) {
-                const hasEmo = filters.value.emotions.every((e) => dream.emotions?.includes(e));
+            if (activeFilters.emotions.length > 0) {
+                const hasEmo = activeFilters.emotions.every((e) => dream.emotions?.includes(e));
                 if (!hasEmo) return false;
             }
-            if (filters.value.authorNames.length > 0 && filters.value.isAlien) {
-                const hasName = filters.value.authorNames.some((e) => {
+            if (activeFilters.authorNames.length > 0 && activeFilters.isAlien) {
+                const hasName = activeFilters.authorNames.some((e) => {
                     return dream.authorName?.trim().toLocaleLowerCase() === e.toLocaleLowerCase();
                 });
                 if (!hasName) return false;
             }
 
-            if (filters.value.isAlien && !!dream.isAlien !== filters.value.isAlien) return false;
-            if (filters.value.isFavorite && !!dream.isFavorite !== filters.value.isFavorite)
+            if (activeFilters.isAlien && !!dream.isAlien !== activeFilters.isAlien) return false;
+            if (activeFilters.isFavorite && !!dream.isFavorite !== activeFilters.isFavorite)
                 return false;
-            if (filters.value.isPinned && !!dream.isPinned !== filters.value.isPinned) return false;
-            if (filters.value.isArchived && !!dream.isArchived !== filters.value.isArchived)
+            if (activeFilters.isPinned && !!dream.isPinned !== activeFilters.isPinned) return false;
+            if (activeFilters.isArchived && !!dream.isArchived !== activeFilters.isArchived)
                 return false;
-            if (filters.value.isDeleted && !!dream.isDeleted !== filters.value.isDeleted)
+            if (activeFilters.isDeleted && !!dream.isDeleted !== activeFilters.isDeleted)
                 return false;
-            if (filters.value.isDraft && !!dream.isDraft !== filters.value.isDraft) return false;
-            if (filters.value.isPrivate && !!dream.isPrivate !== filters.value.isPrivate)
+            if (activeFilters.isDraft && !!dream.isDraft !== activeFilters.isDraft) return false;
+            if (activeFilters.isPrivate && !!dream.isPrivate !== activeFilters.isPrivate)
                 return false;
 
             return true;
@@ -491,62 +495,134 @@ export const useDreamFilterStore = defineStore('dreamFilter', () => {
         }
     };
 
+    const initDraft = (fromCurrent: boolean = true) => {
+        isDraftFiltersActive.value = true;
+        draftFilters.value = fromCurrent
+            ? JSON.parse(JSON.stringify(filters.value))
+            : getDefaultFilters();
+    };
+
+    const applyDraft = () => {
+        filters.value = JSON.parse(JSON.stringify(draftFilters.value));
+        filters.value.isActive = true;
+
+        discardDraft();
+    };
+
+    const discardDraft = () => {
+        isDraftFiltersActive.value = false;
+    };
+
     const toggleActive = (forceState?: boolean) => {
-        filters.value.isActive = forceState ?? !filters.value.isActive;
+        if (isDraftFiltersActive.value) {
+            draftFilters.value.isActive = forceState ?? !draftFilters.value.isActive;
+        } else {
+            filters.value.isActive = forceState ?? !filters.value.isActive;
+        }
     };
 
     const resetFilters = () => {
-        filters.value = getDefaultFilters();
-        localStorage.removeItem(STORAGE_KEY);
+        if (isDraftFiltersActive.value) {
+            draftFilters.value = getDefaultFilters();
+        } else {
+            filters.value = getDefaultFilters();
+            localStorage.removeItem(STORAGE_KEY);
+        }
     };
 
     const toggleArrayFilter = (id: ArrayFilterKey, value: string) => {
-        if (!filters.value.isActive) return;
+        if (isDraftFiltersActive.value) {
+            if (!draftFilters.value.isActive) return;
+            draftFilters.value.isActive = true;
+            const targetArray = draftFilters.value[id] as string[];
+            const index = targetArray.indexOf(value);
 
-        filters.value.isActive = true;
-        const targetArray = filters.value[id] as string[];
-        const index = targetArray.indexOf(value);
-
-        if (index > -1) {
-            targetArray.splice(index, 1);
+            if (index > -1) {
+                targetArray.splice(index, 1);
+            } else {
+                targetArray.push(value);
+            }
         } else {
-            targetArray.push(value);
+            if (!filters.value.isActive) return;
+
+            filters.value.isActive = true;
+            const targetArray = filters.value[id] as string[];
+            const index = targetArray.indexOf(value);
+
+            if (index > -1) {
+                targetArray.splice(index, 1);
+            } else {
+                targetArray.push(value);
+            }
         }
     };
 
     const toggleBooleanFilter = (id: BooleanFilterKeys) => {
-        if (!filters.value.isActive) return;
+        if (isDraftFiltersActive.value) {
+            if (!draftFilters.value.isActive) return;
 
-        const currentValue = filters.value[id];
-        if (currentValue === undefined || currentValue === false) {
-            filters.value[id] = true;
+            const currentValue = draftFilters.value[id];
+            if (currentValue === undefined || currentValue === false) {
+                draftFilters.value[id] = true;
+            } else {
+                draftFilters.value[id] = false;
+            }
         } else {
-            filters.value[id] = false;
+            if (!filters.value.isActive) return;
+
+            const currentValue = filters.value[id];
+            if (currentValue === undefined || currentValue === false) {
+                filters.value[id] = true;
+            } else {
+                filters.value[id] = false;
+            }
         }
     };
 
     const toggleNumberFilter = (id: NumberFilterKeys, value: number) => {
-        if (!filters.value.isActive) return;
+        if (isDraftFiltersActive.value) {
+            if (!draftFilters.value.isActive) return;
 
-        filters.value.isActive = true;
-        const currentValue = filters.value[id];
-        if (typeof currentValue === 'number') {
-            filters.value.isActive = true;
-            filters.value[id] = currentValue === value ? undefined : value;
+            draftFilters.value.isActive = true;
+            const currentValue = draftFilters.value[id];
+            if (typeof currentValue === 'number') {
+                draftFilters.value.isActive = true;
+                draftFilters.value[id] = currentValue === value ? undefined : value;
+            } else {
+                draftFilters.value[id] = value;
+            }
         } else {
-            filters.value[id] = value;
+            if (!filters.value.isActive) return;
+
+            filters.value.isActive = true;
+            const currentValue = filters.value[id];
+            if (typeof currentValue === 'number') {
+                filters.value.isActive = true;
+                filters.value[id] = currentValue === value ? undefined : value;
+            } else {
+                filters.value[id] = value;
+            }
         }
     };
 
     return {
         filters,
         loading,
+
+        draftFilters,
+        isDraftFiltersActive,
+
         filteredDreams,
         matchingCount,
         activeFilterTags,
         toggleActive,
         resetFilters,
         removeFilterTag,
+
+        initDraft,
+        applyDraft,
+        discardDraft,
+
         toggleArrayFilter,
         toggleBooleanFilter,
         toggleNumberFilter,
