@@ -5,7 +5,7 @@
     "type": "module",
     "scripts": {
         "dev": "vite",
-        "build": "npm run type-check && npm run lint && vitest run && vite build",
+        "build": "npm run type-check && vitest run && vite build",
         "preview": "vite preview",
         "test:unit": "vitest",
         "test:unit:run": "vitest run",
@@ -16,6 +16,7 @@
         "lint:oxlint": "oxlint . --fix",
         "lint:eslint": "eslint . --fix --cache",
         "format": "prettier --write --experimental-cli src/",
+        "lint": "run-s \"lint:*\"",
         "test:e2e:open": "cypress open",
         "test:e2e:run": "cypress run"
     },
