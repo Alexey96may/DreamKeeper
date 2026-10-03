@@ -58,21 +58,32 @@ export class DreamRepository extends BaseRepository<Dream, DreamWrite, Partial<D
         return slug;
     }
 
-    override async create(dreamData: DreamWrite): Promise<Dream> {
+    override async create(
+        dreamData: DreamWrite & { id?: number; createdAt?: string; updatedAt?: string },
+    ): Promise<Dream> {
         const now = new Date().toISOString();
-
         const slug = await this.generateUniqueSlug(dreamData.title, dreamData.date);
 
         const payload = {
             ...dreamData,
             slug,
-            createdAt: now,
-            updatedAt: now,
+            createdAt: dreamData.createdAt || now,
+            updatedAt: dreamData.updatedAt || now,
         };
 
-        const dream = await this.dataService.add<typeof payload, Dream>(this.storeName, payload);
+        const explicitId = dreamData.id;
+        if (explicitId !== undefined) {
+            payload.id = explicitId;
+        } else {
+            delete payload.id;
+        }
 
-        return dream;
+        const generatedKey = await this.dataService.add(this.storeName, payload);
+
+        return {
+            ...payload,
+            id: explicitId !== undefined ? explicitId : generatedKey.id,
+        } as Dream;
     }
 
     /**

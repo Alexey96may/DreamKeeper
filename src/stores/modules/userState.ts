@@ -1,5 +1,5 @@
 // src/store/modules/userState.ts
-import { computed, ref } from 'vue';
+import { computed, ref, watch } from 'vue';
 
 import { defineStore } from 'pinia';
 
@@ -9,7 +9,12 @@ import * as v from 'valibot';
 import { ServiceFactory } from '@/services/factories/ServiceFactory';
 import { userStatesSeed } from '@/services/seeders/userStatesSeeder';
 import { UserStateRepository } from '@/services/repositories/UserStateRepository';
-import { UserStateWriteSchema, UserStateUpdateSchema } from '@/services/schemas/userState.schema';
+import {
+    UserStateWriteSchema,
+    UserStateUpdateSchema,
+    UserStateImportSchema,
+    type UserStateImport,
+} from '@/services/schemas/userState.schema';
 import { useUIStore } from '@/stores/modules/ui';
 
 export const useUserStateStore = defineStore('userState', () => {
@@ -215,11 +220,84 @@ export const useUserStateStore = defineStore('userState', () => {
         }
     };
 
+    /**
+     * Special method for batch import of states from a backup with strict Valibot validation
+     */
+    const importStates = async (importedStates: UserStateImport[], mode: 'replace' | 'merge') => {
+        if (!repository.value) return;
+
+        loading.value = true;
+        error.value = null;
+
+        try {
+            if (mode === 'replace') {
+                await repository.value.clearAll();
+                states.value = [];
+            }
+
+            for (const rawState of importedStates) {
+                // Строгая валидация по полной схеме UserStateSchema (включая id, даты, диапазоны оценок)
+                const validation = v.safeParse(UserStateImportSchema, rawState);
+
+                if (!validation.success) {
+                    console.warn(
+                        'Про пропуске некорректного состояния из бэкапа:',
+                        validation.issues,
+                    );
+                    continue;
+                }
+
+                const validState = validation.output;
+
+                if (mode === 'merge') {
+                    // Проверяем дубликаты по ID или дате
+                    const exists = states.value.some(
+                        (s) =>
+                            s.id === validState.id ||
+                            (validState.date && s.date === validState.date),
+                    );
+                    if (exists) {
+                        continue;
+                    }
+                }
+
+                // Прямая запись проверенного объекта через репозиторий
+                const savedState = await repository.value.create(validState);
+                if (savedState) {
+                    states.value.push(savedState);
+                }
+            }
+
+            // Sort by date (newest first)
+            states.value.sort(
+                (a, b) =>
+                    new Date(b.date || b.createdAt || 0).getTime() -
+                    new Date(a.date || a.createdAt || 0).getTime(),
+            );
+        } catch (err) {
+            error.value = 'Ошибка при импорте состояний';
+            console.error(err);
+            throw err;
+        } finally {
+            loading.value = false;
+        }
+    };
+
     const clearError = (field: keyof typeof validationErrors.value) => {
         if (validationErrors.value[field]) {
             delete validationErrors.value[field];
         }
     };
+
+    watch(error, (newError) => {
+        if (newError) {
+            const uiStore = useUIStore();
+            uiStore.addToast({
+                message: newError,
+                type: 'error',
+            });
+        }
+    });
 
     /**
      * Преобразует массив ошибок Valibot в объект формата { [path]: message }
@@ -281,5 +359,6 @@ export const useUserStateStore = defineStore('userState', () => {
         deleteState,
         clearError,
         clearAllStates,
+        importStates,
     };
 });

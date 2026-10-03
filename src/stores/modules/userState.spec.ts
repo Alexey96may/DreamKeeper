@@ -2,6 +2,7 @@ import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { setActivePinia, createPinia } from 'pinia';
 import { useUserStateStore } from '@/stores/modules/userState';
 import type { UserState } from '@/types/UserState';
+import type { UserStateImport } from '@/services/schemas/userState.schema';
 
 const mockRepository = {
     getAll: vi.fn().mockResolvedValue([]),
@@ -17,6 +18,7 @@ const mockDataService = {
 
 const mockUIStore = {
     isTestModeExited: false,
+    addToast: vi.fn(),
 };
 
 vi.mock('@/services/factories/ServiceFactory', () => ({
@@ -172,5 +174,55 @@ describe('useUserStateStore', () => {
         mockRepository.clearAll.mockResolvedValue(undefined);
         await store.clearAllStates();
         expect(store.states.length).toBe(0);
+    });
+
+    it('imports states in merge mode successfully and skips duplicates', async () => {
+        const store = useUserStateStore();
+        await store.init();
+
+        // Сбрасываем моки, чтобы отсечь вызовы создания сидов при init()
+        vi.clearAllMocks();
+        mockRepository.create.mockResolvedValueOnce({
+            id: 2,
+            date: '2026-05-03',
+            mood: 9,
+            energy: 7,
+        });
+
+        store.states = [{ id: 1, date: '2026-05-01', mood: 5 } as unknown as UserState];
+
+        const importedData = [
+            { id: 1, date: '2026-05-01', mood: 8 }, // Дубликат по id и дате -> пропущен
+            { id: 2, date: '2026-05-03', mood: 9, energy: 7 }, // Новая валидная запись -> создана
+            { id: 999, date: '2026-05-01', mood: 7 }, // Дубликат по дате -> пропущен
+        ];
+
+        await store.importStates(importedData as unknown as UserStateImport[], 'merge');
+
+        expect(store.states.length).toBe(2);
+        expect(store.states.some((s) => s.id === 2)).toBe(true);
+        expect(mockRepository.create).toHaveBeenCalledTimes(1);
+    });
+
+    it('imports states in replace mode and filters out invalid items via Valibot schema', async () => {
+        const store = useUserStateStore();
+        await store.init();
+        store.states = [{ id: 1, date: '2026-05-01', mood: 5 } as unknown as UserState];
+
+        const importedData = [
+            { id: 10, date: '2026-05-10', mood: 8 }, // Валидная
+            { id: 11, date: 'invalid-date', mood: 5 }, // Неверный формат даты -> Valibot отклонит
+            { id: 12, date: '2026-05-12', mood: 999 }, // Оценка вне диапазона (макс 10) -> Valibot отклонит
+        ];
+
+        mockRepository.clearAll.mockResolvedValue(undefined);
+        mockRepository.create.mockImplementation(async (item) => ({ ...item }));
+
+        await store.importStates(importedData as unknown as UserStateImport[], 'replace');
+
+        // В режиме replace старая база очищена, а из бэкапа прошла только 1 валидная запись из 3
+        expect(mockRepository.clearAll).toHaveBeenCalled();
+        expect(store.states.length).toBe(1);
+        expect(store.states[0].id).toBe(10);
     });
 });

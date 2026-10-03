@@ -24,7 +24,7 @@ export const generateDreamsSeed = (count: number): DreamWrite[] => {
             'Осознанное погружение в океанские глубины',
             'Архитектура сновидения: перестройка улиц',
             'Проход сквозь зеркальные стены замка',
-            'Дыхание под водой среди биолюминесцентных кораллов',
+            'Дыхание под водой среди биолюминесцентных коралов',
             'Контроль над временем на вершине часовой башни',
             'Превращение в птицу над ночным каньоном',
             'Рисование светом в полной темноте космоса',
@@ -146,7 +146,6 @@ export const generateDreamsSeed = (count: number): DreamWrite[] => {
         'reference',
     ];
 
-    // Маппинг ключевых слов для автоматической привязки интерпретаций из сонника
     const keywordToTagMap: Record<string, string> = {
         вод: 'voda',
         океан: 'voda',
@@ -206,7 +205,6 @@ export const generateDreamsSeed = (count: number): DreamWrite[] => {
         return shuffled.slice(0, count);
     };
 
-    // Функция подбора интерпретаций на основе текста заголовка/описания
     const generateInterpretationsForDream = (text: string): DreamInterpretationRef[] => {
         const lowerText = text.toLowerCase();
         const matchedTags = new Set<string>();
@@ -218,7 +216,6 @@ export const generateDreamsSeed = (count: number): DreamWrite[] => {
         }
 
         if (matchedTags.size === 0 && Math.random() > 0.6) {
-            // Если явных совпадений нет, с некоторой вероятностью даем случайную базовую интерпретацию
             matchedTags.add(getRandomItem(Object.values(keywordToTagMap)));
         }
 
@@ -244,159 +241,104 @@ export const generateDreamsSeed = (count: number): DreamWrite[] => {
 
     const results: DreamWrite[] = [];
     const today = new Date();
-    const dates: string[] = [];
-
-    for (let i = 0; i < 30; i++) {
-        const d = new Date(today);
-        d.setDate(today.getDate() - i);
-        dates.push(d.toISOString().split('T')[0]);
-    }
-
-    let generatedCount = 0;
     const usedTitles = new Set<string>();
 
-    while (generatedCount < count && dates.length > 0) {
-        const dateIndex = Math.floor(Math.random() * dates.length);
-        const targetDate = dates[dateIndex];
-
-        const maxPossibleForDay = Math.min(10, count - generatedCount);
-        const dreamsCountForDay = Math.floor(Math.random() * (maxPossibleForDay + 1));
-
-        for (let i = 0; i < dreamsCountForDay && generatedCount < count; i++) {
-            const categories = getRandomSubarray(allCategories, 1);
-            const catKey = categories[0] || 'default';
-            const pool = titlePools[catKey] || titlePools.default;
-
-            let title = getRandomItem(pool);
-            let attempts = 0;
-            while (usedTitles.has(title) && attempts < 10) {
-                title = `${getRandomItem(pool)} (${Math.floor(Math.random() * 1000)})`;
-                attempts++;
-            }
-            usedTitles.add(title);
-
-            const description = getRandomItem(descriptionTemplates);
-            const phenomena = getRandomSubarray(allPhenomena, 1);
-            const isAlien = Math.random() < 0.15;
-            const authorName = isAlien ? getRandomItem(alienAuthorsPool) : '';
-
-            const relatedDreams: RelatedDreamRef[] = [];
-            if (results.length > 0 && Math.random() > 0.6) {
-                const existingIndex = Math.floor(Math.random() * results.length);
-                relatedDreams.push({
-                    dreamId: existingIndex + 1, // Индекс как условный ID в IndexedDB
-                    relationType: getRandomItem(relationTypesPool),
-                    note: Math.random() > 0.5 ? 'Перекликается с прошлым образом' : undefined,
-                });
-            } else if (Math.random() > 0.85) {
-                relatedDreams.push({
-                    dreamId: undefined,
-                    relationType: 'recurring_instance',
-                    note: 'Повторяющийся сюжет из прошлых лет',
-                });
-            }
-
-            const dream: DreamWrite & {
-                interpretations?: DreamInterpretationRef[];
-                relatedDreams?: RelatedDreamRef[];
-            } = {
-                date: targetDate,
-                title,
-                description,
-                categories,
-                categoryDetails: categories.includes('lucid')
-                    ? {
-                          lucid: {
-                              controlLevel: Math.floor(Math.random() * 8) + 2,
-                              trigger: 'anomaly',
-                          },
-                      }
-                    : categories.includes('nightmare')
-                      ? {
-                            nightmare: {
-                                fearLevel: Math.floor(Math.random() * 7) + 3,
-                                hasPhysicalResponse: true,
-                            },
-                        }
-                      : categories.includes('prophetic')
-                        ? { prophetic: { expectedByDate: '2026-11-01', isFulfilled: false } }
-                        : undefined,
-                phenomena: phenomena.length ? phenomena : undefined,
-                phenomenaDetails: phenomena.includes('flying')
-                    ? { flying: { type: 'effortless', altitude: 'cloud_level' } }
-                    : phenomena.includes('falling')
-                      ? { falling: { origin: 'building_or_cliff', outcome: 'hypnic_jerk' } }
-                      : undefined,
-                quality: Math.floor(Math.random() * 8) + 3,
-                clarity: Math.floor(Math.random() * 7) + 4,
-                moodAfter: Math.floor(Math.random() * 8) + 3,
-                timeOfDay: getRandomItem(timesOfDay),
-                visualStyle: getRandomItem(visualStyles),
-                perspective: getRandomItem(perspectives),
-                roles: getRandomSubarray(allRoles, 2),
-                sensations: getRandomSubarray(allSensory, 3),
-                characters: getRandomSubarray(charactersPool, 2),
-                locations: getRandomSubarray(locationsPool, 2),
-                objects: getRandomSubarray(objectsPool, 2),
-                emotions: getRandomSubarray(emotionsPool, 3),
-                isAlien,
-                authorName,
-                preSleepContext: getRandomItem(contextsPool),
-                interpretations: generateInterpretationsForDream(`${title} ${description}`),
-                relatedDreams: relatedDreams.length > 0 ? relatedDreams : undefined,
-                isFavorite: Math.random() > 0.7,
-                isPinned: Math.random() > 0.9,
-                isArchived: false,
-                isDeleted: false,
-                isDraft: Math.random() > 0.85,
-                isPrivate: true,
-            };
-
-            results.push(dream);
-            generatedCount++;
-        }
-
-        dates.splice(dateIndex, 1);
-    }
-
-    while (generatedCount < count) {
+    for (let generatedCount = 0; generatedCount < count; generatedCount++) {
         const randomDaysAgo = Math.floor(Math.random() * 60);
         const d = new Date(today);
         d.setDate(today.getDate() - randomDaysAgo);
         const targetDate = d.toISOString().split('T')[0];
 
-        const title = `Сон от ${targetDate} #${Math.floor(Math.random() * 10000)}`;
+        const categories = getRandomSubarray(allCategories, 1);
+        const catKey = categories[0] || 'default';
+        const pool = titlePools[catKey] || titlePools.default;
+
+        let title = getRandomItem(pool);
+        let attempts = 0;
+        while (usedTitles.has(title) && attempts < 10) {
+            title = `${getRandomItem(pool)} (${Math.floor(Math.random() * 1000)})`;
+            attempts++;
+        }
         usedTitles.add(title);
 
-        results.push({
+        const description = getRandomItem(descriptionTemplates);
+        const phenomena = getRandomSubarray(allPhenomena, 1);
+        const isAlien = Math.random() < 0.15;
+        const authorName = isAlien ? getRandomItem(alienAuthorsPool) : '';
+
+        const relatedDreams: RelatedDreamRef[] = [];
+        if (results.length > 0 && Math.random() > 0.6) {
+            const existingIndex = Math.floor(Math.random() * results.length);
+            relatedDreams.push({
+                dreamId: existingIndex + 1,
+                relationType: getRandomItem(relationTypesPool),
+                note: Math.random() > 0.5 ? 'Перекликается с прошлым образом' : undefined,
+            });
+        } else if (Math.random() > 0.85) {
+            relatedDreams.push({
+                dreamId: undefined,
+                relationType: 'recurring_instance',
+                note: 'Повторяющийся сюжет из прошлых лет',
+            });
+        }
+
+        const dream: DreamWrite & {
+            interpretations?: DreamInterpretationRef[];
+            relatedDreams?: RelatedDreamRef[];
+        } = {
             date: targetDate,
             title,
-            description: getRandomItem(descriptionTemplates),
-            categories: [],
-            quality: 6,
-            clarity: 7,
-            moodAfter: 6,
-            timeOfDay: 'night',
-            visualStyle: 'color',
-            perspective: 'first_person',
-            roles: ['protagonist'],
-            sensations: ['sounds'],
-            characters: [],
-            locations: ['Неизвестное место'],
-            objects: [],
-            emotions: ['Спокойствие'],
-            isAlien: false,
-            authorName: '',
-            interpretations: generateInterpretationsForDream(title),
-            isFavorite: false,
-            isPinned: false,
+            description,
+            categories,
+            categoryDetails: categories.includes('lucid')
+                ? {
+                      lucid: {
+                          controlLevel: Math.floor(Math.random() * 8) + 2,
+                          trigger: 'anomaly',
+                      },
+                  }
+                : categories.includes('nightmare')
+                  ? {
+                        nightmare: {
+                            fearLevel: Math.floor(Math.random() * 7) + 3,
+                            hasPhysicalResponse: true,
+                        },
+                    }
+                  : categories.includes('prophetic')
+                    ? { prophetic: { expectedByDate: '2026-11-01', isFulfilled: false } }
+                    : undefined,
+            phenomena: phenomena.length ? phenomena : undefined,
+            phenomenaDetails: phenomena.includes('flying')
+                ? { flying: { type: 'effortless', altitude: 'cloud_level' } }
+                : phenomena.includes('falling')
+                  ? { falling: { origin: 'building_or_cliff', outcome: 'hypnic_jerk' } }
+                  : undefined,
+            quality: Math.floor(Math.random() * 8) + 3,
+            clarity: Math.floor(Math.random() * 7) + 4,
+            moodAfter: Math.floor(Math.random() * 8) + 3,
+            timeOfDay: getRandomItem(timesOfDay),
+            visualStyle: getRandomItem(visualStyles),
+            perspective: getRandomItem(perspectives),
+            roles: getRandomSubarray(allRoles, 2),
+            sensations: getRandomSubarray(allSensory, 3),
+            characters: getRandomSubarray(charactersPool, 2),
+            locations: getRandomSubarray(locationsPool, 2),
+            objects: getRandomSubarray(objectsPool, 2),
+            emotions: getRandomSubarray(emotionsPool, 3),
+            isAlien,
+            authorName,
+            preSleepContext: getRandomItem(contextsPool),
+            interpretations: generateInterpretationsForDream(`${title} ${description}`),
+            relatedDreams: relatedDreams.length > 0 ? relatedDreams : undefined,
+            isFavorite: Math.random() > 0.7,
+            isPinned: Math.random() > 0.9,
             isArchived: false,
             isDeleted: false,
-            isDraft: false,
+            isDraft: Math.random() > 0.85,
             isPrivate: true,
-        });
+        };
 
-        generatedCount++;
+        results.push(dream);
     }
 
     return results.sort((a, b) => b.date.localeCompare(a.date));

@@ -34,6 +34,17 @@ const router = createRouter({
                     'Информация о приложении Dream Keeper, созданном для фиксации и анализа снов.',
             },
         },
+        // --- Settings & Backup ---
+        {
+            path: '/settings',
+            name: 'settings',
+            component: () => import('../views/SettingsView.vue'),
+            meta: {
+                title: 'Настройки и бэкап — Dream Keeper',
+                description:
+                    'Управление данными приложения, резервное копирование, экспорт и импорт снов.',
+            },
+        },
         // --- CRUD Dreams ---
         {
             path: '/dream/new',

@@ -1,23 +1,29 @@
 <script setup lang="ts">
     import { RouterLink } from 'vue-router';
     import { useUIStore } from '@/stores/modules/ui';
-    import { Moon } from 'lucide-vue-next';
+    import { Moon, Settings } from 'lucide-vue-next';
     import ThemeSelector from '@/components/sections/ThemeSelector.vue';
 
     const uiStore = useUIStore();
+
+    const settingsLink = { to: '/settings', label: 'Настройки' };
 
     const navLinks = [
         { to: '/', label: 'Главная' },
         { to: '/dream/search', label: 'Поиск' },
         { to: '/about', label: 'О проекте' },
     ];
+
+    const navLinksMobile = [...navLinks, settingsLink];
 </script>
 
 <template>
     <header
         class="header bg-bg-secondary/85 border-border-muted shadow-card transition-theme sticky top-0 z-40 mb-8 w-full border-b backdrop-blur-md"
     >
-        <div class="container flex h-16 items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
+        <div
+            class="container flex h-16 items-center justify-between gap-2 px-4 sm:px-6 lg:gap-4 lg:px-8"
+        >
             <!-- Логотип -->
             <div class="flex items-center gap-3">
                 <RouterLink to="/" class="group flex items-center gap-2">
@@ -40,7 +46,7 @@
                     v-for="link in navLinks"
                     :key="link.to"
                     :to="link.to"
-                    class="text-text-soft hover:text-text-inverse hover:bg-accent-hover/80 rounded-xl px-4 py-2 text-sm font-medium transition-colors"
+                    class="text-text-soft hover:text-text-inverse hover:bg-accent-hover/80 rounded-xl px-4 py-2 text-xs font-medium transition-colors lg:text-sm"
                     active-class="!text-accent hover:!text-text-inverse bg-accent-soft/50 font-semibold"
                 >
                     {{ link.label }}
@@ -49,7 +55,18 @@
 
             <!-- Правая панель (Тема + Бургер) -->
 
-            <div class="flex items-center gap-2">
+            <div class="flex items-center gap-4">
+                <div class="hidden md:inline-block">
+                    <RouterLink
+                        :key="settingsLink.to"
+                        :to="settingsLink.to"
+                        class="text-text-soft hover:text-accent-hover/80 font-medium transition-colors"
+                        active-class="!text-accent hover:text-accent-hover bg-accent-soft/50"
+                    >
+                        <Settings />
+                    </RouterLink>
+                </div>
+
                 <ThemeSelector />
 
                 <!-- Ровная анимированная кнопка бургера -->
@@ -91,7 +108,7 @@
             >
                 <nav class="flex flex-col gap-1.5">
                     <RouterLink
-                        v-for="link in navLinks"
+                        v-for="link in navLinksMobile"
                         :key="link.to"
                         :to="link.to"
                         @click="uiStore.toggleSidebar()"

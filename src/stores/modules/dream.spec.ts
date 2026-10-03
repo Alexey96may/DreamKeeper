@@ -3,6 +3,13 @@ import { setActivePinia, createPinia } from 'pinia';
 import { useSleepStore } from '@/stores/modules/dream';
 import type { Dream, DreamWrite } from '@/types/Dream';
 
+export type DreamImport = DreamWrite & {
+    id?: number;
+    slug?: string;
+    createdAt?: string;
+    updatedAt?: string;
+};
+
 vi.mock('@/stores/modules/useSymbolStore', () => ({
     useSymbolStore: vi.fn(() => ({
         getSymbolByTag: vi.fn(),
@@ -22,21 +29,39 @@ vi.mock('@/stores/modules/useInterpretationStore', () => ({
 vi.mock('@/stores/modules/ui', () => ({
     useUIStore: vi.fn(() => ({
         isTestModeExited: true,
+        addToast: vi.fn(),
     })),
 }));
 
 vi.mock('@/services/factories/ServiceFactory', () => ({
     ServiceFactory: {
-        createService: vi.fn(() => ({
-            init: vi.fn(),
-            getAll: vi.fn().mockResolvedValue([]),
-            create: vi.fn((data) =>
-                Promise.resolve({ id: 1, ...data, createdAt: new Date().toISOString() }),
-            ),
-            update: vi.fn((id, data) => Promise.resolve({ id, ...data })),
-            delete: vi.fn().mockResolvedValue(true),
-            clearAll: vi.fn().mockResolvedValue(undefined),
-        })),
+        createService: vi.fn(() => {
+            let autoIncrement = 1;
+            return {
+                init: vi.fn(),
+                getAll: vi.fn().mockResolvedValue([]),
+                add: vi.fn((_store, data) =>
+                    Promise.resolve({
+                        ...data,
+                        id: data.id !== undefined ? data.id : autoIncrement++,
+                        createdAt: data.createdAt || new Date().toISOString(),
+                        updatedAt: data.updatedAt || new Date().toISOString(),
+                    }),
+                ),
+                create: vi.fn((_store, data) =>
+                    Promise.resolve({
+                        ...data,
+                        id: data.id !== undefined ? data.id : autoIncrement++,
+                        createdAt: data.createdAt || new Date().toISOString(),
+                        updatedAt: data.updatedAt || new Date().toISOString(),
+                    }),
+                ),
+                update: vi.fn((_store, id, data) => Promise.resolve({ id, ...data })),
+                delete: vi.fn().mockResolvedValue(true),
+                clear: vi.fn().mockResolvedValue(undefined),
+                clearAll: vi.fn().mockResolvedValue(undefined),
+            };
+        }),
     },
 }));
 
@@ -172,5 +197,349 @@ describe('useSleepStore', () => {
 
         store.clearError('title');
         expect(store.hasError('title')).toBe(false);
+    });
+
+    describe('importDreams', () => {
+        it('successfully imports valid dreams in merge mode and sorts them', async () => {
+            const store = useSleepStore();
+            await store.init();
+
+            const existingDream = {
+                id: 1,
+                slug: 'dream-1',
+                title: 'Existing',
+                description: 'Desc',
+                date: '2026-06-01',
+                createdAt: '2026-06-01T10:00:00.000Z',
+                updatedAt: '2026-06-01T10:00:00.000Z',
+                categories: [],
+                quality: 6,
+                clarity: 7,
+                moodAfter: 6,
+                timeOfDay: undefined,
+                visualStyle: 'color',
+                perspective: 'first_person',
+                roles: ['protagonist'],
+                sensations: ['sounds'],
+                characters: [],
+                locations: ['Неизвестное место'],
+                objects: [],
+                emotions: ['Спокойствие'],
+                isAlien: false,
+                authorName: '',
+                interpretations: [],
+                isFavorite: false,
+                isPinned: false,
+                isArchived: false,
+                isDeleted: false,
+                isDraft: false,
+                isPrivate: true,
+            } as Dream;
+            store.sleeps = [existingDream];
+
+            const newDreams: DreamImport[] = [
+                {
+                    id: 2,
+                    slug: 'dream-2',
+                    title: 'New Dream',
+                    description: 'Desc',
+                    date: '2026-06-02',
+                    createdAt: '2026-06-02T10:00:00.000Z',
+                    updatedAt: '2026-06-02T10:00:00.000Z',
+                    categories: [],
+                    quality: 6,
+                    clarity: 7,
+                    moodAfter: 6,
+                    timeOfDay: undefined,
+                    visualStyle: 'color',
+                    perspective: 'first_person',
+                    roles: ['protagonist'],
+                    sensations: ['sounds'],
+                    characters: [],
+                    locations: ['Неизвестное место'],
+                    objects: [],
+                    emotions: ['Спокойствие'],
+                    isAlien: false,
+                    authorName: '',
+                    interpretations: [],
+                    isFavorite: false,
+                    isPinned: false,
+                    isArchived: false,
+                    isDeleted: false,
+                    isDraft: false,
+                    isPrivate: true,
+                },
+            ];
+
+            await store.importDreams(newDreams, 'merge');
+
+            expect(store.sleeps.length).toBe(2);
+            expect(store.sleeps[0].id).toBe(2);
+        });
+
+        it('clears existing dreams and replaces them in replace mode', async () => {
+            const store = useSleepStore();
+            await store.init();
+
+            store.sleeps = [
+                {
+                    id: 1,
+                    slug: 'dream-1',
+                    title: 'Old Dream',
+                    description: 'Desc',
+                    date: '2026-06-01',
+                    createdAt: '2026-06-01T10:00:00.000Z',
+                    updatedAt: '2026-06-01T10:00:00.000Z',
+                    categories: [],
+                    quality: 3,
+                    clarity: 7,
+                    moodAfter: 6,
+                    timeOfDay: undefined,
+                    visualStyle: 'color',
+                    perspective: 'first_person',
+                    roles: ['protagonist'],
+                    sensations: ['sounds'],
+                    characters: [],
+                    locations: ['Неизвестное место'],
+                    objects: [],
+                    emotions: ['Спокойствие'],
+                    isAlien: false,
+                    authorName: '',
+                    interpretations: [],
+                    isFavorite: false,
+                    isPinned: false,
+                    isArchived: false,
+                    isDeleted: false,
+                    isDraft: false,
+                    isPrivate: true,
+                },
+            ] as Dream[];
+
+            const replacementDreams: DreamImport[] = [
+                {
+                    id: 5,
+                    slug: 'dream-5',
+                    title: 'Replacement Dream',
+                    description: 'Desc',
+                    date: '2026-01-01',
+                    createdAt: '2026-06-05T10:00:00.000Z',
+                    updatedAt: '2026-06-01T10:00:00.000Z',
+                    categories: [],
+                    quality: 5,
+                    clarity: 7,
+                    moodAfter: 6,
+                    timeOfDay: undefined,
+                    visualStyle: 'color',
+                    perspective: 'first_person',
+                    roles: ['protagonist'],
+                    sensations: ['sounds'],
+                    characters: [],
+                    locations: ['Неизвестное место'],
+                    objects: [],
+                    emotions: ['Спокойствие'],
+                    isAlien: false,
+                    authorName: '',
+                    interpretations: [],
+                    isFavorite: false,
+                    isPinned: false,
+                    isArchived: false,
+                    isDeleted: false,
+                    isDraft: false,
+                    isPrivate: true,
+                },
+            ];
+
+            await store.importDreams(replacementDreams, 'replace');
+
+            expect(store.sleeps.length).toBe(1);
+            expect(store.sleeps[0].id).toBe(5);
+        });
+
+        it('skips invalid dreams based on Valibot schema validation', async () => {
+            const store = useSleepStore();
+            await store.init();
+
+            const mixedDreams: DreamImport[] = [
+                {
+                    id: 3,
+                    slug: 'dream-3',
+                    title: 'Valid Dream',
+                    description: 'Desc',
+                    date: '2026-06-03',
+                    createdAt: '2026-06-03T10:00:00.000Z',
+                    updatedAt: '2026-06-03T10:00:00.000Z',
+                    categories: [],
+                    quality: 5,
+                    clarity: 7,
+                    moodAfter: 6,
+                    timeOfDay: undefined,
+                    visualStyle: 'color',
+                    perspective: 'first_person',
+                    roles: ['protagonist'],
+                    sensations: ['sounds'],
+                    characters: [],
+                    locations: ['Неизвестное место'],
+                    objects: [],
+                    emotions: ['Спокойствие'],
+                    isAlien: false,
+                    authorName: '',
+                    interpretations: [],
+                    isFavorite: false,
+                    isPinned: false,
+                    isArchived: false,
+                    isDeleted: false,
+                    isDraft: false,
+                    isPrivate: true,
+                },
+                {
+                    title: '',
+                    id: 66,
+                    slug: 'dream-3',
+                    description: 'Desc',
+                    date: '2026-06-03',
+                    createdAt: '2026-06-03T10:00:00.000Z',
+                    updatedAt: '2026-06-03T10:00:00.000Z',
+                    categories: [],
+                    quality: 5,
+                    clarity: 7,
+                    moodAfter: 6,
+                    timeOfDay: undefined,
+                    visualStyle: 'color',
+                    perspective: 'first_person',
+                    roles: ['protagonist'],
+                    sensations: ['sounds'],
+                    characters: [],
+                    locations: ['Неизвестное место'],
+                    objects: [],
+                    emotions: ['Спокойствие'],
+                    isAlien: false,
+                    authorName: '',
+                    interpretations: [],
+                    isFavorite: false,
+                    isPinned: false,
+                    isArchived: false,
+                    isDeleted: false,
+                    isDraft: false,
+                    isPrivate: true,
+                },
+            ];
+
+            const consoleWarnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+
+            await store.importDreams(mixedDreams, 'merge');
+
+            expect(store.sleeps.length).toBe(1);
+            expect(store.sleeps[0].id).toBe(3);
+            expect(consoleWarnSpy).toHaveBeenCalled();
+
+            consoleWarnSpy.mockRestore();
+        });
+
+        it('skips duplicate dreams during merge mode by id or slug', async () => {
+            const store = useSleepStore();
+            await store.init();
+
+            const existingDream = {
+                id: 1,
+                slug: 'dream-1',
+                title: 'Existing',
+                description: 'Desc',
+                date: '2026-06-01',
+                createdAt: '2026-06-01T10:00:00.000Z',
+                updatedAt: '2026-06-03T10:00:00.000Z',
+                categories: [],
+                quality: 5,
+                clarity: 7,
+                moodAfter: 6,
+                timeOfDay: undefined,
+                visualStyle: 'color',
+                perspective: 'first_person',
+                roles: ['protagonist'],
+                sensations: ['sounds'],
+                characters: [],
+                locations: ['Неизвестное место'],
+                objects: [],
+                emotions: ['Спокойствие'],
+                isAlien: false,
+                authorName: '',
+                interpretations: [],
+                isFavorite: false,
+                isPinned: false,
+                isArchived: false,
+                isDeleted: false,
+                isDraft: false,
+                isPrivate: true,
+            } as unknown as Dream;
+            store.sleeps = [existingDream];
+
+            const duplicateDreams: DreamImport[] = [
+                {
+                    id: 1, // Совпадает ID
+                    slug: 'other-slug',
+                    title: 'Duplicate by ID',
+                    description: 'Desc',
+                    date: '2026-06-01',
+                    createdAt: '2026-06-01T10:00:00.000Z',
+                    updatedAt: '2026-06-01T10:00:00.000Z',
+                    categories: [],
+                    quality: 5,
+                    clarity: 7,
+                    moodAfter: 6,
+                    timeOfDay: undefined,
+                    visualStyle: 'color',
+                    perspective: 'first_person',
+                    roles: ['protagonist'],
+                    sensations: ['sounds'],
+                    characters: [],
+                    locations: ['Неизвестное место'],
+                    objects: [],
+                    emotions: ['Спокойствие'],
+                    isAlien: false,
+                    authorName: '',
+                    interpretations: [],
+                    isFavorite: false,
+                    isPinned: false,
+                    isArchived: false,
+                    isDeleted: false,
+                    isDraft: false,
+                    isPrivate: true,
+                },
+                {
+                    id: 99,
+                    slug: 'dream-1', // Совпадает slug
+                    title: 'Duplicate by Slug',
+                    description: 'Desc',
+                    date: '2026-06-01',
+                    createdAt: '2026-06-01T10:00:00.000Z',
+                    updatedAt: '2026-06-01T10:00:00.000Z',
+                    categories: [],
+                    quality: 5,
+                    clarity: 7,
+                    moodAfter: 6,
+                    timeOfDay: undefined,
+                    visualStyle: 'color',
+                    perspective: 'first_person',
+                    roles: ['protagonist'],
+                    sensations: ['sounds'],
+                    characters: [],
+                    locations: ['Неизвестное место'],
+                    objects: [],
+                    emotions: ['Спокойствие'],
+                    isAlien: false,
+                    authorName: '',
+                    interpretations: [],
+                    isFavorite: false,
+                    isPinned: false,
+                    isArchived: false,
+                    isDeleted: false,
+                    isDraft: false,
+                    isPrivate: true,
+                },
+            ];
+
+            await store.importDreams(duplicateDreams, 'merge');
+
+            expect(store.sleeps.length).toBe(1);
+        });
     });
 });

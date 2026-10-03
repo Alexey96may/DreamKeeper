@@ -467,3 +467,13 @@ export const DreamSchema: v.BaseSchema<unknown, Dream, v.BaseIssue<unknown>> = v
     createdAt: v.string('Дата создания должна быть строкой'),
     updatedAt: v.string('Дата обновления должна быть строкой'),
 });
+
+export const DreamImportSchema = applyDateValidation(
+    v.object({
+        ...DreamBaseObject.entries,
+        id: v.optional(v.number('ID должен быть числом')),
+        slug: v.optional(v.string('Слаг должен быть строкой')),
+        createdAt: v.optional(v.string('Дата создания должна быть строкой')),
+        updatedAt: v.optional(v.string('Дата обновления должна быть строкой')),
+    }),
+);

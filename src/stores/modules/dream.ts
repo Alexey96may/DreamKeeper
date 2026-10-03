@@ -1,8 +1,12 @@
-import { computed, ref } from 'vue';
+import { computed, ref, watch } from 'vue';
 import { defineStore } from 'pinia';
 import * as v from 'valibot';
 
-import { DreamWriteSchema, DreamUpdateSchema } from '@/services/schemas/dream.schema';
+import {
+    DreamWriteSchema,
+    DreamUpdateSchema,
+    DreamImportSchema,
+} from '@/services/schemas/dream.schema';
 import type { Dream, DreamWrite, DreamInterpretationRef } from '@/types/Dream';
 import type { DreamSymbol } from '@/types/Interpretation/DreamSymbol';
 import type { Interpretation } from '@/types/Interpretation/Interpretation';
@@ -102,8 +106,8 @@ export const useSleepStore = defineStore('sleep', () => {
     // ===== HELPER ACTIONS =====
 
     /**
-     * Автоматическое сохранение/обновление символа и интерпретации в symbolStore,
-     * если sourceId === 'mine'
+     * Automatically saves/updates the symbol and interpretation in symbolStore
+     * if sourceId === 'mine'
      */
     const syncPersonalInterpretations = async (refs: DreamInterpretationRef[]) => {
         if (!Array.isArray(refs) || refs.length === 0) return;
@@ -355,6 +359,75 @@ export const useSleepStore = defineStore('sleep', () => {
         return fieldErrors;
     };
 
+    /**
+     * Batch import dreams from a backup file with strict Valibot validation
+     */
+    const importDreams = async (
+        importedSleeps: (DreamWrite & {
+            id?: number;
+            slug?: string;
+            createdAt?: string;
+            updatedAt?: string;
+        })[],
+        mode: 'replace' | 'merge',
+    ) => {
+        if (!repository.value) return;
+
+        loading.value = true;
+        error.value = null;
+
+        try {
+            if (mode === 'replace') {
+                await repository.value.clearAll();
+                sleeps.value = [];
+            }
+
+            for (const rawDream of importedSleeps) {
+                const validation = v.safeParse(DreamImportSchema, rawDream);
+
+                if (!validation.success) {
+                    console.warn(
+                        'Пропущен некорректный или поврежденный сон из бэкапа:',
+                        validation.issues,
+                    );
+                    continue;
+                }
+
+                const validDream = validation.output;
+
+                if (mode === 'merge') {
+                    const exists = sleeps.value.some(
+                        (s) =>
+                            (validDream.slug && s.slug === validDream.slug) ||
+                            (validDream.id && s.id === validDream.id),
+                    );
+                    if (exists) {
+                        continue;
+                    }
+                }
+
+                // Передаем валидированный объект (он может содержать старый id, slug, createdAt)
+                const savedDream = await repository.value.create(validDream);
+                if (savedDream) {
+                    sleeps.value.push(savedDream);
+                    await syncPersonalInterpretations(validDream.interpretations || []);
+                }
+            }
+
+            // Re-sort by creation date
+            sleeps.value.sort(
+                (a, b) =>
+                    new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime(),
+            );
+        } catch (err) {
+            error.value = 'Ошибка при импорте снов';
+            console.error(err);
+            throw err;
+        } finally {
+            loading.value = false;
+        }
+    };
+
     const clearError = (field: keyof typeof validationErrors.value) => {
         if (validationErrors.value[field]) {
             delete validationErrors.value[field];
@@ -366,6 +439,16 @@ export const useSleepStore = defineStore('sleep', () => {
         await repository.value.clearAll();
         sleeps.value = [];
     };
+
+    watch(error, (newError) => {
+        if (newError) {
+            const uiStore = useUIStore();
+            uiStore.addToast({
+                message: newError,
+                type: 'error',
+            });
+        }
+    });
 
     return {
         sleeps,
@@ -390,5 +473,6 @@ export const useSleepStore = defineStore('sleep', () => {
         deleteDream,
         clearError,
         clearAllDreams,
+        importDreams,
     };
 });

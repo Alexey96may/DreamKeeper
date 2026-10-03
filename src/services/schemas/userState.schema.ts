@@ -55,3 +55,12 @@ export const UserStateSchema: v.BaseSchema<unknown, UserState, v.BaseIssue<unkno
     createdAt: v.string('Дата создания должна быть строкой'),
     updatedAt: v.string('Дата обновления должна быть строкой'),
 });
+
+export const UserStateImportSchema = v.object({
+    ...UserStateWriteSchema.entries,
+    id: v.optional(v.number('ID должен быть числом')),
+    createdAt: v.optional(v.string('Дата создания должна быть строкой')),
+    updatedAt: v.optional(v.string('Дата обновления должна быть строкой')),
+});
+
+export type UserStateImport = v.InferOutput<typeof UserStateImportSchema>;
