@@ -4,6 +4,7 @@
     import AppModal from '@/components/sections/AppModal.vue';
     import AppButton from '@/components/ui/AppButton.vue';
     import { Copy, Check, QrCode } from 'lucide-vue-next';
+    import { Download } from 'lucide-vue-next';
     import QRCode from 'qrcode';
 
     const props = defineProps<{
@@ -61,12 +62,50 @@
                 width: 200,
                 color: {
                     dark: '#000000',
-                    light: '#ffffff00', // Прозрачный фон под тему приложения
+                    light: '#ffffff00',
                 },
+                errorCorrectionLevel: 'L',
             });
         } catch (err) {
             console.error('Ошибка генерации QR-кода', err);
         }
+    };
+
+    const downloadQrCode = () => {
+        // Находим созданный SVG внутри контейнера
+        const svgElement = document.querySelector('.qr-container svg');
+        if (!svgElement) return;
+
+        // Сериализуем SVG в строку
+        const svgString = new XMLSerializer().serializeToString(svgElement);
+        const svgBlob = new Blob([svgString], { type: 'image/svg+xml;charset=utf-8' });
+        const URL = window.URL || window.webkitURL || window;
+        const blobURL = URL.createObjectURL(svgBlob);
+
+        // Рисуем на canvas, чтобы получить PNG
+        const image = new Image();
+        image.onload = () => {
+            const canvas = document.createElement('canvas');
+            canvas.width = 400;
+            canvas.height = 400;
+            const context = canvas.getContext('2d');
+
+            if (context) {
+                context.fillStyle = '#FFFFFF';
+                context.fillRect(0, 0, canvas.width, canvas.height);
+                context.drawImage(image, 0, 0, canvas.width, canvas.height);
+
+                // Создаем ссылку для скачивания PNG
+                const pngUrl = canvas.toDataURL('image/png');
+                const downloadLink = document.createElement('a');
+                downloadLink.href = pngUrl;
+                downloadLink.download = `dream-qr-${Date.now()}.png`;
+                document.body.appendChild(downloadLink);
+                downloadLink.click();
+                document.body.removeChild(downloadLink);
+            }
+        };
+        image.src = blobURL;
     };
 
     // Следим за изменением ссылки (если меняется имя автора — ссылка меняется, QR пересоздается)
@@ -155,17 +194,26 @@
                 <Transition name="fade-slide">
                     <div
                         v-if="showQr"
-                        class="border-border-primary flex flex-col items-center rounded-xl border bg-white p-4 pt-6 shadow-inner"
+                        class="border-border-primary flex flex-col items-center rounded-xl border bg-white p-4 shadow-inner"
                     >
+                        <!-- Добавили класс qr-container для поиска через JS -->
                         <div
                             v-html="qrCodeSvg"
-                            class="flex h-48 w-48 items-center justify-center"
+                            class="qr-container flex h-48 w-48 items-center justify-center [&>svg]:h-full [&>svg]:w-full"
                         ></div>
-                        <span class="mt-2 text-[10px] text-gray-600"
-                            >Откройте камеру телефона, чтобы считать сон</span
+
+                        <!-- Кнопка скачивания картинки -->
+                        <AppButton
+                            @click="downloadQrCode"
+                            variant="secondary"
+                            size="xs"
+                            class="mt-6"
+                            :icon-left="Download"
                         >
-                    </div></Transition
-                >
+                            Скачать QR-код (PNG)
+                        </AppButton>
+                    </div>
+                </Transition>
             </div>
         </div>
 
