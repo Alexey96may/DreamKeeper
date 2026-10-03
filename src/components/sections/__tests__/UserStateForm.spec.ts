@@ -7,6 +7,7 @@ import type { UserState } from '@/types/UserState';
 
 vi.mock('@/composables/crud/index', () => ({
     useCrud: () => ({
+        // @ts-expect-error - the parameter is not used.
         handleDeleteState: vi.fn((id, callback) => callback()),
     }),
 }));
