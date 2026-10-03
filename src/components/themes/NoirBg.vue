@@ -1,6 +1,6 @@
 <template>
     <div
-        class="pointer-events-none fixed inset-0 -z-10 min-h-screen overflow-hidden bg-[var(--bg-primary)]"
+        class="bg-bg-primary pointer-events-none fixed inset-0 -z-10 h-full min-h-screen w-full overflow-hidden"
     >
         <!-- 1. Свет уличного фонаря -->
         <div
@@ -12,11 +12,12 @@
             class="absolute inset-0 bg-[radial-gradient(circle_at_60%_50%,transparent_25%,var(--bg-tertiary)_90%)] opacity-85"
         ></div>
 
-        <!-- 2. Графика: Кирпичная стена + Элементы улик (SVG) -->
-        <div class="absolute inset-0 flex items-center justify-center opacity-50">
+        <!-- 2. Графика: Кирпичная стена + Элементы улик (SVG на весь экран, приглушенные) -->
+        <div class="absolute inset-0 flex items-center justify-center opacity-25">
             <svg
-                class="h-full max-h-[900px] w-full max-w-6xl"
+                class="h-full w-full"
                 viewBox="0 0 1000 800"
+                preserveAspectRatio="none"
                 fill="none"
                 xmlns="http://www.w3.org/2000/svg"
             >
@@ -24,11 +25,11 @@
                 <polygon
                     points="0,0 420,0 720,800 0,800"
                     fill="url(#noir-street-light)"
-                    opacity="0.2"
+                    opacity="0.15"
                 />
 
                 <!-- Кирпичная стена справа -->
-                <g stroke="var(--border-strong)" stroke-width="1" opacity="0.4" fill="none">
+                <g stroke="var(--border-strong)" stroke-width="1" opacity="0.25" fill="none">
                     <path
                         d="M 680 100 H 1000 M 680 130 H 1000 M 680 160 H 1000 M 680 190 H 1000 M 680 220 H 1000 M 680 250 H 1000 M 680 280 H 1000 M 680 310 H 1000 M 680 340 H 1000 M 680 370 H 1000 M 680 400 H 1000 M 680 430 H 1000 M 680 460 H 1000 M 680 490 H 1000 M 680 520 H 1000 M 680 550 H 1000 M 680 580 H 1000 M 680 610 H 1000 M 680 640 H 1000 M 680 670 H 1000 M 680 700 H 1000"
                     />
@@ -37,35 +38,34 @@
                     />
                 </g>
 
-                <!-- Меловая обводка улик на полу -->
+                <!-- Меловая обводка улик на полу (менее яркая) -->
                 <g
                     stroke="var(--accent)"
-                    stroke-width="1.8"
+                    stroke-width="1.5"
                     stroke-dasharray="5 5"
                     fill="none"
-                    opacity="0.8"
+                    opacity="0.35"
                 >
                     <ellipse cx="260" cy="520" rx="42" ry="26" transform="rotate(-20 260 520)" />
                     <path d="M 640 580 L 710 610 L 670 670 L 600 640 Z" />
                 </g>
 
                 <!-- Измерительная линейка криминалиста -->
-                <g stroke="var(--border-strong)" stroke-width="1.5" opacity="0.75">
+                <g stroke="var(--border-strong)" stroke-width="1.2" opacity="0.35">
                     <line x1="180" y1="580" x2="380" y2="580" />
                     <path
                         d="M 180 572 V 580 M 220 575 V 580 M 260 572 V 580 M 300 575 V 580 M 340 572 V 580 M 380 572 V 580"
                     />
                 </g>
 
-                <!-- Маркеры улик (01 и 02) -->
-                <g transform="translate(210, 460)">
-                    <polygon points="0,0 34,0 42,38 -8,38" fill="var(--accent)" opacity="0.18" />
+                <!-- Маркеры улик (01 и 02) — приглушенные -->
+                <g transform="translate(210, 460)" opacity="0.45">
+                    <polygon points="0,0 34,0 42,38 -8,38" fill="var(--accent)" opacity="0.1" />
                     <path
                         d="M 0 0 L 34 0 L 42 38 L -8 38 Z"
                         stroke="var(--accent)"
-                        stroke-width="2"
+                        stroke-width="1.5"
                         fill="none"
-                        opacity="0.95"
                     />
                     <text
                         x="17"
@@ -80,14 +80,13 @@
                     </text>
                 </g>
 
-                <g transform="translate(680, 520)">
-                    <polygon points="0,0 34,0 42,38 -8,38" fill="var(--accent)" opacity="0.18" />
+                <g transform="translate(680, 520)" opacity="0.45">
+                    <polygon points="0,0 34,0 42,38 -8,38" fill="var(--accent)" opacity="0.1" />
                     <path
                         d="M 0 0 L 34 0 L 42 38 L -8 38 Z"
                         stroke="var(--accent)"
-                        stroke-width="2"
+                        stroke-width="1.5"
                         fill="none"
-                        opacity="0.95"
                     />
                     <text
                         x="17"
@@ -125,7 +124,7 @@
             EVIDENCE AREA — DO NOT CROSS —
         </div>
 
-        <!-- 4. Клубы ночного тумана (Скрыты на мобилках для стабильного FPS) -->
+        <!-- 4. Клубы ночного тумана -->
         <div class="detective-smoke-container absolute inset-0 hidden sm:block">
             <div class="detective-smoke-scroller"></div>
         </div>
