@@ -6,7 +6,6 @@ import vueDevTools from 'vite-plugin-vue-devtools';
 import tailwindcss from '@tailwindcss/vite';
 import { VitePWA } from 'vite-plugin-pwa';
 
-// https://vite.dev/config/
 export default defineConfig({
     plugins: [
         vue(),
@@ -21,7 +20,6 @@ export default defineConfig({
                 globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2}'],
             },
             scope: '/DreamKeeper/',
-            start_url: '/DreamKeeper/',
             manifest: {
                 name: 'Dream Keeper',
                 short_name: 'DreamKeeper',

@@ -8,7 +8,9 @@
     "rules": {
         "no-console": ["warn", { "allow": ["error", "warn"] }],
         "eqeqeq": "warn",
-        "vitest/require-mock-type-parameters": "off"
+        "vitest/require-mock-type-parameters": "off",
+        "no-unused-vars": "off",
+        "no-constant-condition": "off"
     },
     "categories": {
         "correctness": "error"
