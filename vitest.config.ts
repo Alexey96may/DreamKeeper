@@ -12,7 +12,15 @@ export default defineConfig(
                 coverage: {
                     provider: 'v8',
                     reporter: ['text', 'html'],
-                    exclude: ['node_modules/', 'src/types/', 'src/plugins/', '**/*.d.ts'],
+                    exclude: [
+                        'node_modules/',
+                        'src/types/',
+                        'src/plugins/',
+                        '**/*.d.ts',
+                        '**/dist/**',
+                        '**/cypress/**',
+                        '**/.{idea,git,cache,output,temp}/**',
+                    ],
                 },
                 silent: true,
             },

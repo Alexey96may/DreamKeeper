@@ -16,7 +16,6 @@
         "lint:oxlint": "oxlint . --fix",
         "lint:eslint": "eslint . --fix --cache",
         "format": "prettier --write --experimental-cli src/",
-        "lint": "run-s \"lint:*\"",
         "test:e2e:open": "cypress open",
         "test:e2e:run": "cypress run"
     },
