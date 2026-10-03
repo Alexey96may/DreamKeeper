@@ -1,6 +1,6 @@
 <template>
     <div
-        class="min pointer-events-none fixed inset-0 -z-10 min-h-screen overflow-hidden bg-[var(--bg-primary)]"
+        class="min bg-bg-primary pointer-events-none fixed inset-0 -z-10 min-h-screen overflow-hidden"
     >
         <!-- 1. Купольный луч света (Оптимизировано: убран тяжелый blur, заменен на чистый градиент) -->
         <div

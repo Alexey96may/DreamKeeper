@@ -1,7 +1,5 @@
 <template>
-    <div
-        class="pointer-events-none fixed inset-0 -z-10 min-h-screen overflow-hidden bg-[var(--bg-primary)]"
-    >
+    <div class="bg-bg-primary pointer-events-none fixed inset-0 -z-10 min-h-screen overflow-hidden">
         <!-- 1. Мягкое тёплое свечение архивной лампы (Без тяжелого blur) -->
         <div
             class="lamp-pulse absolute -top-32 right-10 h-[650px] w-[650px] rounded-full bg-[radial-gradient(circle,var(--accent)_0%,transparent_70%)] opacity-10"

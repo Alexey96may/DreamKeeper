@@ -1,7 +1,5 @@
 <template>
-    <div
-        class="pointer-events-none fixed inset-0 -z-10 min-h-screen overflow-hidden bg-[var(--bg-primary)]"
-    >
+    <div class="bg-bg-primary pointer-events-none fixed inset-0 -z-10 min-h-screen overflow-hidden">
         <!-- 1. Фиолетово-пурпурная туманность (Без тяжелого blur) -->
         <div
             class="nebula-pulse absolute -top-40 -right-20 h-[750px] w-[750px] rounded-full bg-[radial-gradient(circle,var(--accent)_0%,transparent_70%)] opacity-15"

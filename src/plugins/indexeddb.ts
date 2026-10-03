@@ -1,9 +1,9 @@
 // src/plugins/indexeddb.ts
 import type { App, InjectionKey } from 'vue';
 import { IndexedDBService } from '@/services/data/IndexedDBService';
-import type { IDatabaseService } from '@/types/databases/IndexedDB';
+import type { IDataService } from '@/types/databases/DataService';
 
-export const DB_KEY: InjectionKey<IDatabaseService> = Symbol('db');
+export const DB_KEY: InjectionKey<IDataService> = Symbol('db');
 
 export default {
     install(app: App): void {
@@ -16,6 +16,6 @@ export default {
 
 declare module '@vue/runtime-core' {
     interface ComponentCustomProperties {
-        $db: IDatabaseService;
+        $db: IDataService;
     }
 }
