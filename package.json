@@ -5,9 +5,10 @@
     "type": "module",
     "scripts": {
         "dev": "vite",
-        "build": "vite build",
+        "build": "npm run type-check && npm run lint && vitest run && vite build",
         "preview": "vite preview",
         "test:unit": "vitest",
+        "test:unit:run": "vitest run",
         "predeploy": "npm run build",
         "deploy": "gh-pages -d dist",
         "type-check": "vue-tsc --build",
