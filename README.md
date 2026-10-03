@@ -25,7 +25,7 @@ Designed as a production-ready portfolio project, it emphasizes solid software a
 - 🎨 **Atmospheric Themes:** Over 10 custom visual styles to match different moods (Classic, Astronomy, Cinema, Cthulhu, Noir, Folk, Paganism, Alchemy, Temple, Astrology, Archive, and Clinic).
 - 🔍 **Advanced Filtering:** Multi-level search with live active filter tags displayed directly in the view.
 - 📅 **Interactive Calendar:** Seamless integration with `v-calendar` for a quick overview of dreams and daily states by date.
-- 🔗 **Local Sharing («Share Dream»):** Unique hash-based link sharing without a backend.
+- 🔗 **Local Sharing («Share Dream»):** Unique hash-based link sharing and QR code generation without a backend.
 - 💾 **Backup & Restore:** Full database export and import with version schema support.
 - 📱 **Cross-Platform:** Works natively as a web PWA and builds to Android via **Capacitor**.
 

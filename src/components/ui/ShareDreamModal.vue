@@ -1,9 +1,10 @@
 <script setup lang="ts">
-    import { ref, computed } from 'vue';
+    import { ref, computed, watch } from 'vue';
     import type { Dream } from '@/types/Dream';
     import AppModal from '@/components/sections/AppModal.vue';
     import AppButton from '@/components/ui/AppButton.vue';
-    import { Copy, Check } from 'lucide-vue-next';
+    import { Copy, Check, QrCode } from 'lucide-vue-next';
+    import QRCode from 'qrcode';
 
     const props = defineProps<{
         dream: Dream;
@@ -15,6 +16,8 @@
     }>();
 
     const copied = ref(false);
+    const qrCodeSvg = ref('');
+    const showQr = ref(false); // Переключатель: показывать ли сам QR-код
 
     const authorName = ref(props.dream.authorName ?? '');
 
@@ -49,6 +52,32 @@
         return `${origin}${normalizedBase}dream/share/import#data=${base64Data}`;
     });
 
+    // Генерация QR-кода в виде SVG строки при изменении ссылки или имени
+    const generateQrCode = async () => {
+        try {
+            qrCodeSvg.value = await QRCode.toString(shareLink.value, {
+                type: 'svg',
+                margin: 2,
+                width: 200,
+                color: {
+                    dark: '#000000',
+                    light: '#ffffff00', // Прозрачный фон под тему приложения
+                },
+            });
+        } catch (err) {
+            console.error('Ошибка генерации QR-кода', err);
+        }
+    };
+
+    // Следим за изменением ссылки (если меняется имя автора — ссылка меняется, QR пересоздается)
+    watch(
+        shareLink,
+        () => {
+            generateQrCode();
+        },
+        { immediate: true },
+    );
+
     const copyToClipboard = async () => {
         try {
             await navigator.clipboard.writeText(shareLink.value);
@@ -74,8 +103,8 @@
     >
         <div class="mb-4 space-y-4">
             <p class="text-text-secondary text-sm">
-                Укажите имя автора (по желанию) и скопируйте ссылку. Когда друг откроет её, данные
-                сна и имя автора автоматически заполнятся у него в приложении!
+                Укажите имя автора (по желанию) и поделитесь ссылкой или покажите QR-код другу.
+                Когда он сканирует его, сон автоматически добавится в приложение!
             </p>
 
             <!-- Поле ввода имени автора -->
@@ -94,8 +123,9 @@
                 />
             </div>
 
+            <!-- Ссылка для шеринга -->
             <div class="space-y-1.5">
-                <label for="shareLink" class="text-text-primary ma mb-2 block text-xs font-medium"
+                <label for="shareLink" class="text-text-primary mb-2 block text-xs font-medium"
                     >Ссылка для шеринга</label
                 >
                 <div class="flex flex-col gap-3 sm:flex-row sm:items-center">
@@ -115,6 +145,28 @@
                     </AppButton>
                 </div>
             </div>
+
+            <!-- Блок QR-кода -->
+            <div class="flex flex-col items-center justify-center gap-4 py-6">
+                <AppButton @click="showQr = !showQr" variant="primary" :icon-left="QrCode">
+                    {{ showQr ? 'Скрыть QR-код' : 'Показать QR-код' }}
+                </AppButton>
+
+                <Transition name="fade-slide">
+                    <div
+                        v-if="showQr"
+                        class="border-border-primary flex flex-col items-center rounded-xl border bg-white p-4 pt-6 shadow-inner"
+                    >
+                        <div
+                            v-html="qrCodeSvg"
+                            class="flex h-48 w-48 items-center justify-center"
+                        ></div>
+                        <span class="mt-2 text-[10px] text-gray-600"
+                            >Откройте камеру телефона, чтобы считать сон</span
+                        >
+                    </div></Transition
+                >
+            </div>
         </div>
 
         <template #footer>
@@ -122,3 +174,16 @@
         </template>
     </AppModal>
 </template>
+
+<style scoped>
+    .fade-slide-enter-active,
+    .fade-slide-leave-active {
+        transition: all 0.25s ease;
+    }
+
+    .fade-slide-enter-from,
+    .fade-slide-leave-to {
+        opacity: 0;
+        transform: translateY(-8px);
+    }
+</style>
