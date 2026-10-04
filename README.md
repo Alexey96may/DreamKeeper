@@ -60,7 +60,7 @@ Make sure you have Node.js (version 18+) installed on your machine.
 
 1. **Clone the repository:**
     ```bash
-    git clone [https://github.com/your-username/dream-keeper.git](https://github.com/your-username/dream-keeper.git)
+    git clone [https://github.com/Alexey96may/DreamKeeper.git](https://github.com/Alexey96may/DreamKeeper.git)
     cd dream-keeper
     ```
 2. **Install dependencies:**
