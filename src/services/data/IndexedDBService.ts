@@ -27,6 +27,8 @@ export class IndexedDBService implements IDataService {
                     dreamStore.createIndex('date', 'date');
                     dreamStore.createIndex('quality', 'quality');
                     dreamStore.createIndex('type', 'type');
+
+                    dreamStore.createIndex('slug', 'slug', { unique: true });
                 }
 
                 if (!db.objectStoreNames.contains('userStates')) {
