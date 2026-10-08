@@ -79,6 +79,9 @@
                 emotions: formatCommaSeparated(props.emotions),
             };
         },
+        {
+            immediate: true,
+        },
     );
 
     const onFieldChange = (field: ArrayFieldKey, val: string) => {
